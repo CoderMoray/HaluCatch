@@ -2,9 +2,7 @@
 name: halucatch
 slug: halucatch
 displayName: "HaluCatch / 捕幻"
-description: |
-  AI Skill 执行可靠性审查工具。评估一个 Skill 被 AI 执行时，结果是否可信、是否可复现、是否经得起业务推敲。
-  覆盖四维度：地基（数据管线）、代码、规则（业务口径）、护栏（解读指南）。
+description: "AI Skill execution reliability auditor. Scans data pipelines, code risks, business rules, and interpretation guardrails to catch hallucinations before they reach users. Use when you need to verify an AI agent can execute a Skill correctly and reproducibly."
 author: Engineering Assurance Team
 version: "1.6.0"
 tags:
