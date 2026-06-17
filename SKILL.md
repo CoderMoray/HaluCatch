@@ -283,7 +283,8 @@ category: "engineering"
 
 ## 报告落盘
 
-- 审查报告保存到 Skill 同目录下：`{Skill目录}/HaluCatch-report-{YYYY-MM-DD}.md`
+- 缺省输出到 `HaluCatch/reports/` 目录（不污染目标 Skill 目录）
+- 指定 `--output-dir` 则输出到自定义路径
 - 修复包（如有）保存到：`{Skill目录}/halucatch-fix/`
 
 ---

@@ -18,23 +18,27 @@ from datetime import date
 # =============================================================================
 
 def scan_folder(path):
-    """扫描文件夹，返回文件清单和 SKILL.md / .py 内容。"""
+    """递归扫描文件夹，返回文件清单和 SKILL.md / .py 内容。"""
     if not os.path.isdir(path):
         print(f"❌ 路径不存在: {path}")
         return None
 
     files = []
     skill_md_content = None
-    py_content = None
+    py_contents = []
     skill_md_path = None
-    py_path = None
+    py_paths = []
 
-    for fname in os.listdir(path):
-        fpath = os.path.join(path, fname)
-        if os.path.isfile(fpath):
+    skip_dirs = {'.git', '__pycache__', '.pytest_cache', 'node_modules', '.venv', 'venv', 'avatars'}
+
+    for root, dirs, filenames in os.walk(path):
+        dirs[:] = [d for d in dirs if d not in skip_dirs and not d.startswith('.')]
+        for fname in filenames:
+            fpath = os.path.join(root, fname)
             size = os.path.getsize(fpath)
             ext = os.path.splitext(fname)[1].lower()
-            files.append({'name': fname, 'ext': ext, 'size': size, 'path': fpath})
+            fpath_rel = os.path.relpath(fpath, path)
+            files.append({'name': fname, 'ext': ext, 'size': size, 'path': fpath, 'rel_path': fpath_rel})
 
             if fname.lower() in ['skill.md', 'toolcard.md']:
                 skill_md_path = fpath
@@ -42,18 +46,22 @@ def scan_folder(path):
                     skill_md_content = f.read()
 
             if ext == '.py':
-                py_path = fpath
+                py_paths.append(fpath)
                 with open(fpath, 'r', encoding='utf-8', errors='replace') as f:
-                    py_content = f.read()
+                    py_contents.append(f.read())
 
     has_data = any(f['ext'] in ['.xlsx', '.xls', '.csv'] for f in files)
+
+    py_content = '\n'.join(py_contents) if py_contents else None
+    py_path = py_paths[0] if py_paths else None
+    max_py_lines = max(len(c.splitlines()) for c in py_contents) if py_contents else 0
 
     print(f"  📁 扫描: {path}")
     print(f"  📄 文件数: {len(files)}")
     if skill_md_content:
         print(f"  📝 SKILL.md: {len(skill_md_content.splitlines())} 行")
-    if py_content:
-        print(f"  🐍 .py 文件: {len(py_content.splitlines())} 行")
+    if py_paths:
+        print(f"  🐍 .py 文件: {len(py_paths)} 个 ({sum(len(c.splitlines()) for c in py_contents)} 行)")
     if has_data:
         print(f"  📊 数据文件: {sum(1 for f in files if f['ext'] in ['.xlsx', '.xls', '.csv'])} 个")
 
@@ -63,6 +71,8 @@ def scan_folder(path):
         'skill_md_path': skill_md_path,
         'py': py_content,
         'py_path': py_path,
+        'py_count': len(py_paths),
+        'max_py_lines': max_py_lines,
         'has_data': has_data,
     }
 
@@ -170,10 +180,12 @@ def check_code_risks(info):
 
     patterns = [
         ('异常处理', r'except\s*:\s*pass', '裸 except: pass — 可能吞掉内存错误等关键异常'),
-        ('浮点比较', r'(p_pool|p_val)\s*==\s*0', '浮点数精确相等比较 — 可能漏判接近 0 的值'),
-        ('统计函数', r'(math\.exp|scipy\.stats)', '自定义统计函数 — AI 可能替换为不同实现'),
+        ('浮点比较', r'\w+\s*==\s*0\.0', '浮点数精确相等比较 — 可能漏判接近 0 的值'),
+        ('除零风险', r'return\s+[^/]*/\s*\w+', 'return 中直接返回除法结果 — 分母为 0 时无保护'),
         ('硬编码阈值', r'skiprows\s*=\s*\d', '固定的 skiprows — 格式漂移时数据错位'),
-        ('除零风险', r'/\s*store_weeks', '除法未保护 — store_weeks=0 时产生 inf'),
+        ('路径拼接', r'[\'\"][/\w]+\s*\+\s*[\'\"\/]|[\'\"\/]\s*\+\s*[\'\"][\w/]+', '字符串拼接路径 — 建议用 os.path.join'),
+        ('静默覆盖', r'open\([^)]*,\s*[\'\"]w[\'\"]', '写模式打开文件 — 未警告覆盖已有内容'),
+        ('超时缺失', r'requests\.(get|post|put|delete)\([^)]*\)', 'HTTP 请求未设置 timeout — 可能无限挂起'),
     ]
 
     for name, pattern, desc in patterns:
@@ -185,10 +197,14 @@ def check_code_risks(info):
     if found_risks == 0:
         issues.append(('✅ 未检测到常见篡改点', 'pass'))
 
-    # 评级基于嵌入代码行数
-    lines = len(info['py'].splitlines())
+    # 评级基于嵌入代码行数（取最大单文件）
+    lines = info.get('max_py_lines', len(info['py'].splitlines()) if info['py'] else 0)
+    py_count = info.get('py_count', 1 if info['py'] else 0)
     if lines > 200:
-        issues.append((f'🟡 嵌入代码 {lines} 行 — 较长，AI 复现时可能遗漏或篡改', 'warn'))
+        if py_count > 1:
+            issues.append((f'🟡 嵌入代码 {py_count} 个 .py 文件，最大单文件 {lines} 行 — 文件较多，AI 复现时可能遗漏', 'warn'))
+        else:
+            issues.append((f'🟡 嵌入代码 {lines} 行 — 较长，AI 复现时可能遗漏或篡改', 'warn'))
 
     if found_risks == 0 and lines <= 200:
         rating = '🟢 低风险'
@@ -267,8 +283,9 @@ def check_rules(info):
     return {'rating': rating, 'issues': issues, 'score': f'{score}/{total}'}
 
 
-def check_guardrails(info):
-    """护栏评估：检查解读规则是否到位，防止 AI 自信地输出错误结论。"""
+def check_guardrails(info, skill_type='data-driven'):
+    """护栏评估：检查解读规则是否到位，防止 AI 自信地输出错误结论。
+    data-driven 型: 全 8 项; methodology 型: 精简 5 项（跳过数据来源/时效性/置信度）。"""
     md = info['skill_md']
     issues = []
 
@@ -301,19 +318,27 @@ def check_guardrails(info):
     else:
         issues.append(('🟠 缺少输出验证/自检要求', 'warn'))
 
-    # 4) 置信度
-    if re.search(r'(置信|可信度|confidence|不确定|风险)', md):
-        issues.append(('✅ 涉及置信度/风险评估', 'pass'))
-        score += 1
+    # 4) 置信度（数据驱动型专属）
+    if skill_type == 'data-driven':
+        if re.search(r'(置信|可信度|confidence|不确定|风险)', md):
+            issues.append(('✅ 涉及置信度/风险评估', 'pass'))
+            score += 1
+        else:
+            issues.append(('🟡 未要求置信度声明', 'info'))
     else:
-        issues.append(('🟡 未要求置信度声明', 'info'))
+        issues.append(('🟡 纯方法论型，置信度检查跳过', 'skip'))
+        total -= 1
 
-    # 5) 数据来源限制
-    if re.search(r'(数据.*来源|数据.*范围|数据.*限制|仅.*数据|不包括)', md):
-        issues.append(('✅ 声明了数据来源/范围限制', 'pass'))
-        score += 1
+    # 5) 数据来源限制（数据驱动型专属）
+    if skill_type == 'data-driven':
+        if re.search(r'(数据.*来源|数据.*范围|数据.*限制|仅.*数据|不包括)', md):
+            issues.append(('✅ 声明了数据来源/范围限制', 'pass'))
+            score += 1
+        else:
+            issues.append(('🟡 未声明数据来源限制', 'info'))
     else:
-        issues.append(('🟡 未声明数据来源限制', 'info'))
+        issues.append(('🟡 纯方法论型，数据来源检查跳过', 'skip'))
+        total -= 1
 
     # 6) 错误回退
     if re.search(r'(错误|失败|异常|无法|不可用|回退|fallback)', md):
@@ -322,12 +347,16 @@ def check_guardrails(info):
     else:
         issues.append(('🟠 未定义错误回退策略', 'warn'))
 
-    # 7) 时效性
-    if re.search(r'(截至|更新时间|有效期|时效|T\+|交易日|截止)', md):
-        issues.append(('✅ 声明了数据时效性', 'pass'))
-        score += 1
+    # 7) 时效性（数据驱动型专属）
+    if skill_type == 'data-driven':
+        if re.search(r'(截至|更新时间|有效期|时效|T\+|交易日|截止)', md):
+            issues.append(('✅ 声明了数据时效性', 'pass'))
+            score += 1
+        else:
+            issues.append(('🟡 未声明数据时效性约束', 'info'))
     else:
-        issues.append(('🟡 未声明数据时效性约束', 'info'))
+        issues.append(('🟡 纯方法论型，时效性检查跳过', 'skip'))
+        total -= 1
 
     # 8) 前提假设
     if re.search(r'(假设|前提|前置|前提条件)', md):
@@ -359,21 +388,23 @@ def check_methodology(info):
     score = 0
 
     # 1) 步骤清晰
-    if re.search(r'(步骤|Step|##\s+\d)', md):
+    if re.search(r'(步骤|Step|##\s+\d|第[一二三四五六七八九十\d]+步)', md):
         issues.append(('✅ 有结构化步骤', 'pass'))
         score += 1
     else:
         issues.append(('🟠 缺少结构化步骤描述', 'warn'))
 
-    # 2) 边界处理
-    if re.search(r'(如果|若|当|如果.*不|except)', md):
+    # 2) 边界处理 — 中英文条件句、异常处理
+    if re.search(r'(如果|若|当|如果.*不|except|\bif\s|\bwhen\s|\bin\s+case\s)', md):
         issues.append(('✅ 有异常/边界情况处理', 'pass'))
         score += 1
     else:
         issues.append(('🟡 未检测到异常分支处理', 'warn'))
 
-    # 3) 输出格式定义
-    if re.search(r'(输出|产出|结果|report|生成)', md):
+    # 3) 输出格式定义 — 关键词 + 代码块检测
+    has_output_kw = re.search(r'(输出|产出|结果|report|生成|respond\s+with|returns?\s+the)', md) is not None
+    code_blocks = len(re.findall(r'```', md)) // 2
+    if has_output_kw or code_blocks >= 2:
         issues.append(('✅ 定义了输出格式', 'pass'))
         score += 1
     else:
@@ -389,7 +420,9 @@ def check_methodology(info):
     # 5) 自洽 — 检查 SKILL.md 引用的文件是否在文件夹中存在
     mentioned_files = re.findall(r'[`"]([a-zA-Z0-9_./-]*[a-zA-Z0-9_]+\.(?:py|md|xlsx|xls|csv|json|yaml|yml|toml))[`"]', md)
     existing_names = {f['name'] for f in info.get('files', [])}
-    missing = [m for m in mentioned_files if os.path.basename(m) not in existing_names and m not in existing_names]
+    existing_paths = {f.get('rel_path', f['name']) for f in info.get('files', [])}
+    # 优先用完整相对路径匹配，退化为 basename
+    missing = [m for m in mentioned_files if m not in existing_paths and os.path.basename(m) not in existing_names]
     if missing:
         issues.append((f'🟠 引用了不存在的文件: {missing[:3]}', 'warn'))
     elif mentioned_files:
@@ -515,11 +548,29 @@ def generate_report(info, results, output_dir=None):
 > 本报告由 HaluCatch 生成。自检: {self_check_msg}
 """
 
-    # 通俗版
+    # 通俗版 — 附带语境解释
+    context_map = {
+        '硬编码路径': '脚本里写死了某个人的电脑路径，换台机器就跑不了',
+        '裸 except': '异常被静默吞掉，出错时没有任何提示，很难排查',
+        'skiprows': '数据格式跟预期不一样时，强行跳过行会导致数据错位',
+        '自动发现': '没有自动发现文件的机制，每次都得手动指定文件',
+        '未检测到异常分支': '遇到意外情况时，AI 不知道该怎么做，可能给出错误结果',
+        '缺少输出': '没说输出长什么样，不同 AI 可能给出格式完全不同的结果',
+        '缺少结构化步骤': '指令像流水账，AI 可能跳过关键步骤或顺序混乱',
+        '缺少示例': '没有例子，AI 只能靠猜，容易理解偏差',
+        '缺少验证': '没有检查步骤，AI 可能自信地输出错误内容不做验证',
+        '未声明前提假设': '没说明在什么条件下这个 Skill 才能正常工作',
+        '未定义错误回退': '执行失败时没有备用方案，AI 会卡住',
+    }
     simple_issues = []
     for iss in issues:
         text = iss[0].replace('🔴', '❌').replace('🟠', '⚠️').replace('🟡', '📌')
-        simple_issues.append(f'- {text}')
+        hint = ''
+        for key, val in context_map.items():
+            if key in text:
+                hint = f'（{val}）'
+                break
+        simple_issues.append(f'- {text}{hint}')
 
     simple_body = '\n'.join(simple_issues) if simple_issues else '✅ 无发现问题。'
 
@@ -650,7 +701,7 @@ def main():
         print(f"     {results['rules']['rating']}")
         results['rules']['issues'].append(('📝 以上为脚本基线检查，AI 应在此基础上补充语义分析', 'info'))
         print("  🛡️ 护栏评估...")
-        results['guardrails'] = check_guardrails(info)
+        results['guardrails'] = check_guardrails(info, skill_type)
         print(f"     {results['guardrails']['rating']}")
         results['guardrails']['issues'].append(('🛡️ 以上为脚本基线检查，AI 应在此基础上补充语义分析', 'info'))
     else:
@@ -659,13 +710,14 @@ def main():
         results['foundation'] = {'rating': '🟢 纯方法论', 'issues': [('✅ 纯方法论型 Skill，地基检查不适用', 'pass')], 'score': '-'}
         results['code'] = {'rating': '🟢 纯方法论', 'issues': [('✅ 纯方法论型 Skill，代码风险不适用', 'pass')], 'score': '-'}
         print("  🛡️ 护栏评估...")
-        results['guardrails'] = check_guardrails(info)
+        results['guardrails'] = check_guardrails(info, skill_type)
         print(f"     {results['guardrails']['rating']}")
         results['guardrails']['issues'].append(('🛡️ 以上为脚本基线检查，AI 应在此基础上补充语义分析', 'info'))
 
-    # Phase 3: 报告
+    # Phase 3: 报告（缺省输出到自身 reports/ 目录，避免污染目标 Skill 目录）
     print("\n📊 生成报告...")
-    reports = generate_report(info, results, args.output_dir if args.output_dir else args.skill_dir)
+    default_out = args.output_dir or os.path.join(os.path.dirname(os.path.abspath(__file__)), 'reports')
+    reports = generate_report(info, results, default_out)
 
     # 自检
     dims = ['foundation', 'code', 'rules', 'guardrails']
@@ -682,7 +734,7 @@ def main():
         print("  ✅ 自检: 全部通过")
 
     print("\n✅ HaluCatch 审查完成。")
-    print(f"   报告已保存至: {args.output_dir or args.skill_dir}")
+    print(f"   报告已保存至: {default_out}")
 
 
 if __name__ == '__main__':

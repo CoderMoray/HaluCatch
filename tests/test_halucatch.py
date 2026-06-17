@@ -173,3 +173,56 @@ def test_guardrails_weak():
     info = make_info(md_content=md)
     result = check_guardrails(info)
     assert result['rating'] in ('🔴 薄弱', '🟡 缺项')
+
+
+# ---- 边界用例 — 输入不完整时行为正确 ----
+
+import tempfile
+
+def test_scan_empty_folder():
+    with tempfile.TemporaryDirectory() as td:
+        result = __import__('halucatch_core').scan_folder(td)
+        assert result is not None
+        assert result['skill_md'] is None
+        assert result['py'] is None
+        assert len(result['files']) == 0
+
+
+def test_scan_only_skillmd():
+    with tempfile.TemporaryDirectory() as td:
+        md_path = os.path.join(td, 'SKILL.md')
+        with open(md_path, 'w') as f:
+            f.write('name: Test\n\n## 步骤 1\n做 A\n如果失败则报错')
+        result = __import__('halucatch_core').scan_folder(td)
+        assert result is not None
+        assert result['skill_md'] is not None
+        assert result['py'] is None
+        assert len(result['files']) == 1
+
+
+def test_scan_only_py_no_skillmd():
+    with tempfile.TemporaryDirectory() as td:
+        py_path = os.path.join(td, 'core.py')
+        with open(py_path, 'w') as f:
+            f.write("print('hello')\nglob.glob('*')")
+        result = __import__('halucatch_core').scan_folder(td)
+        assert result is not None
+        assert result['skill_md'] is None
+        assert result['py'] is not None
+        assert len(result['files']) == 1
+
+
+def test_scan_deep_nested_py():
+    with tempfile.TemporaryDirectory() as td:
+        nested = os.path.join(td, 'a', 'b', 'c')
+        os.makedirs(nested)
+        py_path = os.path.join(nested, 'deep.py')
+        with open(py_path, 'w') as f:
+            f.write('x = 1')
+        result = __import__('halucatch_core').scan_folder(td)
+        assert result is not None
+        assert result['py'] is not None
+        assert len(result['files']) == 1
+        # 验证 rel_path 正确
+        f = result['files'][0]
+        assert f['rel_path'] == 'a/b/c/deep.py'
