@@ -82,14 +82,14 @@ def scan_folder(path):
 # =============================================================================
 
 def classify_skill(info):
-    """判断 Skill 类型：数据驱动型 / 纯方法论型。"""
+    """判断 Skill 类型：代码工程型 / 纯方法论型。"""
     has_py = info['py'] is not None
     has_data = info['has_data']
     has_pd = info['skill_md'] and ('pd.read_' in info['skill_md'] or 'pandas' in info['skill_md'].lower())
     has_md_py = info['skill_md'] and ('```python' in info['skill_md'])
 
     if has_py or has_data or has_pd or has_md_py:
-        return 'data-driven'
+        return 'code-engineered'
     return 'methodology'
 
 
@@ -301,10 +301,10 @@ def _is_tool_skill(info):
     return tool_count > analysis_count
 
 
-def check_guardrails(info, skill_type='data-driven'):
+def check_guardrails(info, skill_type='code-engineered'):
     """护栏评估：检查解读规则是否到位，防止 AI 自信地输出错误结论。
-    data-driven 分析型: 全 8 项（置信度/数据来源/时效性 全查）;
-    data-driven 工具库型: 精简 5 项（跳过置信度/数据来源/时效性）;
+    code-engineered 分析型: 全 8 项（置信度/数据来源/时效性 全查）;
+    code-engineered 工具库型: 精简 5 项（跳过置信度/数据来源/时效性）;
     methodology 型: 精简 5 项（同上）。"""
     md = info['skill_md']
     issues = []
@@ -312,8 +312,8 @@ def check_guardrails(info, skill_type='data-driven'):
     if not md:
         return {'rating': '🟡 无 SKILL.md', 'issues': [('🟡 未找到 SKILL.md，无法评估护栏', 'skip')], 'score': '-'}
 
-    # 数据驱动型拆两档：工具库 vs 分析型
-    is_tool = skill_type == 'data-driven' and _is_tool_skill(info)
+    # 代码工程型拆两档：工具库 vs 分析型
+    is_tool = skill_type == 'code-engineered' and _is_tool_skill(info)
 
     total = 8
     score = 0
@@ -338,8 +338,8 @@ def check_guardrails(info, skill_type='data-driven'):
     else:
         issues.append(('🟠 缺少输出验证/自检要求', 'warn'))
 
-    # 4) 置信度（分析型数据驱动专属，工具库/方法论跳过）
-    if skill_type == 'data-driven' and not is_tool:
+    # 4) 置信度（分析型代码工程专属，工具库/方法论跳过）
+    if skill_type == 'code-engineered' and not is_tool:
         if re.search(r'(置信|可信度|confidence|uncertainty|reliability|error\s+margin|不确定|风险)', md):
             issues.append(('✅ 涉及置信度/风险评估', 'pass'))
             score += 1
@@ -352,8 +352,8 @@ def check_guardrails(info, skill_type='data-driven'):
         issues.append(('🟡 纯方法论型，置信度检查跳过', 'skip'))
         total -= 1
 
-    # 5) 数据来源限制（分析型数据驱动专属，工具库/方法论跳过）
-    if skill_type == 'data-driven' and not is_tool:
+    # 5) 数据来源限制（分析型代码工程专属，工具库/方法论跳过）
+    if skill_type == 'code-engineered' and not is_tool:
         if re.search(r'(数据.*来源|数据.*范围|数据.*限制|仅.*数据|不包括|data\s+(source|scope)|limited\s+to|coverage)', md):
             issues.append(('✅ 声明了数据来源/范围限制', 'pass'))
             score += 1
@@ -373,8 +373,8 @@ def check_guardrails(info, skill_type='data-driven'):
     else:
         issues.append(('🟠 未定义错误回退策略', 'warn'))
 
-    # 7) 时效性（分析型数据驱动专属，工具库/方法论跳过）
-    if skill_type == 'data-driven' and not is_tool:
+    # 7) 时效性（分析型代码工程专属，工具库/方法论跳过）
+    if skill_type == 'code-engineered' and not is_tool:
         if re.search(r'(截至|更新时间|有效期|时效|T\+|交易日|截止|as\s+of|last\s+updated|valid\s+until|expir)', md):
             issues.append(('✅ 声明了数据时效性', 'pass'))
             score += 1
@@ -750,13 +750,13 @@ def main():
 
     # Phase 0: 分类
     skill_type = classify_skill(info)
-    print(f"\n[2/3] 分类: {'数据驱动型' if skill_type == 'data-driven' else '纯方法论型'}")
+    print(f"\n[2/3] 分类: {'代码工程型' if skill_type == 'code-engineered' else '纯方法论型'}")
 
     # Phase 2: 评估
     print("\n[3/3] 执行评估...")
     results = {}
 
-    if skill_type == 'data-driven':
+    if skill_type == 'code-engineered':
         print("  🏗️ 地基检查...")
         results['foundation'] = check_foundation(info)
         print(f"     {results['foundation']['rating']}")

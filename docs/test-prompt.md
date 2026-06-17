@@ -17,7 +17,7 @@
 
 ## 第二轮：重头戏 — 测试 xlsx
 - 目标路径：~/.workbuddy/plugins/marketplaces/codebuddy-plugins-official/plugins/xlsx
-- 类型：数据驱动型（含 .py 和数据处理逻辑）
+- 类型：代码工程型（含 .py 和数据处理逻辑）
 - 目的：验证四维全覆盖（地基/代码/规则/护栏），重点看脚本基线检查是否靠谱
 
 ## 第三轮：对比 — 测试 skill-sharpener

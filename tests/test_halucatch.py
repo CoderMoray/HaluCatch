@@ -25,14 +25,14 @@ def make_info(py_content=None, md_content=None, files=None, has_data=False):
 
 # ---- classify_skill ----
 
-def test_classify_data_driven_by_py():
+def test_classify_code_engineered_by_py():
     info = make_info(py_content='print(1)')
-    assert classify_skill(info) == 'data-driven'
+    assert classify_skill(info) == 'code-engineered'
 
 
-def test_classify_data_driven_by_data():
+def test_classify_code_engineered_by_data():
     info = make_info(md_content='pd.read_csv()', has_data=True)
-    assert classify_skill(info) == 'data-driven'
+    assert classify_skill(info) == 'code-engineered'
 
 
 def test_classify_methodology():
@@ -189,7 +189,7 @@ def test_guardrails_tool_type():
         '若失败则回退到默认值',
         '假设: 文件已存在',
     ])
-    info = make_info(md_content=md, py_content='print(1)')  # has .py → data-driven
+    info = make_info(md_content=md, py_content='print(1)')  # has .py → code-engineered
     result = check_guardrails(info)
     # 工具库型：total=5（跳过了 4/5/7），得分 ≥ 4
     issues_text = ' '.join(i[0] for i in result['issues'])

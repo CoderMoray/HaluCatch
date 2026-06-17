@@ -29,7 +29,7 @@ flowchart TD
   E --> F["文件清单 → 结束"]
   D -->|标准审查| G["L1: 获取文件清单"]
   G --> H{"Phase 0: 技能分类"}
-  H -->|数据驱动型| I["L2: 四维评估<br/>(地基/代码/规则/护栏)"]
+  H -->|代码工程型| I["L2: 四维评估<br/>(地基/代码/规则/护栏)"]
   H -->|纯方法论型| J["L2: 方法论+护栏评估"]
   H -->|不确定| K["询问用户"]
   K --> H
@@ -51,65 +51,46 @@ flowchart TD
 
 ## 快速开始
 
-### 方式一：作为 AI Skill 使用
+两种调用方式，底层同一套引擎：
 
-向 AI 提供目标 Skill 文件夹路径：
+### 对话中调用（推荐）
+
+对 AI 说出目标 Skill 路径即可，AI 自动跑脚本、做评估、出报告：
 
 ```
 请用 HaluCatch 审查这个 Skill：/path/to/target-skill
 ```
 
-AI 会自动扫描文件夹、分类 Skill 类型、执行评估、输出三份报告。
-
-**用例 1 — 审查一个数据驱动型 Skill（含 .py 和数据文件）：**
+审查完成后，当前目录 `reports/` 下生成三份报告：
 
 ```
-请用 HaluCatch 审查 ./xxx-skill，看看这个自动生成报表的技能稳不稳。
-```
-→ 发现：字符串拼接路径（建议用 os.path.join）、return 除法未保护、无输入验证。评级：地基 🟡 有隐患，代码 🟠 有风险。
-→ 通俗版告知业务方「数据管道有两个问题需要修」；专业版给出具体行号和修复方案。
-
-**用例 2 — 审查一个纯方法论型 Skill（无代码）：**
-
-```
-请用 HaluCatch 审查 ./standup-skill，看指令够不够清楚。
-```
-→ 发现：缺少异常分支处理、输出格式未定义。评级：方法论 🟡 有改进空间。
-→ 通俗版：「这个技能在特殊情况下可能不知道该怎么办」；专业版：缺少的具体检查项。
-
-**用例 3 — 审查一个含数据但无骨架脚本的 Skill：**
-
-```
-请用 HaluCatch 审查 ./churn-analysis。
-```
-→ 发现：SKILL.md 描述复杂统计逻辑但无 .py 文件。评级：地基 🔴 无地基。
-→ AI 询问：「检测到该 Skill 涉及数据处理但无骨架脚本，是否生成？」
-
-### 方式二：直接运行骨架脚本
-
-```bash
-# 完整评估
-python3 halucatch_core.py --skill-dir "/path/to/target-skill"
-
-# 仅扫描文件清单
-python3 halucatch_core.py --skill-dir "/path/to/target-skill" --validate
-
-# 输出到指定目录
-python3 halucatch_core.py --skill-dir "/path/to/target-skill" --output-dir ./reports
+reports/
+├── HaluCatch-report-2026-06-17.md           ← 专业版（工程人员）
+├── HaluCatch-report-2026-06-17-通俗版.md      ← 通俗版（业务方）
+└── HaluCatch-report-2026-06-17-行动版.md      ← 修复指引（含反馈模板）
 ```
 
-### 输出示例
+| 版本 | 目标读者 | 内容 |
+|------|---------|------|
+| 专业版 | 工程人员 | 逐项检查结果 + 分数 + 修复建议 |
+| 通俗版 | 业务方 | 白话 paraphrase，无术语 |
+| 行动版 | 下次执行的 AI | 修复指引 + feedback 模板 |
 
-审查完成后，目标 Skill 目录下会生成：
+**示例 — 审查一个代码工程型 Skill：**
 
 ```
-target-skill/
-├── HaluCatch-report-2026-06-16.md              ← 专业版
-├── HaluCatch-report-2026-06-16-通俗版.md         ← 通俗版
-└── HaluCatch-report-2026-06-16-行动版.md         ← AI 行动版（含修复指引）
+请用 HaluCatch 审查 ~/.workbuddy/skills/xlsx，看这个操作表格的 Skill 稳不稳
 ```
-| 通俗版 | 业务方/非技术人员 | 白话 paraphrase，无术语 |
-| AI 行动版 | 下次执行的 AI | 修复指引 + feedback 模板 |
+→ 发现：字符串拼接路径、写入模式未警告覆盖、除法未保护。评级：地基 🟢 稳固，代码 🟠 有风险，护栏 🟡 缺项。
+
+**示例 — 审查一个纯方法论型 Skill：**
+
+```
+请用 HaluCatch 审查 ~/.workbuddy/skills/apple-style-ppt-generator，看指令够不够清楚
+```
+→ 发现：结构化步骤完整、条件分支信号良好（清单 43 项/图标 8）。评级：方法论 🟢 可靠，护栏 🟢 到位。
+
+审查完成后 AI 会询问是否按方案修复，详见 [decision-flowchart.html](docs/decision-flowchart.html)。
 
 ---
 
@@ -145,7 +126,7 @@ HaluCatch/
 
 前三项可靠，第四项需要目标 Skill 作者自觉配合。
 
-> **分层策略**: 数据驱动型 Skill 细分为三档——分析型（全 8 项护栏，含数据来源/时效性/置信度）、工具库型（精简 5 项）、纯方法论型（精简 5 项）。避免对 xlsx/pptx 等工具库 Skill 检查不必要的「数据时效性/来源」项。
+> **分层策略**: 代码工程型 Skill 细分为三档——分析型（全 8 项护栏，含数据来源/时效性/置信度）、工具库型（精简 5 项）、纯方法论型（精简 5 项）。避免对 xlsx/pptx 等工具库 Skill 检查不必要的「数据时效性/来源」项。
 
 ---
 
@@ -183,6 +164,17 @@ git commit -m "your change"
 git push
 ```
 
+### 引擎调试
+
+`halucatch_core.py` 是底层引擎，直接调用用于调试：
+
+```bash
+python3 halucatch_core.py --skill-dir /path/to/skill          # 完整评估
+python3 halucatch_core.py --skill-dir /path/to/skill --validate # 仅扫描
+```
+
+> 日常使用通过 AI Skill 调用即可，无需手动跑脚本。
+
 ---
 
 ## 测试
@@ -201,7 +193,7 @@ pytest tests/ -v    # 21 个用例全部通过
 | skill-sharpener (ClawHub) | 分析型 | 🟡 缺项 5/8 |
 | neodata-financial-search | 分析型 | 🟢 到位 7/8 |
 | data-validation | 嵌入式 Python | 🟡 缺项 5/8 |
-| HaluCatch (自审查) | 数据驱动 | 🟡 缺项 5/8 |
+| HaluCatch (自审查) | 代码工程 | 🟡 缺项 5/8 |
 
 ---
 
