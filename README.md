@@ -121,10 +121,14 @@ HaluCatch/
 ├── halucatch_core.py         ← 骨架脚本（标准化评估 + --validate）
 ├── README.md                 ← 项目说明（含 Mermaid 流程图）
 ├── docs/
-│   └── decision-flowchart.html  ← 决策流程图（本地渲染）
+│   ├── decision-flowchart.html              ← 决策流程图（本地渲染）
+│   ├── decision-flowchart-prompt.md         ← 流程图生成指令
+│   ├── test-prompt.md                       ← 测试计划
+│   ├── HaluCatch-v6-to-v7-plan-2026-06-17.md
+│   └── HaluCatch-readme-v7-update-2026-06-17.md
 ├── tests/
 │   ├── __init__.py
-│   └── test_halucatch.py     ← 20 个单元测试（6 函数 + 4 边界）
+│   └── test_halucatch.py     ← 21 个单元测试（6 函数 + 4 边界 + 1 分层）
 └── .gitignore
 ```
 
@@ -141,18 +145,31 @@ HaluCatch/
 
 前三项可靠，第四项需要目标 Skill 作者自觉配合。
 
-> 护栏检查按 Skill 类型分层：数据驱动型检查全 8 项（含数据来源/时效性/置信度），纯方法论型精简为 5 项（跳过不适用项），避免误报。
+> **分层策略**: 数据驱动型 Skill 细分为三档——分析型（全 8 项护栏，含数据来源/时效性/置信度）、工具库型（精简 5 项）、纯方法论型（精简 5 项）。避免对 xlsx/pptx 等工具库 Skill 检查不必要的「数据时效性/来源」项。
 
 ---
 
 ## 同类项目对比
 
-| | HaluCatch | CodeQL | ESLint |
-|---|---|---|---|
-| 审查对象 | AI Skill（markdown + python） | 源代码 | JavaScript |
-| 检查范围 | 执行可靠性 + 业务规则 | 安全漏洞 | 代码规范 |
-| 输出 | 三版报告 + 修复建议 | 告警列表 | 错误/警告 |
-| 闭环 | ✅ 含修复指南 | ❌ 仅标记 | ❌ 仅标记 |
+Skill 审查赛道目前仅四个工具，各自切不同的角度：
+
+| | HaluCatch | skill-vetter | SkillGuard | skill-sharpener |
+|---|---|---|---|---|
+| 切面 | **执行可靠性（工程）** | 安全审查（红队） | 全生命周期守护 | 文案质量（最佳实践） |
+| 检查什么 | 数据管线/代码风险/业务规则/解读护栏 | 恶意行为/权限范围/源可信度 | 安装前审查+发布前安检+安装后体检 | 触发描述/结构/简洁度 |
+| 评估方式 | 脚本基线 + AI 语义 | 纯 AI 按协议逐项检查 | AI + 规则引擎 | 纯 AI 按 checklist 打分 |
+| 输出 | 三版报告 + 修复方案 + 闭环 | SAFE/CAUTION/REJECT 判定 | 风险报告 + 自动修复 | 优化建议报告 |
+| 通用性 | ✅ 中/英/日/表格均适用 | ✅ 英文为主 | ✅ 中英文 | 🟡 依赖 AI 理解能力 |
+| 闭环 | ✅ 行动版含修复指引 + feedback | ❌ | ✅ 含自动修复 | ❌ |
+| skills.sh | — | **19.6K** | ❌ 未上榜 | ❌ 未上榜 |
+| 平台评分 | — | ★3.690 (clawhub) | v4.2.0 (skillhub) | ★3.607 (clawhub) |
+
+**HaluCatch 的独特优势**：
+1. **唯一有骨架脚本的工具** — `halucatch_core.py` 提供可复现的基线检查，不依赖 AI 主观判断
+2. **唯一含修复闭环** — 三版报告 + Phase 4 修复决策 + feedback.md 模板，形成「发现→修复→验证」完整链路
+3. **唯一跨语言** — 结构信号（清单/图标/表格/否定词密度）替代语义关键词，不绑定特定语言
+4. **唯一分层护栏** — 按 Skill 类型（分析型/工具库型/方法论）自动调整检查范围，避免误报
+5. **赛道蓝海** — skills.sh 前 287 名中，Skill 审查工具仅 skill-vetter 上榜（19.6K），执行可靠性方向尚无竞品
 
 ---
 
@@ -171,17 +188,20 @@ git push
 ## 测试
 
 ```bash
-pytest tests/ -v    # 20 个用例全部通过
+pytest tests/ -v    # 21 个用例全部通过
 ```
 
-已对 8 个不同类型 Skill 完成实战验证：
+已对 10 个不同类型 Skill 完成实战验证：
 
-| Skill | 类型 | 评级 |
+| Skill | 类型 | 护栏 |
 |-------|------|------|
-| apple-style-ppt-generator | 方法论 | 🟢 护栏到位 |
-| my-knowledge | 方法论 | 🟢 方法论满分 |
-| xlsx / pptx | 数据驱动 | 🟢 地基稳固 |
-| find-skills / agent-browser / edgeone-deploy / skill-sharpener | 混合 | 🟡~🔴 护栏偏弱 |
+| apple-style-ppt-generator | 方法论 | 🟢 到位 4/5 |
+| find-skills / agent-browser / edgeone-deploy | 方法论 | 🟡 缺项 3/5 |
+| xlsx / pptx | 工具库型 | 🟡 缺项 3/5 |
+| skill-sharpener (ClawHub) | 分析型 | 🟡 缺项 5/8 |
+| neodata-financial-search | 分析型 | 🟢 到位 7/8 |
+| data-validation | 嵌入式 Python | 🟡 缺项 5/8 |
+| HaluCatch (自审查) | 数据驱动 | 🟡 缺项 5/8 |
 
 ---
 
