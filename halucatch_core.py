@@ -283,14 +283,37 @@ def check_rules(info):
     return {'rating': rating, 'issues': issues, 'score': f'{score}/{total}'}
 
 
+def _is_tool_skill(info):
+    """工具库型 Skill：专注文件操作/格式转换，不做数据分析。"""
+    md = info.get('skill_md', '')
+    tool_signals = [
+        'create', 'edit', 'convert', 'merge', 'split',
+        'spreadsheet', 'workbook', 'presentation',
+        'format', 'template', 'validate',
+    ]
+    analysis_signals = [
+        'analyze', 'analysis', '计算', '统计', '分析',
+        'visualize', 'report', 'insight',
+        'chart', 'graph', 'forecast', 'trend',
+    ]
+    tool_count = sum(1 for s in tool_signals if s in md.lower())
+    analysis_count = sum(1 for s in analysis_signals if s in md.lower())
+    return tool_count > analysis_count
+
+
 def check_guardrails(info, skill_type='data-driven'):
     """护栏评估：检查解读规则是否到位，防止 AI 自信地输出错误结论。
-    data-driven 型: 全 8 项; methodology 型: 精简 5 项（跳过数据来源/时效性/置信度）。"""
+    data-driven 分析型: 全 8 项（置信度/数据来源/时效性 全查）;
+    data-driven 工具库型: 精简 5 项（跳过置信度/数据来源/时效性）;
+    methodology 型: 精简 5 项（同上）。"""
     md = info['skill_md']
     issues = []
 
     if not md:
         return {'rating': '🟡 无 SKILL.md', 'issues': [('🟡 未找到 SKILL.md，无法评估护栏', 'skip')], 'score': '-'}
+
+    # 数据驱动型拆两档：工具库 vs 分析型
+    is_tool = skill_type == 'data-driven' and _is_tool_skill(info)
 
     total = 8
     score = 0
@@ -315,24 +338,30 @@ def check_guardrails(info, skill_type='data-driven'):
     else:
         issues.append(('🟠 缺少输出验证/自检要求', 'warn'))
 
-    # 4) 置信度（数据驱动型专属）
-    if skill_type == 'data-driven':
-        if re.search(r'(置信|可信度|confidence|不确定|风险)', md):
+    # 4) 置信度（分析型数据驱动专属，工具库/方法论跳过）
+    if skill_type == 'data-driven' and not is_tool:
+        if re.search(r'(置信|可信度|confidence|uncertainty|reliability|error\s+margin|不确定|风险)', md):
             issues.append(('✅ 涉及置信度/风险评估', 'pass'))
             score += 1
         else:
             issues.append(('🟡 未要求置信度声明', 'info'))
+    elif is_tool:
+        issues.append(('🟡 工具库型 Skill，置信度检查跳过', 'skip'))
+        total -= 1
     else:
         issues.append(('🟡 纯方法论型，置信度检查跳过', 'skip'))
         total -= 1
 
-    # 5) 数据来源限制（数据驱动型专属）
-    if skill_type == 'data-driven':
-        if re.search(r'(数据.*来源|数据.*范围|数据.*限制|仅.*数据|不包括)', md):
+    # 5) 数据来源限制（分析型数据驱动专属，工具库/方法论跳过）
+    if skill_type == 'data-driven' and not is_tool:
+        if re.search(r'(数据.*来源|数据.*范围|数据.*限制|仅.*数据|不包括|data\s+(source|scope)|limited\s+to|coverage)', md):
             issues.append(('✅ 声明了数据来源/范围限制', 'pass'))
             score += 1
         else:
             issues.append(('🟡 未声明数据来源限制', 'info'))
+    elif is_tool:
+        issues.append(('🟡 工具库型 Skill，数据来源检查跳过', 'skip'))
+        total -= 1
     else:
         issues.append(('🟡 纯方法论型，数据来源检查跳过', 'skip'))
         total -= 1
@@ -344,13 +373,16 @@ def check_guardrails(info, skill_type='data-driven'):
     else:
         issues.append(('🟠 未定义错误回退策略', 'warn'))
 
-    # 7) 时效性（数据驱动型专属）
-    if skill_type == 'data-driven':
-        if re.search(r'(截至|更新时间|有效期|时效|T\+|交易日|截止)', md):
+    # 7) 时效性（分析型数据驱动专属，工具库/方法论跳过）
+    if skill_type == 'data-driven' and not is_tool:
+        if re.search(r'(截至|更新时间|有效期|时效|T\+|交易日|截止|as\s+of|last\s+updated|valid\s+until|expir)', md):
             issues.append(('✅ 声明了数据时效性', 'pass'))
             score += 1
         else:
             issues.append(('🟡 未声明数据时效性约束', 'info'))
+    elif is_tool:
+        issues.append(('🟡 工具库型 Skill，时效性检查跳过', 'skip'))
+        total -= 1
     else:
         issues.append(('🟡 纯方法论型，时效性检查跳过', 'skip'))
         total -= 1

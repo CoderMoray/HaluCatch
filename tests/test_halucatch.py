@@ -179,6 +179,24 @@ def test_guardrails_weak():
     assert result['rating'] in ('🔴 薄弱', '🟡 缺项')
 
 
+def test_guardrails_tool_type():
+    """工具库型 Skill 应跳过置信度/数据来源/时效性，total=5。"""
+    md = '\n'.join([
+        'create spreadsheet from template',
+        'edit and convert format',
+        '输出 json 格式',
+        '执行后 validate 结果',
+        '若失败则回退到默认值',
+        '假设: 文件已存在',
+    ])
+    info = make_info(md_content=md, py_content='print(1)')  # has .py → data-driven
+    result = check_guardrails(info)
+    # 工具库型：total=5（跳过了 4/5/7），得分 ≥ 4
+    issues_text = ' '.join(i[0] for i in result['issues'])
+    assert '工具库' in issues_text
+    assert result['score'] in ('4/5', '5/5')
+
+
 # ---- 边界用例 — 输入不完整时行为正确 ----
 
 import tempfile
