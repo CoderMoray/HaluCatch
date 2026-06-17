@@ -62,7 +62,7 @@ else
 
   echo "[6/7] 发布到 ClawHub..."
   if [[ "$SKIP_CLAWHUB" == "false" ]]; then
-    (cd "$ROOT" && clawhub publish --no-input) || echo "⚠️  ClawHub 发布失败（可手动重试）"
+    (cd "$ROOT" && clawhub publish . --version "$VERSION") || echo "⚠️  ClawHub 发布失败（可手动重试）"
   else
     echo "  ⏭️  跳过 ClawHub"
   fi

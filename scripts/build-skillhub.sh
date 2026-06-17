@@ -26,7 +26,7 @@ cp "$ROOT/SKILL.md" "$TMPDIR/"
 cp "$ROOT/halucatch_core.py" "$TMPDIR/"
 cp "$ROOT/README.md" "$TMPDIR/"
 [[ -f "$ROOT/docs/CHANGELOG.md" ]] && cp "$ROOT/docs/CHANGELOG.md" "$TMPDIR/CHANGELOG.md"
-[[ -f "$ROOT/LICENSE" ]] && cp "$ROOT/LICENSE" "$TMPDIR/"
+# SkillHub 不接受 LICENSE 文件
 
 # 打包
 cd "$TMPDIR"

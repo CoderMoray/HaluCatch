@@ -1,5 +1,7 @@
 ---
 name: halucatch
+slug: halucatch
+displayName: "HaluCatch / 捕幻"
 description: |
   AI Skill 执行可靠性审查工具。评估一个 Skill 被 AI 执行时，结果是否可信、是否可复现、是否经得起业务推敲。
   覆盖四维度：地基（数据管线）、代码、规则（业务口径）、护栏（解读指南）。
