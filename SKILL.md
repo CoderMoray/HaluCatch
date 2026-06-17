@@ -1,17 +1,6 @@
 ---
 name: halucatch
-description: "AI Skill execution reliability auditor. Scans data pipelines, code risks, business rules, and interpretation guardrails to catch hallucinations before they reach users. Use when you need to verify an AI agent can execute a Skill correctly and reproducibly."
-license: MIT
-metadata:
-  slug: halucatch
-  displayName: "HaluCatch / 捕幻"
-  author: Engineering Assurance Team
-  version: "1.6.0"
-  tags:
-    - "engineering-assurance"
-    - "skill-audit"
-    - "reliability"
-  category: "engineering"
+description: "AI Skill execution reliability auditor. Scans data pipelines, code risks, business rules, and interpretation guardrails to catch hallucinations before they reach users."
 ---
 
 # HaluCatch / 捕幻 — AI Skill 执行可靠性审查
