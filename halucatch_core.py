@@ -131,11 +131,14 @@ def check_foundation(info):
         issues.append(('🟡 无 .py 文件，无法检查输入验证', 'skip'))
 
     # 5) 文件发现机制
-    if info['py'] and ('glob' in info['py'] or 'os.listdir' in info['py']):
-        issues.append(('✅ 使用通配符/自动发现文件', 'pass'))
-        score += 1
+    if info['py']:
+        if 'glob' in info['py'] or 'os.listdir' in info['py']:
+            issues.append(('✅ 使用通配符/自动发现文件', 'pass'))
+            score += 1
+        else:
+            issues.append(('🟠 有 .py 但缺少文件自动发现机制（建议用 glob）', 'warn'))
     else:
-        issues.append(('🟡 未检测到自动文件发现机制', 'warn'))
+        issues.append(('🟡 无 .py 文件，跳过文件发现检查', 'skip'))
 
     # 6) 依赖声明
     if info['skill_md'] and ('依赖' in info['skill_md'] or 'requirements' in info['skill_md'].lower()):
@@ -197,6 +200,153 @@ def check_code_risks(info):
     return {'rating': rating, 'issues': issues, 'score': f'{found_risks}/{total_checks}'}
 
 
+def check_rules(info):
+    """规则评估：检查 SKILL.md 中的业务规则是否明确、无歧义。"""
+    md = info['skill_md']
+    issues = []
+
+    if not md:
+        return {'rating': '🟡 无 SKILL.md', 'issues': [('🟡 未找到 SKILL.md，无法评估规则', 'skip')], 'score': '-'}
+
+    total = 6
+    score = 0
+
+    # 1) 分类歧义 — 查找模糊词汇
+    fuzzy_words = ['一般', '大概', '酌情', '适当', '差不多', '基本上', '通常', '大致', '左右']
+    found_fuzzy = [w for w in fuzzy_words if w in md]
+    if found_fuzzy:
+        issues.append((f'🟠 存在模糊表述: {found_fuzzy[:3]}', 'warn'))
+    else:
+        issues.append(('✅ 未检测到模糊词汇', 'pass'))
+        score += 1
+
+    # 2) 边界/数值约束
+    if re.search(r'(最小|最大|范围|不低于|不超过|>=|<=)', md):
+        issues.append(('✅ 定义了数值边界/范围', 'pass'))
+        score += 1
+    else:
+        issues.append(('🟡 未检测到明确的数值边界约束', 'warn'))
+
+    # 3) 公式/计算明确性
+    if re.search(r'([+\-*/^]|公式|计算|sum|avg|mean)', md):
+        issues.append(('✅ 包含计算/公式说明', 'pass'))
+        score += 1
+    else:
+        issues.append(('🟡 未检测到计算公式', 'info'))
+
+    # 4) 单位一致性
+    mult_units = re.findall(r'(元|万元|亿|%|百分比|千分比|bps)', md)
+    if len(set(mult_units)) > 2:
+        issues.append((f'🟠 多单位混用: {list(set(mult_units))}', 'warn'))
+    else:
+        issues.append(('✅ 单位使用一致', 'pass'))
+        score += 1
+
+    # 5) 异常分支覆盖
+    if re.search(r'(如果.*不|若.*不|错误|异常|失败|缺失|为空)', md):
+        issues.append(('✅ 有异常分支处理', 'pass'))
+        score += 1
+    else:
+        issues.append(('🟠 缺少异常值/失败场景处理说明', 'warn'))
+
+    # 6) 默认值声明
+    if re.search(r'(默认|缺省|default|fallback)', md):
+        issues.append(('✅ 声明了默认值/回退策略', 'pass'))
+        score += 1
+    else:
+        issues.append(('🟡 未声明默认值策略', 'warn'))
+
+    pct = score / total
+    if pct >= 0.8:
+        rating = '🟢 明确'
+    elif pct >= 0.4:
+        rating = '🟡 有歧义'
+    else:
+        rating = '🔴 歧义较多'
+
+    return {'rating': rating, 'issues': issues, 'score': f'{score}/{total}'}
+
+
+def check_guardrails(info):
+    """护栏评估：检查解读规则是否到位，防止 AI 自信地输出错误结论。"""
+    md = info['skill_md']
+    issues = []
+
+    if not md:
+        return {'rating': '🟡 无 SKILL.md', 'issues': [('🟡 未找到 SKILL.md，无法评估护栏', 'skip')], 'score': '-'}
+
+    total = 8
+    score = 0
+
+    # 1) 输出格式明确
+    if re.search(r'(```|json|markdown|table|表格|图表|输出格式|export)', md):
+        issues.append(('✅ 明确了输出格式', 'pass'))
+        score += 1
+    else:
+        issues.append(('🟠 未定义输出格式', 'warn'))
+
+    # 2) 禁令/护栏
+    if re.search(r'(不要|不能|禁止|切勿) ', md):
+        issues.append(('✅ 有明确的禁止/护栏声明', 'pass'))
+        score += 1
+    elif re.search(r'(不要|不能|禁止|切勿)', md):
+        issues.append(('🟡 检测到禁止词但可能非护栏声明', 'info'))
+    else:
+        issues.append(('🟡 未检测到明确的禁止操作', 'warn'))
+
+    # 3) 验证/自检
+    if re.search(r'(验证|检查|确认|validate|verify|check|自检)', md):
+        issues.append(('✅ 包含验证/自检步骤', 'pass'))
+        score += 1
+    else:
+        issues.append(('🟠 缺少输出验证/自检要求', 'warn'))
+
+    # 4) 置信度
+    if re.search(r'(置信|可信度|confidence|不确定|风险)', md):
+        issues.append(('✅ 涉及置信度/风险评估', 'pass'))
+        score += 1
+    else:
+        issues.append(('🟡 未要求置信度声明', 'info'))
+
+    # 5) 数据来源限制
+    if re.search(r'(数据.*来源|数据.*范围|数据.*限制|仅.*数据|不包括)', md):
+        issues.append(('✅ 声明了数据来源/范围限制', 'pass'))
+        score += 1
+    else:
+        issues.append(('🟡 未声明数据来源限制', 'info'))
+
+    # 6) 错误回退
+    if re.search(r'(错误|失败|异常|无法|不可用|回退|fallback)', md):
+        issues.append(('✅ 定义了错误处理/回退策略', 'pass'))
+        score += 1
+    else:
+        issues.append(('🟠 未定义错误回退策略', 'warn'))
+
+    # 7) 时效性
+    if re.search(r'(截至|更新时间|有效期|时效|T\+|交易日|截止)', md):
+        issues.append(('✅ 声明了数据时效性', 'pass'))
+        score += 1
+    else:
+        issues.append(('🟡 未声明数据时效性约束', 'info'))
+
+    # 8) 前提假设
+    if re.search(r'(假设|前提|前置|前提条件)', md):
+        issues.append(('✅ 声明了前提假设', 'pass'))
+        score += 1
+    else:
+        issues.append(('🟡 未声明前提假设', 'info'))
+
+    pct = score / total
+    if pct >= 0.8:
+        rating = '🟢 到位'
+    elif pct >= 0.5:
+        rating = '🟡 缺项'
+    else:
+        rating = '🔴 薄弱'
+
+    return {'rating': rating, 'issues': issues, 'score': f'{score}/{total}'}
+
+
 def check_methodology(info):
     """纯方法论型 Skill 评估。"""
     md = info['skill_md']
@@ -236,12 +386,17 @@ def check_methodology(info):
     else:
         issues.append(('🟡 缺少示例说明', 'warn'))
 
-    # 5) 自洽
-    if score >= 3:
-        issues.append(('✅ 指令整体逻辑自洽', 'pass'))
+    # 5) 自洽 — 检查 SKILL.md 引用的文件是否在文件夹中存在
+    mentioned_files = re.findall(r'[`"]([a-zA-Z0-9_./-]*[a-zA-Z0-9_]+\.(?:py|md|xlsx|xls|csv|json|yaml|yml|toml))[`"]', md)
+    existing_names = {f['name'] for f in info.get('files', [])}
+    missing = [m for m in mentioned_files if os.path.basename(m) not in existing_names and m not in existing_names]
+    if missing:
+        issues.append((f'🟠 引用了不存在的文件: {missing[:3]}', 'warn'))
+    elif mentioned_files:
+        issues.append((f'✅ 引用文件均在文件夹中（{len(mentioned_files)} 个）', 'pass'))
         score += 1
     else:
-        issues.append(('🟠 指令逻辑需加强', 'warn'))
+        issues.append(('🟡 未在 SKILL.md 中检测到文件引用，跳过自洽检查', 'skip'))
 
     pct = score / total
     if pct >= 0.8:
@@ -277,13 +432,19 @@ def generate_report(info, results, output_dir=None):
     g = results['guardrails']
 
     # 摘要
-    issues = [i for i in (f['issues'] + c['issues'] + r['issues'] + g['issues']) if i[1] in ['fail', 'warn']]
-    if not issues:
+    all_items = f['issues'] + c['issues'] + r['issues'] + g['issues']
+    issues = [i for i in all_items if i[1] in ['fail', 'warn']]
+    infos = [i for i in all_items if i[1] == 'info']
+    if not issues and not infos:
         summary = '✅ 未发现风险。'
+    elif not issues:
+        summary = f'📌 无阻塞项，{len(infos)} 项需 AI 补充判断。'
     else:
         critical = sum(1 for i in issues if i[1] == 'fail')
         warnings = sum(1 for i in issues if i[1] == 'warn')
         summary = f'⚠️ 发现 {critical} 项阻塞、{warnings} 项高危风险。'
+        if infos:
+            summary += f' 另有 {len(infos)} 项需 AI 补充判断。'
 
     # 议题文本
     def fmt_issues(iss):
@@ -307,6 +468,9 @@ def generate_report(info, results, output_dir=None):
     sp = info.get('skill_md_path', '')
 
     # 专业版
+    self_check_passed = all(k in results for k in ['foundation', 'code', 'rules', 'guardrails'])
+    self_check_msg = '✅ 全部通过（文件完整、四维评估完整）' if self_check_passed else '⚠️ 部分评估维度缺失'
+
     report = f"""# HaluCatch Report — {skill_name}
 
 **日期**: {today}
@@ -348,7 +512,7 @@ def generate_report(info, results, output_dir=None):
 
 ---
 
-> 本报告由 HaluCatch 生成。关键决策请人工复核。
+> 本报告由 HaluCatch 生成。自检: {self_check_msg}
 """
 
     # 通俗版
@@ -481,20 +645,41 @@ def main():
         print("  🤖 代码风险扫描...")
         results['code'] = check_code_risks(info)
         print(f"     {results['code']['rating']}")
-        print("  📝 规则评估（需 AI 判断）...")
-        results['rules'] = {'rating': '🟡 待 AI 判断', 'issues': [('📝 业务规则需 AI 阅读 SKILL.md 后判断', 'info')], 'score': '-'}
-        print("  🛡️ 护栏评估（需 AI 判断）...")
-        results['guardrails'] = {'rating': '🟡 待 AI 判断', 'issues': [('🛡️ 解读护栏需 AI 阅读 SKILL.md 后判断', 'info')], 'score': '-'}
+        print("  📝 规则评估...")
+        results['rules'] = check_rules(info)
+        print(f"     {results['rules']['rating']}")
+        results['rules']['issues'].append(('📝 以上为脚本基线检查，AI 应在此基础上补充语义分析', 'info'))
+        print("  🛡️ 护栏评估...")
+        results['guardrails'] = check_guardrails(info)
+        print(f"     {results['guardrails']['rating']}")
+        results['guardrails']['issues'].append(('🛡️ 以上为脚本基线检查，AI 应在此基础上补充语义分析', 'info'))
     else:
         print("  📝 方法论评估...")
         results['rules'] = check_methodology(info)
         results['foundation'] = {'rating': '🟢 纯方法论', 'issues': [('✅ 纯方法论型 Skill，地基检查不适用', 'pass')], 'score': '-'}
         results['code'] = {'rating': '🟢 纯方法论', 'issues': [('✅ 纯方法论型 Skill，代码风险不适用', 'pass')], 'score': '-'}
-        results['guardrails'] = {'rating': '🟡 待 AI 判断', 'issues': [('🛡️ 解读护栏需 AI 阅读 SKILL.md 后判断', 'info')], 'score': '-'}
+        print("  🛡️ 护栏评估...")
+        results['guardrails'] = check_guardrails(info)
+        print(f"     {results['guardrails']['rating']}")
+        results['guardrails']['issues'].append(('🛡️ 以上为脚本基线检查，AI 应在此基础上补充语义分析', 'info'))
 
     # Phase 3: 报告
     print("\n📊 生成报告...")
-    generate_report(info, results, args.output_dir if args.output_dir else args.skill_dir)
+    reports = generate_report(info, results, args.output_dir if args.output_dir else args.skill_dir)
+
+    # 自检
+    dims = ['foundation', 'code', 'rules', 'guardrails']
+    all_dims_done = all(d in results and 'rating' in results[d] for d in dims)
+    has_info_items = any(
+        any(i[1] == 'info' for i in results[d].get('issues', []))
+        for d in dims
+    )
+    if not all_dims_done:
+        print("  ⚠️ 自检: 部分评估维度未完成")
+    elif has_info_items:
+        print("  ✅ 自检: 四维评估完成（部分维度建议 AI 补充语义分析）")
+    else:
+        print("  ✅ 自检: 全部通过")
 
     print("\n✅ HaluCatch 审查完成。")
     print(f"   报告已保存至: {args.output_dir or args.skill_dir}")
