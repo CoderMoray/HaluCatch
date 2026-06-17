@@ -5,8 +5,17 @@
   "author": "CoderMoray",
   "version": "1.6.0",
   "license": "MIT",
-  "tags": ["skill-audit", "reliability", "engineering-assurance"],
+  "tags": [
+    "skill-audit",
+    "reliability",
+    "engineering-assurance"
+  ],
   "category": "engineering",
-  "platforms": ["cursor", "windsurf", "codebuddy", "cline"],
+  "platforms": [
+    "cursor",
+    "windsurf",
+    "codebuddy",
+    "cline"
+  ],
   "homepage": "https://github.com/CoderMoray/HaluCatch"
 }
