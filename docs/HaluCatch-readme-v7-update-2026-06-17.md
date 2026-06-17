@@ -102,8 +102,11 @@ reports/
 **示例 — 审查一个纯方法论型 Skill：**
 
 ```
-请用 HaluCatch 审查 ~/.workbuddy/skills/apple-style-ppt-generator，看指令够不够清楚
+请用 HaluCatch 审查 ~/.workbuddy/skills/find-skills，看指令够不够清楚
 ```
+→ 发现：结构化步骤完整、条件分支信号良好（清单 13 项/图标 7）。评级：方法论 🟢 可靠，护栏 🟡 缺项 3/5。
+
+> `find-skills` 是 CodeBuddy 内置 Skill，详见 [WorkBuddy 文档](https://www.codebuddy.cn/docs/workbuddy/Overview)。
 → 发现：结构化步骤完整、条件分支信号良好（清单 43 项/图标 8）。评级：方法论 🟢 可靠，护栏 🟢 到位。
 
 审查完成后 AI 会询问是否按方案修复，支持「执行/不执行/我有更好建议」三选一闭环。
