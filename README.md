@@ -90,7 +90,7 @@ reports/
 ```
 → 发现：结构化步骤完整、条件分支信号良好（清单 13 项/图标 7）。评级：方法论 🟢 可靠，护栏 🟡 缺项 3/5。
 
-> `find-skills` 是 CodeBuddy 内置 Skill，详见 [WorkBuddy 文档](https://www.codebuddy.cn/docs/workbuddy/Overview)。
+> `find-skills` 是 Skill 生态中的搜索工具，详见 [vercel-labs/skills](https://github.com/vercel-labs/skills)。
 
 审查完成后 AI 会询问是否按方案修复，详见 [decision-flowchart.html](docs/decision-flowchart.html)。
 
