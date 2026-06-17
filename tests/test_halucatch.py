@@ -102,6 +102,9 @@ def test_code_risks_clean():
 def test_methodology_complete():
     md = '\n'.join([
         '## 步骤 1',
+        '- 检查数据完整性',
+        '- ✅ 验证格式',
+        '- 对比新旧文件差异',
         '如果数据缺失则报错',
         '输出 report.md',
         '例如：```python```',
@@ -156,6 +159,7 @@ def test_guardrails_strong():
     md = '\n'.join([
         '输出 json 格式',
         '不要 输出不确认的数据',
+        '禁止 使用未验证数据',
         '执行后验证结果',
         '置信度 < 0.8 时标记',
         '数据来源: 仅限 2024 年报',

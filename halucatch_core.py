@@ -302,14 +302,11 @@ def check_guardrails(info, skill_type='data-driven'):
     else:
         issues.append(('🟠 未定义输出格式', 'warn'))
 
-    # 2) 禁令/护栏
-    if re.search(r'(不要|不能|禁止|切勿) ', md):
-        issues.append(('✅ 有明确的禁止/护栏声明', 'pass'))
+    # 2) 禁令/护栏 — 跨语言信号（否定词/大写警告/中文禁止）
+    status, text = _prohibition_signal(md)
+    issues.append((text, status))
+    if status == 'pass':
         score += 1
-    elif re.search(r'(不要|不能|禁止|切勿)', md):
-        issues.append(('🟡 检测到禁止词但可能非护栏声明', 'info'))
-    else:
-        issues.append(('🟡 未检测到明确的禁止操作', 'warn'))
 
     # 3) 验证/自检
     if re.search(r'(验证|检查|确认|validate|verify|check|自检)', md):
@@ -376,6 +373,35 @@ def check_guardrails(info, skill_type='data-driven'):
     return {'rating': rating, 'issues': issues, 'score': f'{score}/{total}'}
 
 
+def _branch_density(md):
+    """跨语言异常分支覆盖信号：不看具体用词，看结构化密度。"""
+    checklist = len(re.findall(r'^\s*[-*]\s', md, re.MULTILINE))
+    warn_icons = len(re.findall(r'[⚠️🚨❌✅🔴⛔🟡🟠🟢]', md))
+    tables = md.count('|---')
+    checkbox = len(re.findall(r'\[ \]|\[x\]', md, re.IGNORECASE))
+    signal = checklist + warn_icons * 2 + tables * 3 + checkbox * 2
+    if signal >= 5:
+        return ('pass', f'✅ 检测到条件分支信号（清单 {checklist} 项 / 图标 {warn_icons} / 表格 {tables}）')
+    else:
+        return ('warn', '🟡 未检测到足够的条件分支信号，建议 AI 人工审查')
+
+
+def _prohibition_signal(md):
+    """跨语言禁止/护栏声明信号：否定词 + 大写警告词 + 中文禁止词。"""
+    negations = len(re.findall(
+        r'\b(?:never|not|no|don\'?t|REJECT|DENY|BLOCK|SHALL\s+NOT)\b',
+        md, re.IGNORECASE
+    ))
+    caps_warnings = len(re.findall(r'[A-Z]{5,}', md))
+    zh_prohibition = len(re.findall(r'(不要|不能|禁止|切勿|严禁)', md))
+    red_flags = len(re.findall(r'RED\s+FLAG|🚨|⛔', md, re.IGNORECASE))
+    signal = negations * 2 + caps_warnings + zh_prohibition * 2 + red_flags * 3
+    if signal >= 3:
+        return ('pass', f'✅ 检测到禁止/护栏声明（否定词 {negations} / 中文禁止 {zh_prohibition}）')
+    else:
+        return ('warn', '🟡 未检测到明确的禁止操作声明')
+
+
 def check_methodology(info):
     """纯方法论型 Skill 评估。"""
     md = info['skill_md']
@@ -394,12 +420,11 @@ def check_methodology(info):
     else:
         issues.append(('🟠 缺少结构化步骤描述', 'warn'))
 
-    # 2) 边界处理 — 中英文条件句、异常处理
-    if re.search(r'(如果|若|当|如果.*不|except|\bif\s|\bwhen\s|\bin\s+case\s)', md):
-        issues.append(('✅ 有异常/边界情况处理', 'pass'))
+    # 2) 边界处理 — 跨语言结构信号（清单/图标/表格密度）
+    status, text = _branch_density(md)
+    issues.append((text, status))
+    if status == 'pass':
         score += 1
-    else:
-        issues.append(('🟡 未检测到异常分支处理', 'warn'))
 
     # 3) 输出格式定义 — 关键词 + 代码块检测
     has_output_kw = re.search(r'(输出|产出|结果|report|生成|respond\s+with|returns?\s+the)', md) is not None
@@ -430,6 +455,8 @@ def check_methodology(info):
         score += 1
     else:
         issues.append(('🟡 未在 SKILL.md 中检测到文件引用，跳过自洽检查', 'skip'))
+
+    issues.append(('📝 以上为结构信号基线，语义判断（分支是否完备、逻辑是否正确）请由 AI 补充', 'info'))
 
     pct = score / total
     if pct >= 0.8:
