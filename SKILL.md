@@ -6,10 +6,13 @@ description: |
   AI Skill 执行可靠性审查工具。评估一个 Skill 被 AI 执行时，结果是否可信、是否可复现、是否经得起业务推敲。
   覆盖四维度：地基（数据管线）、代码、规则（业务口径）、护栏（解读指南）。
 author: Engineering Assurance Team
-version: "1.6.0"
+version: "1.6.1"
 tags:
+  - "工程质量"
   - "engineering-assurance"
+  - "Skill审查"
   - "skill-audit"
+  - "可靠性"
   - "reliability"
 category: "engineering"
 ---
