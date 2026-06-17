@@ -38,7 +38,11 @@ flowchart TD
   N --> O{"Phase 4: 用户要修复?"}
   O -->|修| P["生成修复方案"]
   O -->|不修| Q["结束"]
-  P --> Q
+  P --> R{"用户选择?"}
+  R -->|执行| S["用户让 AI 应用修复"]
+  R -->|不执行| Q
+  R -->|建议| P
+  S -.->|重新审查| A
 ```
 
 > 详细决策分支见 [decision-flowchart.html](docs/decision-flowchart.html)（本地渲染）或 [SKILL.md](SKILL.md) 底部决策树。
