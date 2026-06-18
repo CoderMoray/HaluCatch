@@ -54,7 +54,7 @@ flowchart TD
   S -.->|重新审查| A
 ```
 
-> 详细决策分支见 [decision-flowchart.html](docs/decision-flowchart.html)（本地渲染）或 [SKILL.md](SKILL.md) 底部决策树。
+> 详细决策分支见 [在线流程图](https://codermoray.github.io/HaluCatch/decision-flowchart.html) 或 [SKILL.md](SKILL.md) 底部决策树。
 
 ---
 
@@ -101,7 +101,7 @@ reports/
 
 > `find-skills` 是 Skill 生态中的搜索工具，详见 [vercel-labs/skills](https://github.com/vercel-labs/skills)。
 
-审查完成后 AI 会询问是否按方案修复，详见 [decision-flowchart.html](docs/decision-flowchart.html)。
+审查完成后 AI 会询问是否按方案修复，详见 [在线流程图](https://codermoray.github.io/HaluCatch/decision-flowchart.html)。
 
 ---
 

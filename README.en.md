@@ -54,7 +54,7 @@ flowchart TD
   S -.->|Re-audit| A
 ```
 
-> For the full decision tree, see [decision-flowchart.html](docs/decision-flowchart.html) or the [SKILL.md](SKILL.md) appendix.
+> For the full decision tree, see the [online flowchart](https://codermoray.github.io/HaluCatch/decision-flowchart.html) or the [SKILL.md](SKILL.md) appendix.
 
 ---
 
@@ -101,7 +101,7 @@ Please audit ~/.workbuddy/skills/find-skills with HaluCatch
 
 > `find-skills` is a Skill discovery tool from the ecosystem — see [vercel-labs/skills](https://github.com/vercel-labs/skills).
 
-After the audit, the AI asks whether to apply fixes (Execute / Skip / Suggest) — see [decision-flowchart.html](docs/decision-flowchart.html).
+After the audit, the AI asks whether to apply fixes (Execute / Skip / Suggest) — see the [online flowchart](https://codermoray.github.io/HaluCatch/decision-flowchart.html).
 
 ---
 
