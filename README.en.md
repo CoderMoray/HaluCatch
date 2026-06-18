@@ -114,11 +114,10 @@ HaluCatch/
 ├── README.md                 ← Project overview (zh-CN)
 ├── README.en.md              ← English version
 ├── docs/
-│   ├── decision-flowchart.html
-│   ├── decision-flowchart-prompt.md
-│   ├── test-prompt.md
 │   ├── CHANGELOG.md
-│   └── HaluCatch-trace-feedback-response-2026-06-18.md
+│   ├── FAQ.md
+│   ├── decision-flowchart.html
+│   └── decision-flowchart-prompt.md
 ├── tests/
 │   ├── __init__.py
 │   └── test_halucatch.py     ← 21 unit tests
@@ -240,6 +239,15 @@ A: Not supported in the current version. Run them one at a time — batch mode i
 
 **Q: "It froze on network issues" — is that HaluCatch?**
 A: No. HaluCatch is fully local and makes no network requests. If execution hangs, it's likely an AI session timeout or a very large target directory causing slow scanning.
+
+**Q: How do I get started quickly?**
+A: 3 steps — 1. Run an audit and check the plain-language report for issues; 2. Open the action report and fix items one by one; 3. Re-audit to verify improvements.
+
+**Q: What if I hit a file encoding error?**
+A: HaluCatch reads files as UTF-8. Non-UTF-8 encodings (like GBK) are preserved with escape markers — data is never silently dropped.
+
+**Q: How does the "Phase 4 fix loop" work?**
+A: After the audit, choose "Execute fix" to send the plan to AI for implementation, then re-audit. Or choose "I have a better idea" to describe your approach and regenerate the plan.
 
 ---
 

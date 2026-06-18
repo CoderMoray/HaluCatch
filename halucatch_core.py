@@ -42,12 +42,12 @@ def scan_folder(path):
 
             if fname.lower() in ['skill.md', 'toolcard.md']:
                 skill_md_path = fpath
-                with open(fpath, 'r', encoding='utf-8', errors='replace') as f:
+                with open(fpath, 'r', encoding='utf-8', errors='backslashreplace') as f:
                     skill_md_content = f.read()
 
             if ext == '.py':
                 py_paths.append(fpath)
-                with open(fpath, 'r', encoding='utf-8', errors='replace') as f:
+                with open(fpath, 'r', encoding='utf-8', errors='backslashreplace') as f:
                     py_contents.append(f.read())
 
     has_data = any(f['ext'] in ['.xlsx', '.xls', '.csv'] for f in files)
