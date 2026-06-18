@@ -1,5 +1,7 @@
 # HaluCatch / 捕幻
 
+**中文** | [English](./README.en.md)
+
 AI Skill **执行可靠性审查**工具。评估一个 Skill 被 AI 执行时，结果是否可信、是否可复现、是否经得起业务推敲。
 
 > **Halu** = Hallucination（幻觉） | **Catch** = 捕获
