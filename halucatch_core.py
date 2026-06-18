@@ -620,9 +620,14 @@ def generate_report(info, results, output_dir=None):
         '缺少验证': '没有检查步骤，AI 可能自信地输出错误内容不做验证',
         '未声明前提假设': '没说明在什么条件下这个 Skill 才能正常工作',
         '未定义错误回退': '执行失败时没有备用方案，AI 会卡住',
+        '未声明数据来源限制': '没说明数据从哪里来、覆盖什么范围，不同 AI 可能用不同数据源，结果不可比',
+        '未要求置信度声明': '没要求 AI 标注对结论有多大把握，容易把不确定的事说得很肯定',
+        '引用.*不存在的文件': '说明书写了要用某个文件，但文件夹里没有——大概率是文件名写错了或忘了放',
     }
     simple_issues = []
     for iss in issues:
+        if iss[1] == 'info':
+            continue  # 通俗版不展示 info 级提示
         text = iss[0].replace('🔴', '❌').replace('🟠', '⚠️').replace('🟡', '📌')
         hint = ''
         for key, val in context_map.items():

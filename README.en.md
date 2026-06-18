@@ -235,6 +235,12 @@ A: Guardrail checks are tiered — Tool-type Skills only check 5 core items (ski
 **Q: Can HaluCatch auto-fix the issues it finds?**
 A: No. HaluCatch is a diagnostic tool, not an auto-fix tool. The action report provides fix guidance, but fixes must be applied manually (by you or an AI).
 
+**Q: Can I audit multiple Skills at once?**
+A: Not supported in the current version. Run them one at a time — batch mode is on the roadmap.
+
+**Q: "It froze on network issues" — is that HaluCatch?**
+A: No. HaluCatch is fully local and makes no network requests. If execution hangs, it's likely an AI session timeout or a very large target directory causing slow scanning.
+
 ---
 
 ## License
