@@ -1,6 +1,13 @@
 # HaluCatch / 捕幻
 
-**中文** | [English](./README.en.md)
+<p align="center">
+  <a href="README.md">
+    <img src="https://img.shields.io/badge/语言-中文-blue?style=for-the-badge" alt="中文">
+  </a>
+  <a href="README.en.md">
+    <img src="https://img.shields.io/badge/Language-English-slategray?style=for-the-badge" alt="English">
+  </a>
+</p>
 
 AI Skill **执行可靠性审查**工具。评估一个 Skill 被 AI 执行时，结果是否可信、是否可复现、是否经得起业务推敲。
 

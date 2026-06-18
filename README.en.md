@@ -1,6 +1,13 @@
 # HaluCatch / 捕幻
 
-[中文](./README.md) | **English**
+<p align="center">
+  <a href="README.md">
+    <img src="https://img.shields.io/badge/语言-中文-slategray?style=for-the-badge" alt="中文">
+  </a>
+  <a href="README.en.md">
+    <img src="https://img.shields.io/badge/Language-English-blue?style=for-the-badge" alt="English">
+  </a>
+</p>
 
 AI Skill **execution reliability auditor**. Evaluates whether a Skill produces trustworthy, reproducible, and business-sound results when executed by an AI.
 
