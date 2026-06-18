@@ -54,7 +54,7 @@ flowchart TD
   S -.->|重新审查| A
 ```
 
-> 详细决策分支见 [在线流程图](https://codermoray.github.io/HaluCatch/decision-flowchart.html) 或 [SKILL.md](SKILL.md) 底部决策树。
+> 详细决策分支见 [在线流程图](https://codermoray.github.io/HaluCatch/decision-flowchart.html)。
 
 ---
 
