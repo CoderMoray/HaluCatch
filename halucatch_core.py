@@ -127,7 +127,7 @@ def check_foundation(info):
         issues.append(('✅ 有 --validate 验证模式', 'pass'))
         score += 1
     elif info['py']:
-        issues.append(('🟠 有 .py 但缺少 --validate 验证模式', 'warn'))
+        issues.append(('🟠 有 .py 但缺少 --validate 验证模式 → 建议在 argparse 中添加 `--validate` 参数', 'warn'))
     else:
         issues.append(('🟡 无 .py 文件，无法检查验证模式', 'skip'))
 
@@ -136,7 +136,7 @@ def check_foundation(info):
         issues.append(('✅ 有输入验证/列名校验', 'pass'))
         score += 1
     elif info['py']:
-        issues.append(('🟠 有 .py 但缺少输入验证', 'warn'))
+        issues.append(('🟠 有 .py 但缺少输入验证 → 建议添加 check_columns() 或 required_ 字段预检', 'warn'))
     else:
         issues.append(('🟡 无 .py 文件，无法检查输入验证', 'skip'))
 
@@ -270,7 +270,7 @@ def check_rules(info):
         issues.append(('✅ 声明了默认值/回退策略', 'pass'))
         score += 1
     else:
-        issues.append(('🟡 未声明默认值策略', 'warn'))
+        issues.append(('🟡 未声明默认值策略 → 建议在 SKILL.md 中声明 fallback 行为（如「缺省使用最近 30 天数据」）', 'warn'))
 
     pct = score / total
     if pct >= 0.8:
