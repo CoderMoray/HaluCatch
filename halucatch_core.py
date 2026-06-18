@@ -40,15 +40,28 @@ def scan_folder(path):
             fpath_rel = os.path.relpath(fpath, path)
             files.append({'name': fname, 'ext': ext, 'size': size, 'path': fpath, 'rel_path': fpath_rel})
 
-            if fname.lower() in ['skill.md', 'toolcard.md']:
-                skill_md_path = fpath
-                with open(fpath, 'r', encoding='utf-8', errors='backslashreplace') as f:
-                    skill_md_content = f.read()
+    # 尺寸保护：跳过超大文件避免 OOM
+    SZ_LIMIT = 10 * 1024 * 1024  # 10MB
+    oversized = []
+    for f in files:
+        if f['size'] > SZ_LIMIT:
+            oversized.append(f['name'])
+    if oversized:
+        print(f"  ⚠️ 超大文件 ({', '.join(oversized)}) 超过 10MB，跳过内容读取")
+    oversized_set = set(oversized)
 
-            if ext == '.py':
-                py_paths.append(fpath)
-                with open(fpath, 'r', encoding='utf-8', errors='backslashreplace') as f:
-                    py_contents.append(f.read())
+    for f in files:
+        if f['name'] in oversized_set:
+            continue
+        if f['name'].lower() in ['skill.md', 'toolcard.md']:
+            skill_md_path = f['path']
+            with open(f['path'], 'r', encoding='utf-8', errors='backslashreplace') as fh:
+                skill_md_content = fh.read()
+
+        if f['ext'] == '.py':
+            py_paths.append(f['path'])
+            with open(f['path'], 'r', encoding='utf-8', errors='backslashreplace') as fh:
+                py_contents.append(fh.read())
 
     has_data = any(f['ext'] in ['.xlsx', '.xls', '.csv'] for f in files)
 
@@ -346,10 +359,10 @@ def check_guardrails(info, skill_type='code-engineered'):
         else:
             issues.append(('🟡 未要求置信度声明', 'info'))
     elif is_tool:
-        issues.append(('🟡 工具库型 Skill，置信度检查跳过', 'skip'))
+        issues.append(('🟡 工具库型，置信度检查跳过（文件格式类 Skill 不涉统计推断）', 'skip'))
         total -= 1
     else:
-        issues.append(('🟡 纯方法论型，置信度检查跳过', 'skip'))
+        issues.append(('🟡 纯方法论型，置信度检查跳过（无数据操作，不适用置信度评估）', 'skip'))
         total -= 1
 
     # 5) 数据来源限制（分析型代码工程专属，工具库/方法论跳过）
@@ -360,10 +373,10 @@ def check_guardrails(info, skill_type='code-engineered'):
         else:
             issues.append(('🟡 未声明数据来源限制', 'info'))
     elif is_tool:
-        issues.append(('🟡 工具库型 Skill，数据来源检查跳过', 'skip'))
+        issues.append(('🟡 工具库型，数据来源检查跳过（不声明自有数据范围）', 'skip'))
         total -= 1
     else:
-        issues.append(('🟡 纯方法论型，数据来源检查跳过', 'skip'))
+        issues.append(('🟡 纯方法论型，数据来源检查跳过（不处理外部数据）', 'skip'))
         total -= 1
 
     # 6) 错误回退
@@ -381,10 +394,10 @@ def check_guardrails(info, skill_type='code-engineered'):
         else:
             issues.append(('🟡 未声明数据时效性约束', 'info'))
     elif is_tool:
-        issues.append(('🟡 工具库型 Skill，时效性检查跳过', 'skip'))
+        issues.append(('🟡 工具库型，时效性检查跳过（不依赖特定时间窗口的数据）', 'skip'))
         total -= 1
     else:
-        issues.append(('🟡 纯方法论型，时效性检查跳过', 'skip'))
+        issues.append(('🟡 纯方法论型，时效性检查跳过（不依赖时变数据）', 'skip'))
         total -= 1
 
     # 8) 前提假设
