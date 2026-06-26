@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HaluCatch — AI Skill 执行可靠性审计</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --surface2: #1a1a2e;
+      --border: #2a2a3e;
+      --text: #e0e0f0;
+      --text2: #8888aa;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --red: #ff6b6b;
+      --orange: #ffa94d;
+      --green: #51cf66;
+      --blue: #339af0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a { color: var(--accent2); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 80px 20px 60px;
+      background: radial-gradient(ellipse at top, #1a1a3e 0%, transparent 60%);
+    }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #6c63ff, #00d4aa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+    .hero .subtitle {
+      font-size: 1.2rem;
+      color: var(--text2);
+      max-width: 600px;
+      margin: 0 auto 32px;
+    }
+    .hero .badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 32px; }
+    .badge {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 0.85rem;
+      color: var(--text2);
+    }
+    .cta-group { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+    .btn-primary:hover { background: #5a52e0; text-decoration: none; color: white; }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-secondary:hover { border-color: var(--accent); text-decoration: none; color: var(--text); }
+
+    /* Sections */
+    section { padding: 60px 20px; max-width: 1100px; margin: 0 auto; }
+    section h2 {
+      font-size: 1.8rem;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    /* Problem */
+    .problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .problem-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .problem-card .icon { font-size: 2rem; margin-bottom: 12px; }
+    .problem-card h3 { font-size: 1rem; margin-bottom: 8px; }
+    .problem-card p { font-size: 0.9rem; color: var(--text2); }
+
+    /* Report Preview */
+    .preview-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .preview-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+    .preview-tab {
+      padding: 12px 24px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--text2);
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .preview-tab.active {
+      color: var(--accent2);
+      border-bottom-color: var(--accent2);
+    }
+    .preview-body { padding: 32px; overflow-x: auto; }
+    .report-content { display: none; }
+    .report-content.active { display: block; }
+
+    /* Report styles */
+    .report-content h3 { font-size: 1.1rem; margin: 24px 0 12px; color: var(--accent2); }
+    .report-content h4 { font-size: 1rem; margin: 16px 0 8px; }
+    .report-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 0.9rem;
+    }
+    .report-content th, .report-content td {
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .report-content th { background: var(--surface2); }
+    .report-content .pass { color: var(--green); }
+    .report-content .warn { color: var(--orange); }
+    .report-content .fail { color: var(--red); }
+    .report-content ul { padding-left: 20px; margin: 8px 0; }
+    .report-content li { margin: 4px 0; font-size: 0.9rem; }
+    .report-content code {
+      background: var(--surface2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+    .report-content hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+    /* Quick Start */
+    .install-steps { display: grid; gap: 20px; }
+    .step {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .step-num {
+      width: 40px;
+      height: 40px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .step-content { flex: 1; }
+    .step-content h3 { margin-bottom: 8px; }
+    .step-content p { color: var(--text2); font-size: 0.9rem; margin-bottom: 8px; }
+    pre {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+    pre .comment { color: var(--text2); }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid var(--border);
+      color: var(--text2);
+      font-size: 0.9rem;
+    }
+    footer a { margin: 0 12px; }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 2rem; }
+      .preview-tabs { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <h1>🎯 HaluCatch</h1>
+  <p class="subtitle">AI Skill 执行可靠性审计工具<br>在 AI 执行前，发现 Skill 里的隐患</p>
+  <div class="badges">
+    <span class="badge">🐍 Python CLI</span>
+    <span class="badge">📋 3 份报告</span>
+    <span class="badge">🌏 中英文</span>
+    <span class="badge">📦 零依赖</span>
+  </div>
+  <div class="cta-group" style="margin-top: 32px;">
+    <a href="https://github.com/CoderMoray/HaluCatch" class="btn btn-primary">⭐ GitHub 开源</a>
+    <a href="#quickstart" class="btn btn-secondary">🚀 快速开始</a>
+  </div>
+</section>
+
+<!-- Problem -->
+<section>
+  <h2>AI 执行 Skill 时，这些坑你遇到过吗？</h2>
+  <div class="problem-grid">
+    <div class="problem-card">
+      <div class="icon">🗂️</div>
+      <h3>硬编码路径</h3>
+      <p>Skill 里写了 <code>/Users/foo/...</code>，换台机器就挂</p>
+    </div>
+    <div class="problem-card">
+      <div class="icon">🔀</div>
+      <h3>分支缺失</h3>
+      <p>正常流程写得很好，异常分支没写，AI 瞎编</p>
+    </div>
+    <div class="problem-card">
+      <div class="icon">🤔</div>
+      <h3>模糊表述</h3>
+      <p>"酌情处理"、"大概估算"，AI 自由发挥空间太大</p>
+    </div>
+    <div class="problem-card">
+      <div class="icon">🛡️</div>
+      <h3>无护栏</h3>
+      <p>没写禁止操作，AI 可能执行危险指令</p>
+    </div>
+  </div>
+</section>
+
+<!-- Report Preview -->
+<section>
+  <h2>审计报告预览</h2>
+  <p style="text-align:center;color:var(--text2);margin-bottom:24px;">三份报告，面向不同读者</p>
+  <div class="preview-container">
+    <div class="preview-tabs">
+      <div class="preview-tab active" onclick="switchTab('pro')">📊 专业版</div>
+      <div class="preview-tab" onclick="switchTab('plain')">🗣️ 通俗版</div>
+      <div class="preview-tab" onclick="switchTab('action')">🤖 AI 行动版</div>
+    </div>
+    <div class="preview-body">
+
+      <!-- 专业版 -->
+      <div class="report-content active" id="tab-pro">
+<h3>📌 TL;DR</h3>
+<p>⚠️ 发现 0 项阻塞、6 项高危风险。另有 3 项需 AI 补充判断。</p>
+
+<h3>🎯 核心结论卡片</h3>
+<table>
+<tr><th>维度</th><th>评级</th><th>分数</th></tr>
+<tr><td>🏗️ 地基</td><td class="pass">🟢 纯方法论</td><td>-</td></tr>
+<tr><td>🤖 代码</td><td class="pass">🟢 纯方法论</td><td>-</td></tr>
+<tr><td>📝 规则/方法论</td><td class="fail">🔴 不可靠</td><td>1/5</td></tr>
+<tr><td>🛡️ 护栏</td><td class="fail">🔴 薄弱</td><td>1/5</td></tr>
+</table>
+
+<h3>🔍 审查发现</h3>
+<h4>📝 规则/方法论</h4>
+<ul>
+  <li class="pass">✅ 有结构化步骤</li>
+  <li class="warn">🟡 未检测到足够的条件分支信号，建议 AI 人工审查</li>
+  <li class="warn">🟡 未明确定义输出格式</li>
+  <li class="warn">🟡 缺少示例说明</li>
+</ul>
+<h4>🛡️ 护栏</h4>
+<ul>
+  <li class="warn">🟠 未定义输出格式</li>
+  <li class="pass">✅ 检测到禁止/护栏声明</li>
+  <li class="warn">🟠 缺少输出验证/自检要求</li>
+  <li class="warn">🟠 未定义错误回退策略</li>
+</ul>
+<p style="margin-top:16px;font-size:0.85rem;color:var(--text2);">本报告由 HaluCatch 生成。自检: ✅ 全部通过</p>
+      </div>
+
+      <!-- 通俗版 -->
+      <div class="report-content" id="tab-plain">
+<h3>🗣️ 通俗版 — 用人话解释</h3>
+<hr>
+<h4>🔍 地基检查 — 用大白话解释</h4>
+<p><strong>这项检查在干什么？</strong><br>检查 Skill 是不是纯方法论（没有代码/文件操作）。如果是，地基检查不适用，直接通过。</p>
+<p style="margin-top:8px;"><strong>结果：</strong><span class="pass">✅ 通过</span>（纯方法论型 Skill）</p>
+
+<hr>
+<h4>📝 规则/方法论 — 通俗解释</h4>
+<p><strong>这项检查在干什么？</strong><br>检查 Skill 的步骤是否清晰、是否有分支处理异常、输出格式是否明确。</p>
+<p style="margin-top:8px;"><strong>结果：</strong><span class="fail">🔴 有几项要注意</span></p>
+<ul>
+  <li>✅ 有结构化步骤 — 这点做得好</li>
+  <li>🟡 没有写清楚"如果出错了怎么办" — AI 遇到异常可能会瞎编</li>
+  <li>🟡 输出格式没定义 — AI 输出的结果可能每次不一样</li>
+  <li>🟡 没有示例 — AI 不知道你期望的输出长什么样</li>
+</ul>
+<p style="margin-top:12px;background:var(--surface2);padding:12px;border-radius:8px;font-size:0.9rem;"><strong>💡 建议：</strong>在 SKILL.md 里加一个"示例输出"小节，让 AI 知道你想要什么格式。</p>
+
+<hr>
+<h4>🛡️ 护栏 — 通俗解释</h4>
+<p><strong>这项检查在干什么？</strong><br>检查 Skill 有没有"禁止做某件事"的声明，以及输出后有没有验证步骤。</p>
+<p style="margin-top:8px;"><strong>结果：</strong><span class="warn">🟠 护栏比较薄弱</span></p>
+<ul>
+  <li>✅ 有禁止声明（检测到 NEVER、REJECT 等关键词）— 这点做得好</li>
+  <li>🟠 没有定义"如果 AI 执行失败了怎么办" — 建议加上错误回退策略</li>
+  <li>🟠 没有输出验证步骤 — AI 输出错误结果，你也不知道</li>
+</ul>
+      </div>
+
+      <!-- AI 行动版 -->
+      <div class="report-content" id="tab-action">
+<h3>🤖 AI 行动版 — 直接可执行</h3>
+<hr>
+<h4>🛠️ 建议修复清单（按优先级排序）</h4>
+<table>
+<tr><th>优先级</th><th>文件</th><th>修改建议</th></tr>
+<tr><td>🔴 高</td><td>SKILL.md</td><td>明确定义输出格式（在"输出"章节加示例）</td></tr>
+<tr><td>🔴 高</td><td>SKILL.md</td><td>添加错误回退策略（"如果 X 失败，执行 Y"）</td></tr>
+<tr><td>🟠 中</td><td>SKILL.md</td><td>添加条件分支（"如果数据缺失，执行..."）</td></tr>
+<tr><td>🟠 中</td><td>SKILL.md</td><td>添加示例说明（"示例输出："小节）</td></tr>
+</table>
+
+<hr>
+<h4>✅ 验证检查点（修复后自检）</h4>
+<ul>
+  <li>☐ SKILL.md 有"输出格式"定义，且附示例</li>
+  <li>☐ SKILL.md 有"错误处理"或"异常回退"章节</li>
+  <li>☐ 所有步骤都有条件分支（if-else 逻辑）</li>
+  <li>☐ 有禁止操作声明（NEVER/REJECT）</li>
+  <li>☐ 重新跑 HaluCatch，确认评分提升</li>
+</ul>
+
+<hr>
+<h4>📋 直接可用的提示词（给 AI 执行修复）</h4>
+<pre style="margin-top:12px;">请帮我修复以下 SKILL.md，按优先级完成：
+
+1. 在"输出"章节添加输出格式定义，并给出一个具体示例
+2. 添加"错误处理"章节，定义：如果输入数据缺失/格式错误，应该执行什么
+3. 在关键步骤添加条件分支（使用"如果...则..."句式）
+4. 保留已有的禁止声明（NEVER...）
+
+修改完后，告诉我哪些地方改了，并给出修复后的完整 SKILL.md。</pre>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Quick Start -->
+<section id="quickstart">
+  <h2>快速开始</h2>
+  <div class="install-steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>下载 HaluCatch</h3>
+        <p>克隆仓库到本地</p>
+        <pre>git clone https://github.com/CoderMoray/HaluCatch.git
+cd HaluCatch</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>审计一个 Skill</h3>
+        <p>指向任意 Skill 目录，一键生成报告</p>
+        <pre><span class="comment"># 自动检测语言（中文/英文）</span>
+python3 halucatch_core.py --skill-dir /path/to/your-skill
+
+<span class="comment"># 强制英文输出</span>
+python3 halucatch_core.py --skill-dir /path/to/your-skill --lang en</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>查看报告</h3>
+        <p>报告自动生成在 <code>reports/</code> 目录</p>
+        <pre><span class="comment"># 三份报告</span>
+reports/HaluCatch-report-YYYY-MM-DD.md        <span class="comment"># 专业版</span>
+reports/HaluCatch-report-YYYY-MM-DD-通俗版.md  <span class="comment"># 通俗版</span>
+reports/HaluCatch-report-YYYY-MM-DD-行动版.md  <span class="comment"># AI 行动版</span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>
+    <a href="https://github.com/CoderMoray/HaluCatch">GitHub</a>
+    <a href="https://github.com/CoderMoray/HaluCatch/releases">Releases</a>
+    <a href="decision-flowchart.html">决策流程图</a>
+    <a href="https://skillhub.cn/skills/88918">SkillHub</a>
+  </p>
+  <p style="margin-top:12px;">HaluCatch © 2026 · MIT License</p>
+</footer>
+
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.report-content').forEach(c => c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+</script>
+
+</body>
+</html>
