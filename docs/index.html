@@ -67,17 +67,22 @@
       border-radius: 8px;
       font-weight: 600;
       font-size: 0.95rem;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text2);
       transition: all 0.2s;
       cursor: pointer;
-    }
-    .btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
       text-decoration: none;
     }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border: 1px solid var(--accent);
+    }
+    .btn-primary:hover { background: #5a52e0; border-color: #5a52e0; color: white; text-decoration: none; }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text2);
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
 
     /* Sections */
     section { padding: 60px 20px; max-width: 1100px; margin: 0 auto; }
@@ -227,10 +232,10 @@
     <span class="badge">MIT 开源</span>
   </div>
   <div class="cta-group" style="margin-top: 32px;">
-    <a href="https://github.com/CoderMoray/HaluCatch" class="btn">⭐ GitHub 开源</a>
-    <a href="https://skillhub.cn/skills/halucatch" class="btn" target="_blank">📦 SkillHub</a>
-    <a href="https://clawhub.ai/codermoray/skills/halucatch" class="btn" target="_blank">🦞 ClawHub</a>
-    <a href="#quickstart" class="btn">🚀 快速开始</a>
+    <a href="https://github.com/CoderMoray/HaluCatch" class="btn btn-primary">⭐ GitHub 开源</a>
+    <a href="https://skillhub.cn/skills/halucatch" class="btn btn-outline" target="_blank">📦 SkillHub</a>
+    <a href="https://clawhub.ai/codermoray/skills/halucatch" class="btn btn-outline" target="_blank">🦞 ClawHub</a>
+    <a href="#quickstart" class="btn btn-outline">🚀 快速开始</a>
   </div>
 </section>
 
@@ -264,84 +269,84 @@
 <!-- Report Preview -->
 <section>
   <h2>审计报告预览</h2>
-  <p style="text-align:center;color:var(--text2);margin-bottom:24px;">同一份 Skill，三份视角 — 这是 HaluCatch 审计自己的报告节选</p>
+  <p style="text-align:center;color:var(--text2);margin-bottom:24px;">同一份 Skill，三份视角 — 以下是 HaluCatch 审计自身的真实报告</p>
   <div class="preview-container">
     <div class="preview-tabs">
-      <div class="preview-tab active" onclick="switchTab('explain')">🗣️ 解释版</div>
+      <div class="preview-tab active" onclick="switchTab('standard')">📗 标准版</div>
       <div class="preview-tab" onclick="switchTab('pro')">📊 专业版</div>
       <div class="preview-tab" onclick="switchTab('action')">🤖 AI 行动版</div>
     </div>
     <div class="preview-body">
 
-      <!-- 解释版（默认） -->
-      <div class="report-content active" id="tab-explain">
-<h3>🗣️ 解释版 — 用人话告诉你哪里有问题</h3>
+      <!-- 标准版（默认） -->
+      <div class="report-content active" id="tab-standard">
+<h3>📗 标准版 — 用人话告诉你哪里有问题</h3>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（审计根目录 SKILL.md）</p>
 <hr>
-<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计项目中 skill-vetter 的真实报告节选</p>
 <h4>🔍 规则/方法论 — 用人话解释</h4>
 <p><strong>这项检查在干什么？</strong><br>检查 SKILL.md 的步骤是否清晰、是否有"如果出错了怎么办"的分支、输出格式是否明确、有没有给 AI 看示例。</p>
-<p style="margin-top:8px;"><strong>结果：</strong><span class="warn">🟡 有歧义</span></p>
+<p style="margin-top:8px;"><strong>结果：</strong><span class="pass">✅ 明确</span></p>
 <ul>
   <li>✅ 未检测到模糊词汇（"大概"、"酌情"等）</li>
-  <li>🟡 未检测到明确的数值边界约束</li>
-  <li>✅ 包含计算/公式说明</li>
-  <li>✅ 单位使用一致</li>
-  <li class="warn">🟠 缺少异常值/失败场景处理说明 — AI 遇到脏数据可能瞎编</li>
-  <li class="warn">🟡 未声明默认值策略 — 建议在 SKILL.md 中声明 fallback 行为</li>
+  <li>✅ 有异常分支处理</li>
+  <li>✅ 声明了默认值/回退策略</li>
+  <li class="warn">🟡 未检测到明确的数值边界约束 — 建议加上"误差小于 X"等具体边界</li>
 </ul>
-<div class="tip-box"><strong>💡 怎么改：</strong>在 SKILL.md 里加"异常处理"小节，说明数据缺失/格式错误时应该执行什么，而不是让 AI 自己猜。</div>
+<div class="tip-box"><strong>💡 怎么改：</strong>在 SKILL.md 的"规则"章节，补充数值边界，比如"差异超过 5% 时标记为异常"。</div>
 
 <hr>
 <h4>🛡️ 护栏 — 用人话解释</h4>
 <p><strong>这项检查在干什么？</strong><br>检查 Skill 有没有写"禁止做 X"，以及 AI 执行完后有没有验证输出的步骤。</p>
-<p style="margin-top:8px;"><strong>结果：</strong><span class="fail">🔴 薄弱</span></p>
+<p style="margin-top:8px;"><strong>结果：</strong><span class="warn">🟡 缺项</span></p>
 <ul>
   <li>✅ 明确了输出格式</li>
-  <li>✅ 检测到禁止/护栏声明</li>
-  <li class="fail">🟠 缺少输出验证/自检要求 — AI 输出错误结果你也不知道</li>
-  <li class="warn">🟡 未要求置信度声明</li>
-  <li class="fail">🟠 未定义错误回退策略 — 执行失败时 AI 会卡住</li>
+  <li>✅ 包含验证/自检步骤</li>
+  <li>✅ 定义了错误处理/回退策略</li>
+  <li class="warn">🟡 未声明数据时效性约束 — AI 可能用过时的数据</li>
+  <li class="warn">🟡 未声明前提假设 — AI 不知道输入数据要满足什么条件</li>
 </ul>
-<div class="tip-box"><strong>💡 怎么改：</strong>在 SKILL.md 加"验证步骤"：AI 执行完后，对照检查清单自检一次，把自检结果也输出出来。</div>
+<div class="tip-box"><strong>💡 怎么改：</strong>在 SKILL.md 加"数据要求"章节，说明输入数据的时效性和前提假设。</div>
       </div>
 
       <!-- 专业版 -->
       <div class="report-content" id="tab-pro">
 <h3>📊 专业版 — 结构化评估结果</h3>
-<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计项目中 skill-vetter 的真实报告节选</p>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（审计根目录 SKILL.md）</p>
 <hr>
 <h3>📌 TL;DR</h3>
-<p>⚠️ 发现 1 项阻塞、10 项高危风险。另有 5 项需 AI 补充判断。</p>
+<p>⚠️ 发现 0 项阻塞、5 项高危风险。另有 4 项需 AI 补充判断。</p>
 
 <h3>🎯 核心结论卡片</h3>
 <table>
 <tr><th>维度</th><th>评级</th><th>分数</th></tr>
-<tr><td>🏗️ 地基</td><td class="warn">🟡 有隐患</td><td>4/6</td></tr>
+<tr><td>🏗️ 地基</td><td class="pass">🟢 稳固</td><td>6/6</td></tr>
 <tr><td>🤖 代码</td><td class="fail">🔴 高风险</td><td>3/7</td></tr>
-<tr><td>📝 规则/方法论</td><td class="warn">🟡 有歧义</td><td>3/6</td></tr>
-<tr><td>🛡️ 护栏</td><td class="fail">🔴 薄弱</td><td>3/8</td></tr>
+<tr><td>📝 规则/方法论</td><td class="pass">🟢 明确</td><td>5/6</td></tr>
+<tr><td>🛡️ 护栏</td><td class="warn">🟡 缺项</td><td>6/8</td></tr>
 </table>
 
 <h3>🔍 审查发现</h3>
 <h4>🏗️ 地基</h4>
 <ul>
   <li class="pass">✅ 有固化 .py 脚本</li>
-  <li class="fail">🔴 发现 1 处硬编码路径: <code>/Users/bob/data.csv</code></li>
+  <li class="pass">✅ 路径已参数化，无硬编码</li>
   <li class="pass">✅ 有 --validate 验证模式</li>
   <li class="pass">✅ 有输入验证/列名校验</li>
 </ul>
 <h4>🤖 代码</h4>
 <ul>
   <li class="warn">🟠 [异常处理] 裸 except: pass — 可能吞掉内存错误等关键异常</li>
-  <li class="warn">🟠 [除零风险] return 中直接返回除法结果 — 分母为 0 时无保护</li>
-  <li class="warn">🟠 [静默覆盖] 写模式打开文件 — 未警告覆盖已有内容</li>
+  <li class="warn">🟠 [除零风险] 除法结果未保护分母为零</li>
+  <li class="warn">🟠 [静默覆盖] 写模式打开文件 — 未警告覆盖</li>
+  <li class="warn">🟡 嵌入代码 1081 行 — 较长，AI 复现时可能遗漏</li>
 </ul>
 <h4>🛡️ 护栏</h4>
 <ul>
   <li class="pass">✅ 明确了输出格式</li>
-  <li class="pass">✅ 检测到禁止/护栏声明（否定词 6 个）</li>
-  <li class="warn">🟠 缺少输出验证/自检要求</li>
-  <li class="warn">🟠 未定义错误回退策略</li>
+  <li class="pass">✅ 包含验证/自检步骤</li>
+  <li class="pass">✅ 定义了错误处理/回退策略</li>
+  <li class="warn">🟡 未声明数据时效性约束</li>
+  <li class="warn">🟡 未声明前提假设</li>
 </ul>
 <p style="margin-top:16px;font-size:0.85rem;color:var(--text2);">本报告由 HaluCatch 生成。自检: ✅ 全部通过</p>
       </div>
@@ -349,27 +354,25 @@
       <!-- AI 行动版 -->
       <div class="report-content" id="tab-action">
 <h3>🤖 AI 行动版 — 直接给 AI 的修复指令</h3>
-<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计项目中 skill-vetter 的真实报告节选</p>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（审计根目录 SKILL.md）</p>
 <hr>
 <h4>🛠️ 建议修复清单（按优先级排序）</h4>
 <table>
 <tr><th>优先级</th><th>文件</th><th>修改建议</th></tr>
-<tr><td>🔴 高</td><td>halucatch_core.py</td><td>硬编码路径 <code>/Users/bob/data.csv</code> → 改为 <code>--data-dir</code> 参数传入</td></tr>
 <tr><td>🔴 高</td><td>halucatch_core.py</td><td>裸 except: pass → 改为 <code>except Exception as e:</code> 并打印日志</td></tr>
-<tr><td>🟠 中</td><td>halucatch_core.py</td><td>[除零风险] 除法前检查分母是否为 0</td></tr>
+<tr><td>🔴 高</td><td>halucatch_core.py</td><td>[除零风险] 除法前检查分母是否为 0</td></tr>
 <tr><td>🟠 中</td><td>halucatch_core.py</td><td>[静默覆盖] 写文件前检查是否存在，或用追加模式</td></tr>
-<tr><td>🟠 中</td><td>SKILL.md</td><td>添加错误回退策略（"如果 X 失败，执行 Y"）</td></tr>
-<tr><td>🟠 中</td><td>SKILL.md</td><td>添加输出验证/自检要求</td></tr>
+<tr><td>🟠 中</td><td>SKILL.md</td><td>声明数据时效性约束（如"数据不超过 7 天"）</td></tr>
+<tr><td>🟠 中</td><td>SKILL.md</td><td>声明前提假设（如"输入数据已去重"）</td></tr>
 </table>
 
 <hr>
 <h4>✅ 验证检查点（修复后自检）</h4>
 <ul>
-  <li>☐ 无硬编码路径（grep 确认）</li>
   <li>☐ 所有异常处理都打印了日志，没有裸 except: pass</li>
-  <li>☐ 除法操作前有分母为零的检查</li>
+  <li>☐ 所有除法操作前有分母为零的检查</li>
   <li>☐ 写文件操作有存在性检查或备份机制</li>
-  <li>☐ SKILL.md 有"错误处理"章节</li>
+  <li>☐ SKILL.md 有"数据要求"章节（时效性 + 前提假设）</li>
   <li>☐ 重新跑 HaluCatch，确认评分提升</li>
 </ul>
 
@@ -377,10 +380,9 @@
 <h4>📋 直接可用的提示词（发给 AI 执行修复）</h4>
 <pre style="margin-top:12px;">请帮我修复 halucatch_core.py，按优先级完成：
 
-1. 搜索并替换所有硬编码路径（如 /Users/bob/data.csv），改为通过参数传入
-2. 把所有裸 `except: pass` 改为 `except Exception as e: print(e)` 至少打印错误
-3. 检查所有除法操作，添加分母为零的保护
-4. 检查所有文件写操作，添加存在性检查
+1. 把所有裸 `except: pass` 改为 `except Exception as e:` 至少打印错误日志
+2. 检查所有除法操作，添加分母为零的保护（if denominator == 0: return 0）
+3. 检查所有文件写操作（open(..., 'w')），添加存在性检查或改用追加模式
 
 修改完后，告诉我哪些地方改了，并给出修改处的上下文代码。</pre>
       </div>
@@ -421,7 +423,7 @@ python3 halucatch_core.py --skill-dir /path/to/your-skill --lang en</pre>
         <p>报告自动生成在 <code>reports/</code> 目录</p>
         <pre><span class="comment"># 三份报告</span>
 reports/HaluCatch-report-YYYY-MM-DD.md        <span class="comment"># 专业版</span>
-reports/HaluCatch-report-YYYY-MM-DD-解释版.md  <span class="comment"># 解释版（人话版）</span>
+reports/HaluCatch-report-YYYY-MM-DD-标准版.md  <span class="comment"># 标准版</span>
 reports/HaluCatch-report-YYYY-MM-DD-行动版.md  <span class="comment"># AI 行动版</span></pre>
       </div>
     </div>

@@ -233,7 +233,7 @@ def detect_system_locale():
 # =============================================================================
 
 def scan_folder(path, msg):
-    """递归扫描文件夹，返回文件清单和 SKILL.md / .py 内容。"""
+    """扫描文件夹（仅顶层），返回文件清单和 SKILL.md / .py 内容。"""
     if not os.path.isdir(path):
         print(msg['path_not_exist'].format(path=path))
         return None
@@ -247,7 +247,8 @@ def scan_folder(path, msg):
     skip_dirs = {'.git', '__pycache__', '.pytest_cache', 'node_modules', '.venv', 'venv', 'avatars'}
 
     for root, dirs, filenames in os.walk(path):
-        dirs[:] = [d for d in dirs if d not in skip_dirs and not d.startswith('.')]
+        # 只扫描顶层目录，不递归子目录（避免误读其他 Skill 的 SKILL.md）
+        dirs[:] = []
         for fname in filenames:
             fpath = os.path.join(root, fname)
             size = os.path.getsize(fpath)
