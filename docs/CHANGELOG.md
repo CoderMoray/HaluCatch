@@ -16,6 +16,22 @@
 
 ---
 
+## [V1.7.0] - 2026-06-26
+
+### Added
+- feat: **英文 Skill 支持增强**
+  
+  **跨语言检测能力扩展:**
+  - 新增英文模糊词检测（18 个词）: `roughly`, `approximately`, `about`, `usually`, `generally` 等
+  - 新增英文单位检测: `USD`, `EUR`, `GBP`, `million`, `billion`, `percent`, `percentage`, `pct`
+  - 增强英文禁止声明检测: `MUST NOT`, `FORBIDDEN`, `PROHIBITED`, `DO NOT`
+  - 增强工具库/分析型识别信号词
+  
+  **影响**: halucatch_core.py (`check_rules`, `_prohibition_signal`, `_is_tool_skill`)
+  - 提交: `待提交`
+
+---
+
 ## [V1.6.0] - 2026-06-17
 
 ### Added
