@@ -81,6 +81,35 @@ category: "engineering"
 
 ---
 
+## AI 执行指南
+
+### 语言自动检测
+
+AI 在加载本 Skill 时，应从系统提示（`<response_language>`）或对话上下文判断用户语言，然后自动添加 `--lang` 参数：
+
+| 用户语言 | 参数 | 示例 |
+|-----------|------|------|
+| 中文（简体/繁体） | `--lang zh-CN` | `python3 halucatch_core.py --skill-dir <path> --lang zh-CN` |
+| 英文 | `--lang en` | `python3 halucatch_core.py --skill-dir <path> --lang en` |
+| 不确定 | 不添加（默认 `auto`，自动检测系统 locale） | `python3 halucatch_core.py --skill-dir <path>` |
+
+**原则**：AI 肯定知道用户用什么语言，不需要用户手动配置。
+
+### 基本用法
+
+```bash
+# 为中文用户审查
+python3 halucatch_core.py --skill-dir /path/to/skill --lang zh-CN
+
+# 为英文用户审查
+python3 halucatch_core.py --skill-dir /path/to/skill --lang en
+
+# 自动检测（fallback）
+python3 halucatch_core.py --skill-dir /path/to/skill
+```
+
+---
+
 ## 执行流程
 
 > **执行范式**：各 Phase 按三层调用模型分配职责。L1/L2 调 `halucatch_core.py`，L3 你亲自执行。
