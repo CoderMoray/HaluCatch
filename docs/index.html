@@ -67,26 +67,17 @@
       border-radius: 8px;
       font-weight: 600;
       font-size: 0.95rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text2);
       transition: all 0.2s;
       cursor: pointer;
     }
-    .btn-primary {
-      background: var(--accent);
-      color: white;
-    }
-    .btn-primary:hover { background: #5a52e0; text-decoration: none; color: white; }
-    .btn-secondary {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text);
-    }
-    .btn-secondary:hover { border-color: var(--accent); text-decoration: none; color: var(--text); }
-    .btn-outline {
-      background: transparent;
-      border: 1px solid var(--accent);
+    .btn:hover {
+      border-color: var(--accent);
       color: var(--accent);
+      text-decoration: none;
     }
-    .btn-outline:hover { background: var(--accent); color: white; text-decoration: none; }
 
     /* Sections */
     section { padding: 60px 20px; max-width: 1100px; margin: 0 auto; }
@@ -236,10 +227,10 @@
     <span class="badge">MIT 开源</span>
   </div>
   <div class="cta-group" style="margin-top: 32px;">
-    <a href="https://github.com/CoderMoray/HaluCatch" class="btn btn-primary">⭐ GitHub 开源</a>
-    <a href="https://skillhub.cn/skills/halucatch" class="btn btn-outline" target="_blank">📦 SkillHub</a>
-    <a href="https://clawhub.ai/codermoray/skills/halucatch" class="btn btn-outline" target="_blank">🦞 ClawHub</a>
-    <a href="#quickstart" class="btn btn-secondary">🚀 快速开始</a>
+    <a href="https://github.com/CoderMoray/HaluCatch" class="btn">⭐ GitHub 开源</a>
+    <a href="https://skillhub.cn/skills/halucatch" class="btn" target="_blank">📦 SkillHub</a>
+    <a href="https://clawhub.ai/codermoray/skills/halucatch" class="btn" target="_blank">🦞 ClawHub</a>
+    <a href="#quickstart" class="btn">🚀 快速开始</a>
   </div>
 </section>
 
@@ -286,66 +277,69 @@
       <div class="report-content active" id="tab-explain">
 <h3>🗣️ 解释版 — 用人话告诉你哪里有问题</h3>
 <hr>
-<h4>🔍 地基检查 — 这项检查在干什么？</h4>
-<p>检查 Skill 是否写了死路径（比如 <code>/Users/yourname/...</code>）、是否引用了不存在的文件。纯方法论型 Skill 此项自动通过。</p>
-<p style="margin-top:8px;"><strong>结果：</strong><span class="pass">✅ 通过</span>（HaluCatch 是代码工程型，路径检查通过）</p>
-
-<hr>
-<h4>📝 规则/方法论 — 用人话解释</h4>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计项目中 skill-vetter 的真实报告节选</p>
+<h4>🔍 规则/方法论 — 用人话解释</h4>
 <p><strong>这项检查在干什么？</strong><br>检查 SKILL.md 的步骤是否清晰、是否有"如果出错了怎么办"的分支、输出格式是否明确、有没有给 AI 看示例。</p>
-<p style="margin-top:8px;"><strong>结果：</strong><span class="warn">🟠 有改进空间</span></p>
+<p style="margin-top:8px;"><strong>结果：</strong><span class="warn">🟡 有歧义</span></p>
 <ul>
-  <li>✅ 有结构化步骤</li>
-  <li>🟡 条件分支信号偏弱 — AI 可能在异常场景下瞎编</li>
-  <li>🟡 未明确定义输出格式 — AI 每次输出可能不一样</li>
-  <li>🟡 缺少示例 — AI 不知道你期望的输出长什么样</li>
+  <li>✅ 未检测到模糊词汇（"大概"、"酌情"等）</li>
+  <li>🟡 未检测到明确的数值边界约束</li>
+  <li>✅ 包含计算/公式说明</li>
+  <li>✅ 单位使用一致</li>
+  <li class="warn">🟠 缺少异常值/失败场景处理说明 — AI 遇到脏数据可能瞎编</li>
+  <li class="warn">🟡 未声明默认值策略 — 建议在 SKILL.md 中声明 fallback 行为</li>
 </ul>
-<div class="tip-box"><strong>💡 怎么改：</strong>在 SKILL.md 里加"示例输出"小节，用 <code>```</code> 代码块给出一个具体例子。</div>
+<div class="tip-box"><strong>💡 怎么改：</strong>在 SKILL.md 里加"异常处理"小节，说明数据缺失/格式错误时应该执行什么，而不是让 AI 自己猜。</div>
 
 <hr>
 <h4>🛡️ 护栏 — 用人话解释</h4>
 <p><strong>这项检查在干什么？</strong><br>检查 Skill 有没有写"禁止做 X"，以及 AI 执行完后有没有验证输出的步骤。</p>
-<p style="margin-top:8px;"><strong>结果：</strong><span class="warn">🟠 护栏较薄弱</span></p>
+<p style="margin-top:8px;"><strong>结果：</strong><span class="fail">🔴 薄弱</span></p>
 <ul>
-  <li>✅ 有禁止声明（检测到 NEVER、REJECT 等关键词）</li>
-  <li>🟠 未定义错误回退策略 — 建议加上"如果 X 失败，执行 Y"</li>
-  <li>🟠 没有输出验证步骤 — AI 输出错误结果你也不知道</li>
+  <li>✅ 明确了输出格式</li>
+  <li>✅ 检测到禁止/护栏声明</li>
+  <li class="fail">🟠 缺少输出验证/自检要求 — AI 输出错误结果你也不知道</li>
+  <li class="warn">🟡 未要求置信度声明</li>
+  <li class="fail">🟠 未定义错误回退策略 — 执行失败时 AI 会卡住</li>
 </ul>
-<div class="tip-box"><strong>💡 怎么改：</strong>在 SKILL.md 加"错误处理"章节，定义异常回退逻辑。</div>
+<div class="tip-box"><strong>💡 怎么改：</strong>在 SKILL.md 加"验证步骤"：AI 执行完后，对照检查清单自检一次，把自检结果也输出出来。</div>
       </div>
 
       <!-- 专业版 -->
       <div class="report-content" id="tab-pro">
 <h3>📊 专业版 — 结构化评估结果</h3>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计项目中 skill-vetter 的真实报告节选</p>
 <hr>
 <h3>📌 TL;DR</h3>
-<p>⚠️ 发现 0 项阻塞、6 项高危风险。另有 3 项需 AI 补充判断。</p>
+<p>⚠️ 发现 1 项阻塞、10 项高危风险。另有 5 项需 AI 补充判断。</p>
 
 <h3>🎯 核心结论卡片</h3>
 <table>
 <tr><th>维度</th><th>评级</th><th>分数</th></tr>
-<tr><td>🏗️ 地基</td><td class="pass">🟢 通过</td><td>5/5</td></tr>
-<tr><td>🤖 代码</td><td class="pass">🟢 低风险</td><td>4/5</td></tr>
-<tr><td>📝 规则/方法论</td><td class="warn">🟠 需注意</td><td>3/5</td></tr>
-<tr><td>🛡️ 护栏</td><td class="warn">🟠 薄弱</td><td>2/5</td></tr>
+<tr><td>🏗️ 地基</td><td class="warn">🟡 有隐患</td><td>4/6</td></tr>
+<tr><td>🤖 代码</td><td class="fail">🔴 高风险</td><td>3/7</td></tr>
+<tr><td>📝 规则/方法论</td><td class="warn">🟡 有歧义</td><td>3/6</td></tr>
+<tr><td>🛡️ 护栏</td><td class="fail">🔴 薄弱</td><td>3/8</td></tr>
 </table>
 
 <h3>🔍 审查发现</h3>
 <h4>🏗️ 地基</h4>
 <ul>
-  <li class="pass">✅ 无硬编码路径</li>
   <li class="pass">✅ 有固化 .py 脚本</li>
-  <li class="pass">✅ SKILL.md 与脚本路径一致</li>
+  <li class="fail">🔴 发现 1 处硬编码路径: <code>/Users/bob/data.csv</code></li>
+  <li class="pass">✅ 有 --validate 验证模式</li>
+  <li class="pass">✅ 有输入验证/列名校验</li>
 </ul>
 <h4>🤖 代码</h4>
 <ul>
-  <li class="pass">✅ 有结构化步骤</li>
-  <li class="warn">🟡 未检测到足够的条件分支信号</li>
-  <li class="warn">🟡 未明确定义输出格式</li>
+  <li class="warn">🟠 [异常处理] 裸 except: pass — 可能吞掉内存错误等关键异常</li>
+  <li class="warn">🟠 [除零风险] return 中直接返回除法结果 — 分母为 0 时无保护</li>
+  <li class="warn">🟠 [静默覆盖] 写模式打开文件 — 未警告覆盖已有内容</li>
 </ul>
 <h4>🛡️ 护栏</h4>
 <ul>
-  <li class="pass">✅ 检测到禁止/护栏声明</li>
+  <li class="pass">✅ 明确了输出格式</li>
+  <li class="pass">✅ 检测到禁止/护栏声明（否定词 6 个）</li>
   <li class="warn">🟠 缺少输出验证/自检要求</li>
   <li class="warn">🟠 未定义错误回退策略</li>
 </ul>
@@ -355,36 +349,40 @@
       <!-- AI 行动版 -->
       <div class="report-content" id="tab-action">
 <h3>🤖 AI 行动版 — 直接给 AI 的修复指令</h3>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计项目中 skill-vetter 的真实报告节选</p>
 <hr>
 <h4>🛠️ 建议修复清单（按优先级排序）</h4>
 <table>
 <tr><th>优先级</th><th>文件</th><th>修改建议</th></tr>
-<tr><td>🔴 高</td><td>SKILL.md</td><td>明确定义输出格式（在"输出"章节加示例）</td></tr>
-<tr><td>🔴 高</td><td>SKILL.md</td><td>添加错误回退策略（"如果 X 失败，执行 Y"）</td></tr>
-<tr><td>🟠 中</td><td>SKILL.md</td><td>添加条件分支（"如果数据缺失，执行..."）</td></tr>
-<tr><td>🟠 中</td><td>SKILL.md</td><td>添加示例说明（"示例输出："小节）</td></tr>
+<tr><td>🔴 高</td><td>halucatch_core.py</td><td>硬编码路径 <code>/Users/bob/data.csv</code> → 改为 <code>--data-dir</code> 参数传入</td></tr>
+<tr><td>🔴 高</td><td>halucatch_core.py</td><td>裸 except: pass → 改为 <code>except Exception as e:</code> 并打印日志</td></tr>
+<tr><td>🟠 中</td><td>halucatch_core.py</td><td>[除零风险] 除法前检查分母是否为 0</td></tr>
+<tr><td>🟠 中</td><td>halucatch_core.py</td><td>[静默覆盖] 写文件前检查是否存在，或用追加模式</td></tr>
+<tr><td>🟠 中</td><td>SKILL.md</td><td>添加错误回退策略（"如果 X 失败，执行 Y"）</td></tr>
+<tr><td>🟠 中</td><td>SKILL.md</td><td>添加输出验证/自检要求</td></tr>
 </table>
 
 <hr>
 <h4>✅ 验证检查点（修复后自检）</h4>
 <ul>
-  <li>☐ SKILL.md 有"输出格式"定义，且附示例</li>
-  <li>☐ SKILL.md 有"错误处理"或"异常回退"章节</li>
-  <li>☐ 所有步骤都有条件分支（if-else 逻辑）</li>
-  <li>☐ 有禁止操作声明（NEVER/REJECT）</li>
+  <li>☐ 无硬编码路径（grep 确认）</li>
+  <li>☐ 所有异常处理都打印了日志，没有裸 except: pass</li>
+  <li>☐ 除法操作前有分母为零的检查</li>
+  <li>☐ 写文件操作有存在性检查或备份机制</li>
+  <li>☐ SKILL.md 有"错误处理"章节</li>
   <li>☐ 重新跑 HaluCatch，确认评分提升</li>
 </ul>
 
 <hr>
 <h4>📋 直接可用的提示词（发给 AI 执行修复）</h4>
-<pre style="margin-top:12px;">请帮我修复以下 SKILL.md，按优先级完成：
+<pre style="margin-top:12px;">请帮我修复 halucatch_core.py，按优先级完成：
 
-1. 在"输出"章节添加输出格式定义，并给出一个具体示例
-2. 添加"错误处理"章节，定义：如果输入数据缺失/格式错误，应该执行什么
-3. 在关键步骤添加条件分支（使用"如果...则..."句式）
-4. 保留已有的禁止声明（NEVER...）
+1. 搜索并替换所有硬编码路径（如 /Users/bob/data.csv），改为通过参数传入
+2. 把所有裸 `except: pass` 改为 `except Exception as e: print(e)` 至少打印错误
+3. 检查所有除法操作，添加分母为零的保护
+4. 检查所有文件写操作，添加存在性检查
 
-修改完后，告诉我哪些地方改了，并给出修复后的完整 SKILL.md。</pre>
+修改完后，告诉我哪些地方改了，并给出修改处的上下文代码。</pre>
       </div>
 
     </div>
