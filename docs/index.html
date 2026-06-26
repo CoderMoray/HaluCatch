@@ -58,15 +58,15 @@
       font-size: 0.85rem;
       color: var(--text2);
     }
-    .cta-group { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .cta-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
     .btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 12px 28px;
+      padding: 12px 24px;
       border-radius: 8px;
       font-weight: 600;
-      font-size: 1rem;
+      font-size: 0.95rem;
       transition: all 0.2s;
       cursor: pointer;
     }
@@ -81,6 +81,12 @@
       color: var(--text);
     }
     .btn-secondary:hover { border-color: var(--accent); text-decoration: none; color: var(--text); }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+    .btn-outline:hover { background: var(--accent); color: white; text-decoration: none; }
 
     /* Sections */
     section { padding: 60px 20px; max-width: 1100px; margin: 0 auto; }
@@ -121,6 +127,7 @@
       color: var(--text2);
       border-bottom: 2px solid transparent;
       transition: all 0.2s;
+      white-space: nowrap;
     }
     .preview-tab.active {
       color: var(--accent2);
@@ -157,6 +164,14 @@
       font-size: 0.85rem;
     }
     .report-content hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+    .report-content .tip-box {
+      background: var(--surface2);
+      border-left: 3px solid var(--accent2);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 12px 0;
+      font-size: 0.9rem;
+    }
 
     /* Quick Start */
     .install-steps { display: grid; gap: 20px; }
@@ -203,6 +218,7 @@
     @media (max-width: 600px) {
       .hero h1 { font-size: 2rem; }
       .preview-tabs { overflow-x: auto; }
+      .cta-group { flex-direction: column; align-items: center; }
     }
   </style>
 </head>
@@ -217,9 +233,12 @@
     <span class="badge">📋 3 份报告</span>
     <span class="badge">🌏 中英文</span>
     <span class="badge">📦 零依赖</span>
+    <span class="badge">MIT 开源</span>
   </div>
   <div class="cta-group" style="margin-top: 32px;">
     <a href="https://github.com/CoderMoray/HaluCatch" class="btn btn-primary">⭐ GitHub 开源</a>
+    <a href="https://skillhub.cn/skills/halucatch" class="btn btn-outline" target="_blank">📦 SkillHub</a>
+    <a href="https://clawhub.ai/codermoray/skills/halucatch" class="btn btn-outline" target="_blank">🦞 ClawHub</a>
     <a href="#quickstart" class="btn btn-secondary">🚀 快速开始</a>
   </div>
 </section>
@@ -254,40 +273,78 @@
 <!-- Report Preview -->
 <section>
   <h2>审计报告预览</h2>
-  <p style="text-align:center;color:var(--text2);margin-bottom:24px;">三份报告，面向不同读者</p>
+  <p style="text-align:center;color:var(--text2);margin-bottom:24px;">同一份 Skill，三份视角 — 这是 HaluCatch 审计自己的报告节选</p>
   <div class="preview-container">
     <div class="preview-tabs">
-      <div class="preview-tab active" onclick="switchTab('pro')">📊 专业版</div>
-      <div class="preview-tab" onclick="switchTab('plain')">🗣️ 通俗版</div>
+      <div class="preview-tab active" onclick="switchTab('explain')">🗣️ 解释版</div>
+      <div class="preview-tab" onclick="switchTab('pro')">📊 专业版</div>
       <div class="preview-tab" onclick="switchTab('action')">🤖 AI 行动版</div>
     </div>
     <div class="preview-body">
 
+      <!-- 解释版（默认） -->
+      <div class="report-content active" id="tab-explain">
+<h3>🗣️ 解释版 — 用人话告诉你哪里有问题</h3>
+<hr>
+<h4>🔍 地基检查 — 这项检查在干什么？</h4>
+<p>检查 Skill 是否写了死路径（比如 <code>/Users/yourname/...</code>）、是否引用了不存在的文件。纯方法论型 Skill 此项自动通过。</p>
+<p style="margin-top:8px;"><strong>结果：</strong><span class="pass">✅ 通过</span>（HaluCatch 是代码工程型，路径检查通过）</p>
+
+<hr>
+<h4>📝 规则/方法论 — 用人话解释</h4>
+<p><strong>这项检查在干什么？</strong><br>检查 SKILL.md 的步骤是否清晰、是否有"如果出错了怎么办"的分支、输出格式是否明确、有没有给 AI 看示例。</p>
+<p style="margin-top:8px;"><strong>结果：</strong><span class="warn">🟠 有改进空间</span></p>
+<ul>
+  <li>✅ 有结构化步骤</li>
+  <li>🟡 条件分支信号偏弱 — AI 可能在异常场景下瞎编</li>
+  <li>🟡 未明确定义输出格式 — AI 每次输出可能不一样</li>
+  <li>🟡 缺少示例 — AI 不知道你期望的输出长什么样</li>
+</ul>
+<div class="tip-box"><strong>💡 怎么改：</strong>在 SKILL.md 里加"示例输出"小节，用 <code>```</code> 代码块给出一个具体例子。</div>
+
+<hr>
+<h4>🛡️ 护栏 — 用人话解释</h4>
+<p><strong>这项检查在干什么？</strong><br>检查 Skill 有没有写"禁止做 X"，以及 AI 执行完后有没有验证输出的步骤。</p>
+<p style="margin-top:8px;"><strong>结果：</strong><span class="warn">🟠 护栏较薄弱</span></p>
+<ul>
+  <li>✅ 有禁止声明（检测到 NEVER、REJECT 等关键词）</li>
+  <li>🟠 未定义错误回退策略 — 建议加上"如果 X 失败，执行 Y"</li>
+  <li>🟠 没有输出验证步骤 — AI 输出错误结果你也不知道</li>
+</ul>
+<div class="tip-box"><strong>💡 怎么改：</strong>在 SKILL.md 加"错误处理"章节，定义异常回退逻辑。</div>
+      </div>
+
       <!-- 专业版 -->
-      <div class="report-content active" id="tab-pro">
+      <div class="report-content" id="tab-pro">
+<h3>📊 专业版 — 结构化评估结果</h3>
+<hr>
 <h3>📌 TL;DR</h3>
 <p>⚠️ 发现 0 项阻塞、6 项高危风险。另有 3 项需 AI 补充判断。</p>
 
 <h3>🎯 核心结论卡片</h3>
 <table>
 <tr><th>维度</th><th>评级</th><th>分数</th></tr>
-<tr><td>🏗️ 地基</td><td class="pass">🟢 纯方法论</td><td>-</td></tr>
-<tr><td>🤖 代码</td><td class="pass">🟢 纯方法论</td><td>-</td></tr>
-<tr><td>📝 规则/方法论</td><td class="fail">🔴 不可靠</td><td>1/5</td></tr>
-<tr><td>🛡️ 护栏</td><td class="fail">🔴 薄弱</td><td>1/5</td></tr>
+<tr><td>🏗️ 地基</td><td class="pass">🟢 通过</td><td>5/5</td></tr>
+<tr><td>🤖 代码</td><td class="pass">🟢 低风险</td><td>4/5</td></tr>
+<tr><td>📝 规则/方法论</td><td class="warn">🟠 需注意</td><td>3/5</td></tr>
+<tr><td>🛡️ 护栏</td><td class="warn">🟠 薄弱</td><td>2/5</td></tr>
 </table>
 
 <h3>🔍 审查发现</h3>
-<h4>📝 规则/方法论</h4>
+<h4>🏗️ 地基</h4>
+<ul>
+  <li class="pass">✅ 无硬编码路径</li>
+  <li class="pass">✅ 有固化 .py 脚本</li>
+  <li class="pass">✅ SKILL.md 与脚本路径一致</li>
+</ul>
+<h4>🤖 代码</h4>
 <ul>
   <li class="pass">✅ 有结构化步骤</li>
-  <li class="warn">🟡 未检测到足够的条件分支信号，建议 AI 人工审查</li>
+  <li class="warn">🟡 未检测到足够的条件分支信号</li>
   <li class="warn">🟡 未明确定义输出格式</li>
-  <li class="warn">🟡 缺少示例说明</li>
 </ul>
 <h4>🛡️ 护栏</h4>
 <ul>
-  <li class="warn">🟠 未定义输出格式</li>
   <li class="pass">✅ 检测到禁止/护栏声明</li>
   <li class="warn">🟠 缺少输出验证/自检要求</li>
   <li class="warn">🟠 未定义错误回退策略</li>
@@ -295,40 +352,9 @@
 <p style="margin-top:16px;font-size:0.85rem;color:var(--text2);">本报告由 HaluCatch 生成。自检: ✅ 全部通过</p>
       </div>
 
-      <!-- 通俗版 -->
-      <div class="report-content" id="tab-plain">
-<h3>🗣️ 通俗版 — 用人话解释</h3>
-<hr>
-<h4>🔍 地基检查 — 用大白话解释</h4>
-<p><strong>这项检查在干什么？</strong><br>检查 Skill 是不是纯方法论（没有代码/文件操作）。如果是，地基检查不适用，直接通过。</p>
-<p style="margin-top:8px;"><strong>结果：</strong><span class="pass">✅ 通过</span>（纯方法论型 Skill）</p>
-
-<hr>
-<h4>📝 规则/方法论 — 通俗解释</h4>
-<p><strong>这项检查在干什么？</strong><br>检查 Skill 的步骤是否清晰、是否有分支处理异常、输出格式是否明确。</p>
-<p style="margin-top:8px;"><strong>结果：</strong><span class="fail">🔴 有几项要注意</span></p>
-<ul>
-  <li>✅ 有结构化步骤 — 这点做得好</li>
-  <li>🟡 没有写清楚"如果出错了怎么办" — AI 遇到异常可能会瞎编</li>
-  <li>🟡 输出格式没定义 — AI 输出的结果可能每次不一样</li>
-  <li>🟡 没有示例 — AI 不知道你期望的输出长什么样</li>
-</ul>
-<p style="margin-top:12px;background:var(--surface2);padding:12px;border-radius:8px;font-size:0.9rem;"><strong>💡 建议：</strong>在 SKILL.md 里加一个"示例输出"小节，让 AI 知道你想要什么格式。</p>
-
-<hr>
-<h4>🛡️ 护栏 — 通俗解释</h4>
-<p><strong>这项检查在干什么？</strong><br>检查 Skill 有没有"禁止做某件事"的声明，以及输出后有没有验证步骤。</p>
-<p style="margin-top:8px;"><strong>结果：</strong><span class="warn">🟠 护栏比较薄弱</span></p>
-<ul>
-  <li>✅ 有禁止声明（检测到 NEVER、REJECT 等关键词）— 这点做得好</li>
-  <li>🟠 没有定义"如果 AI 执行失败了怎么办" — 建议加上错误回退策略</li>
-  <li>🟠 没有输出验证步骤 — AI 输出错误结果，你也不知道</li>
-</ul>
-      </div>
-
       <!-- AI 行动版 -->
       <div class="report-content" id="tab-action">
-<h3>🤖 AI 行动版 — 直接可执行</h3>
+<h3>🤖 AI 行动版 — 直接给 AI 的修复指令</h3>
 <hr>
 <h4>🛠️ 建议修复清单（按优先级排序）</h4>
 <table>
@@ -350,7 +376,7 @@
 </ul>
 
 <hr>
-<h4>📋 直接可用的提示词（给 AI 执行修复）</h4>
+<h4>📋 直接可用的提示词（发给 AI 执行修复）</h4>
 <pre style="margin-top:12px;">请帮我修复以下 SKILL.md，按优先级完成：
 
 1. 在"输出"章节添加输出格式定义，并给出一个具体示例
@@ -397,7 +423,7 @@ python3 halucatch_core.py --skill-dir /path/to/your-skill --lang en</pre>
         <p>报告自动生成在 <code>reports/</code> 目录</p>
         <pre><span class="comment"># 三份报告</span>
 reports/HaluCatch-report-YYYY-MM-DD.md        <span class="comment"># 专业版</span>
-reports/HaluCatch-report-YYYY-MM-DD-通俗版.md  <span class="comment"># 通俗版</span>
+reports/HaluCatch-report-YYYY-MM-DD-解释版.md  <span class="comment"># 解释版（人话版）</span>
 reports/HaluCatch-report-YYYY-MM-DD-行动版.md  <span class="comment"># AI 行动版</span></pre>
       </div>
     </div>
@@ -410,7 +436,8 @@ reports/HaluCatch-report-YYYY-MM-DD-行动版.md  <span class="comment"># AI 行
     <a href="https://github.com/CoderMoray/HaluCatch">GitHub</a>
     <a href="https://github.com/CoderMoray/HaluCatch/releases">Releases</a>
     <a href="decision-flowchart.html">决策流程图</a>
-    <a href="https://skillhub.cn/skills/88918">SkillHub</a>
+    <a href="https://skillhub.cn/skills/halucatch" target="_blank">SkillHub</a>
+    <a href="https://clawhub.ai/codermoray/skills/halucatch" target="_blank">ClawHub</a>
   </p>
   <p style="margin-top:12px;">HaluCatch © 2026 · MIT License</p>
 </footer>
