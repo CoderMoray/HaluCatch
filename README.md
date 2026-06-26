@@ -125,6 +125,25 @@ HaluCatch/
 
 ---
 
+## 多语言支持
+
+HaluCatch 支持中文（简/繁）和英文输出，根据用户语言自动切换：
+
+```bash
+# 自动检测（默认，推荐）
+python3 halucatch_core.py --skill-dir /path/to/skill
+
+# 强制中文输出
+python3 halucatch_core.py --skill-dir /path/to/skill --lang zh-CN
+
+# 强制英文输出
+python3 halucatch_core.py --skill-dir /path/to/skill --lang en
+```
+
+**AI 使用场景**：AI 从 `<response_language>` 判断用户语言，自动传 `--lang` 参数，无需用户手动配置。详见 [SKILL.md](SKILL.md) 中的「AI 执行指南」。
+
+---
+
 ## 四维评估框架
 
 | 维度 | 检查什么 | 类型 |
@@ -183,8 +202,9 @@ git push
 `halucatch_core.py` 是底层引擎，直接调用用于调试：
 
 ```bash
-python3 halucatch_core.py --skill-dir /path/to/skill          # 完整评估
-python3 halucatch_core.py --skill-dir /path/to/skill --validate # 仅扫描
+python3 halucatch_core.py --skill-dir /path/to/skill               # 完整评估（自动检测语言）
+python3 halucatch_core.py --skill-dir /path/to/skill --validate    # 仅扫描
+python3 halucatch_core.py --skill-dir /path/to/skill --lang en     # 强制英文输出
 ```
 
 > 日常使用通过 AI Skill 调用即可，无需手动跑脚本。

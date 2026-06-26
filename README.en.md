@@ -130,6 +130,25 @@ HaluCatch/
 
 ---
 
+## Multi-Language Support
+
+HaluCatch supports Chinese (Simplified/Traditional) and English output, auto-switching based on user language:
+
+```bash
+# Auto-detect (default, recommended)
+python3 halucatch_core.py --skill-dir /path/to/skill
+
+# Force Chinese output
+python3 halucatch_core.py --skill-dir /path/to/skill --lang zh-CN
+
+# Force English output
+python3 halucatch_core.py --skill-dir /path/to/skill --lang en
+```
+
+**For AI usage**: The AI detects user language from `<response_language>` and automatically passes the `--lang` parameter. No manual configuration needed. See [SKILL.md](SKILL.md) for the AI Execution Guide.
+
+---
+
 ## Four-Dimension Audit Framework
 
 | Dimension | What it checks | Method |
@@ -190,8 +209,9 @@ git push
 `halucatch_core.py` is the low-level engine — call it directly for debugging:
 
 ```bash
-python3 halucatch_core.py --skill-dir /path/to/skill          # Full audit
-python3 halucatch_core.py --skill-dir /path/to/skill --validate # Scan only
+python3 halucatch_core.py --skill-dir /path/to/skill               # Full audit (auto-detect language)
+python3 halucatch_core.py --skill-dir /path/to/skill --validate    # Scan only
+python3 halucatch_core.py --skill-dir /path/to/skill --lang en      # Force English output
 ```
 
 > For daily use, invoke via AI Skill — no need to run the script manually.
