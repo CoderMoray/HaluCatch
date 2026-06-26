@@ -71,18 +71,21 @@
       cursor: pointer;
       text-decoration: none;
     }
-    .btn-primary {
-      background: var(--accent);
-      color: white;
-      border: 1px solid var(--accent);
-    }
-    .btn-primary:hover { background: #5a52e0; border-color: #5a52e0; color: white; text-decoration: none; }
     .btn-outline {
       background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text2);
+      border: 1px solid var(--accent);
+      color: var(--accent);
     }
-    .btn-outline:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+    .btn-outline:hover {
+      background: var(--accent);
+      color: white;
+      text-decoration: none;
+    }
+    .btn-outline:active {
+      background: #5a52e0;
+      border-color: #5a52e0;
+      color: white;
+    }
 
     /* Sections */
     section { padding: 60px 20px; max-width: 1100px; margin: 0 auto; }
@@ -232,7 +235,7 @@
     <span class="badge">MIT 开源</span>
   </div>
   <div class="cta-group" style="margin-top: 32px;">
-    <a href="https://github.com/CoderMoray/HaluCatch" class="btn btn-primary">⭐ GitHub 开源</a>
+    <a href="https://github.com/CoderMoray/HaluCatch" class="btn btn-outline">⭐ GitHub 开源</a>
     <a href="https://skillhub.cn/skills/halucatch" class="btn btn-outline" target="_blank">📦 SkillHub</a>
     <a href="https://clawhub.ai/codermoray/skills/halucatch" class="btn btn-outline" target="_blank">🦞 ClawHub</a>
     <a href="#quickstart" class="btn btn-outline">🚀 快速开始</a>
@@ -241,7 +244,7 @@
 
 <!-- Problem -->
 <section>
-  <h2>AI 执行 Skill 时，这些坑你遇到过吗？</h2>
+  <h2>AI 创建/执行 Skill 时，这些坑你遇到过吗？</h2>
   <div class="problem-grid">
     <div class="problem-card">
       <div class="icon">🗂️</div>
