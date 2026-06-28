@@ -6,20 +6,25 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from halucatch_core import classify_skill, check_foundation, check_code_risks, check_methodology, check_rules, check_guardrails
+from halucatch.config import MESSAGES
+from halucatch.scanner import scan_folder
+from halucatch.classifier import classify_skill
+from halucatch.evaluators import check_foundation, check_code_risks, check_methodology, check_rules, check_guardrails
 
 
 # ---- helpers ----
 
-def make_info(py_content=None, md_content=None, files=None, has_data=False):
+def make_info(py_content=None, md_content=None, files=None, has_data=False, version=None, skill_md_source='SKILL.md'):
     """构造 scan_folder 返回的 info dict。"""
     return {
         'files': files or [],
         'skill_md': md_content or '',
         'skill_md_path': '/fake/SKILL.md',
+        'skill_md_source': skill_md_source,
         'py': py_content,
         'py_path': '/fake/core.py' if py_content else None,
         'has_data': has_data,
+        'version': version,
     }
 
 
@@ -202,12 +207,10 @@ def test_guardrails_tool_type():
 import tempfile
 
 def test_scan_empty_folder():
+    """空目录无 .md 文件 → 不是标准 Skill 目录，返回 None。"""
     with tempfile.TemporaryDirectory() as td:
-        result = __import__('halucatch_core').scan_folder(td)
-        assert result is not None
-        assert result['skill_md'] is None
-        assert result['py'] is None
-        assert len(result['files']) == 0
+        result = scan_folder(td, MESSAGES['zh-CN'])
+        assert result is None
 
 
 def test_scan_only_skillmd():
@@ -215,7 +218,7 @@ def test_scan_only_skillmd():
         md_path = os.path.join(td, 'SKILL.md')
         with open(md_path, 'w') as f:
             f.write('name: Test\n\n## 步骤 1\n做 A\n如果失败则报错')
-        result = __import__('halucatch_core').scan_folder(td)
+        result = scan_folder(td, MESSAGES['zh-CN'])
         assert result is not None
         assert result['skill_md'] is not None
         assert result['py'] is None
@@ -223,28 +226,71 @@ def test_scan_only_skillmd():
 
 
 def test_scan_only_py_no_skillmd():
+    """只有 .py 没有 .md → 不是标准 Skill 目录，返回 None。"""
     with tempfile.TemporaryDirectory() as td:
         py_path = os.path.join(td, 'core.py')
         with open(py_path, 'w') as f:
             f.write("print('hello')\nglob.glob('*')")
-        result = __import__('halucatch_core').scan_folder(td)
+        result = scan_folder(td, MESSAGES['zh-CN'])
+        assert result is None  # 无 Markdown 文件，直接返回 None
+
+
+def test_scan_no_md_files():
+    """验证无 .md 文件时返回 None。"""
+    with tempfile.TemporaryDirectory() as td:
+        py_path = os.path.join(td, 'core.py')
+        with open(py_path, 'w') as f:
+            f.write('x = 1')
+        result = scan_folder(td, MESSAGES['zh-CN'])
+        assert result is None
+
+
+def test_scan_with_other_md_no_skillmd():
+    """有 .md 但无 SKILL.md → 使用替代文件，继续工作。"""
+    with tempfile.TemporaryDirectory() as td:
+        md_path = os.path.join(td, 'README.md')
+        with open(md_path, 'w') as f:
+            f.write('---\nversion: "1.2.3"\n---\n\n# README\nThis is a skill.')
+        result = scan_folder(td, MESSAGES['zh-CN'])
         assert result is not None
-        assert result['skill_md'] is None
-        assert result['py'] is not None
-        assert len(result['files']) == 1
+        assert result['skill_md'] is not None
+        assert result['skill_md_source'] == 'README.md'
+        assert result['version'] == '1.2.3'
 
 
 def test_scan_deep_nested_py():
+    with tempfile.TemporaryDirectory() as td:
+        # 文件放在顶层，scan_folder 不递归子目录
+        py_path = os.path.join(td, 'deep.py')
+        with open(py_path, 'w') as f:
+            f.write('x = 1')
+        # 同时放一个 .md 使得目录有效
+        md_path = os.path.join(td, 'SKILL.md')
+        with open(md_path, 'w') as f:
+            f.write('name: Test')
+        result = scan_folder(td, MESSAGES['zh-CN'])
+        assert result is not None
+        assert result['py'] is not None
+        assert len(result['files']) == 2
+        # 验证 rel_path 正确
+        py_file = [f for f in result['files'] if f['name'] == 'deep.py'][0]
+        assert py_file['rel_path'] == 'deep.py'
+
+
+def test_scan_skips_subdirectories():
+    """验证 scan_folder 不递归子目录，避免误读其他 Skill。"""
     with tempfile.TemporaryDirectory() as td:
         nested = os.path.join(td, 'a', 'b', 'c')
         os.makedirs(nested)
         py_path = os.path.join(nested, 'deep.py')
         with open(py_path, 'w') as f:
             f.write('x = 1')
-        result = __import__('halucatch_core').scan_folder(td)
+        # 同时放一个顶层 SKILL.md 使得目录有效
+        md_path = os.path.join(td, 'SKILL.md')
+        with open(md_path, 'w') as f:
+            f.write('name: Test')
+        result = scan_folder(td, MESSAGES['zh-CN'])
         assert result is not None
-        assert result['py'] is not None
+        assert result['py'] is None  # 深层文件不扫描
+        assert result['skill_md'] is not None
         assert len(result['files']) == 1
-        # 验证 rel_path 正确
-        f = result['files'][0]
-        assert f['rel_path'] == 'a/b/c/deep.py'

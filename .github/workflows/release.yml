@@ -31,7 +31,7 @@ jobs:
       - name: Build GitHub Release Package
         run: |
           zip -r "HaluCatch-${{ github.ref_name }}-full.zip" \
-            SKILL.md halucatch_core.py README.md LICENSE \
+            SKILL.md halucatch_core.py halucatch/ README.md LICENSE \
             docs/CHANGELOG.md -x "*.pyc" "__pycache__/*"
 
       - name: Create Release

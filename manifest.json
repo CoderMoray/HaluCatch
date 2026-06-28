@@ -1,14 +1,15 @@
 {
   "name": "HaluCatch",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "required_files": [
     "SKILL.md",
     "halucatch_core.py",
-    "README.md"
+    "halucatch/"
   ],
   "skillhub_files": [
     "SKILL.md",
     "halucatch_core.py",
+    "halucatch/",
     "README.md",
     "CHANGELOG.md"
   ],

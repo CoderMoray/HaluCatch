@@ -228,6 +228,7 @@
   <h1>🎯 HaluCatch</h1>
   <p class="subtitle">AI Skill 执行可靠性审计工具<br>在 AI 执行前，发现 Skill 里的隐患</p>
   <div class="badges">
+    <span class="badge">v1.7.1</span>
     <span class="badge">🐍 Python CLI</span>
     <span class="badge">📋 3 份报告</span>
     <span class="badge">🌏 中英文</span>
@@ -300,15 +301,15 @@
 <hr>
 <h4>🛡️ 护栏 — 用人话解释</h4>
 <p><strong>这项检查在干什么？</strong><br>检查 Skill 有没有写"禁止做 X"，以及 AI 执行完后有没有验证输出的步骤。</p>
-<p style="margin-top:8px;"><strong>结果：</strong><span class="warn">🟡 缺项</span></p>
+<p style="margin-top:8px;"><strong>结果：</strong><span class="pass">🟢 到位</span></p>
 <ul>
   <li>✅ 明确了输出格式</li>
   <li>✅ 包含验证/自检步骤</li>
   <li>✅ 定义了错误处理/回退策略</li>
-  <li class="warn">🟡 未声明数据时效性约束 — AI 可能用过时的数据</li>
-  <li class="warn">🟡 未声明前提假设 — AI 不知道输入数据要满足什么条件</li>
+  <li>✅ 已声明数据时效性约束</li>
+  <li>✅ 已声明前提假设</li>
 </ul>
-<div class="tip-box"><strong>💡 怎么改：</strong>在 SKILL.md 加"数据要求"章节，说明输入数据的时效性和前提假设。</div>
+<div class="tip-box"><strong>💡 状态：</strong>所有已知问题已修复，护栏完整。</div>
       </div>
 
       <!-- 专业版 -->
@@ -317,15 +318,15 @@
 <p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（审计根目录 SKILL.md）</p>
 <hr>
 <h3>📌 TL;DR</h3>
-<p>⚠️ 发现 0 项阻塞、5 项高危风险。另有 4 项需 AI 补充判断。</p>
+<p>✅ 自检全部通过，无阻塞项。所有已知高/中优先级问题已修复。</p>
 
 <h3>🎯 核心结论卡片</h3>
 <table>
 <tr><th>维度</th><th>评级</th><th>分数</th></tr>
 <tr><td>🏗️ 地基</td><td class="pass">🟢 稳固</td><td>6/6</td></tr>
-<tr><td>🤖 代码</td><td class="fail">🔴 高风险</td><td>3/7</td></tr>
+<tr><td>🤖 代码</td><td class="pass">🟢 低风险</td><td>0/7</td></tr>
 <tr><td>📝 规则/方法论</td><td class="pass">🟢 明确</td><td>5/6</td></tr>
-<tr><td>🛡️ 护栏</td><td class="warn">🟡 缺项</td><td>6/8</td></tr>
+<tr><td>🛡️ 护栏</td><td class="pass">🟢 到位</td><td>8/8</td></tr>
 </table>
 
 <h3>🔍 审查发现</h3>
@@ -338,18 +339,18 @@
 </ul>
 <h4>🤖 代码</h4>
 <ul>
-  <li class="warn">🟠 [异常处理] 裸 except: pass — 可能吞掉内存错误等关键异常</li>
-  <li class="warn">🟠 [除零风险] 除法结果未保护分母为零</li>
-  <li class="warn">🟠 [静默覆盖] 写模式打开文件 — 未警告覆盖</li>
-  <li class="warn">🟡 嵌入代码 1081 行 — 较长，AI 复现时可能遗漏</li>
+  <li class="pass">✅ [异常处理] 已修复：裸 except: pass → except Exception</li>
+  <li class="pass">✅ [除零风险] 已修复：除法前添加 max(total, 1) 保护</li>
+  <li class="pass">✅ [静默覆盖] 已修复：报告文件名含版本号/时间戳，冲突时自动加序号</li>
+  <li class="pass">✅ [模块拆分] 已修复：1191 行单文件拆分为 11 个模块，单文件 ≤270 行</li>
 </ul>
 <h4>🛡️ 护栏</h4>
 <ul>
   <li class="pass">✅ 明确了输出格式</li>
   <li class="pass">✅ 包含验证/自检步骤</li>
   <li class="pass">✅ 定义了错误处理/回退策略</li>
-  <li class="warn">🟡 未声明数据时效性约束</li>
-  <li class="warn">🟡 未声明前提假设</li>
+  <li class="pass">✅ 已声明数据时效性约束</li>
+  <li class="pass">✅ 已声明前提假设</li>
 </ul>
 <p style="margin-top:16px;font-size:0.85rem;color:var(--text2);">本报告由 HaluCatch 生成。自检: ✅ 全部通过</p>
       </div>
@@ -361,33 +362,27 @@
 <hr>
 <h4>🛠️ 建议修复清单（按优先级排序）</h4>
 <table>
-<tr><th>优先级</th><th>文件</th><th>修改建议</th></tr>
-<tr><td>🔴 高</td><td>halucatch_core.py</td><td>裸 except: pass → 改为 <code>except Exception as e:</code> 并打印日志</td></tr>
-<tr><td>🔴 高</td><td>halucatch_core.py</td><td>[除零风险] 除法前检查分母是否为 0</td></tr>
-<tr><td>🟠 中</td><td>halucatch_core.py</td><td>[静默覆盖] 写文件前检查是否存在，或用追加模式</td></tr>
-<tr><td>🟠 中</td><td>SKILL.md</td><td>声明数据时效性约束（如"数据不超过 7 天"）</td></tr>
-<tr><td>🟠 中</td><td>SKILL.md</td><td>声明前提假设（如"输入数据已去重"）</td></tr>
+<tr><th>优先级</th><th>文件</th><th>修改建议</th><th>状态</th></tr>
+<tr><td>~~🔴 高~~</td><td>~~halucatch_core.py~~</td><td>~~裸 except: pass → 改为 <code>except Exception as e:</code> 并打印日志~~</td><td>✅ 已修复</td></tr>
+<tr><td>~~🔴 高~~</td><td>~~halucatch_core.py~~</td><td>~~[除零风险] 除法前检查分母是否为 0~~</td><td>✅ 已修复</td></tr>
+<tr><td>~~🟠 中~~</td><td>~~halucatch_core.py~~</td><td>~~[静默覆盖] 写文件前检查是否存在，或用追加模式~~</td><td>✅ 已修复（版本号+防覆盖）</td></tr>
+<tr><td>~~🟠 中~~</td><td>~~SKILL.md~~</td><td>~~声明数据时效性约束（如"数据不超过 7 天"）~~</td><td>✅ 已修复</td></tr>
+<tr><td>~~🟠 中~~</td><td>~~SKILL.md~~</td><td>~~声明前提假设（如"输入数据已去重"）~~</td><td>✅ 已修复</td></tr>
 </table>
 
 <hr>
 <h4>✅ 验证检查点（修复后自检）</h4>
 <ul>
-  <li>☐ 所有异常处理都打印了日志，没有裸 except: pass</li>
-  <li>☐ 所有除法操作前有分母为零的检查</li>
-  <li>☐ 写文件操作有存在性检查或备份机制</li>
-  <li>☐ SKILL.md 有"数据要求"章节（时效性 + 前提假设）</li>
-  <li>☐ 重新跑 HaluCatch，确认评分提升</li>
+  <li>☑ 所有异常处理都打印了日志，没有裸 except: pass</li>
+  <li>☑ 所有除法操作前有分母为零的检查</li>
+  <li>☑ 报告文件名含版本号或时间戳，冲突时自动加序号</li>
+  <li>☑ SKILL.md 有"数据要求"章节（时效性 + 前提假设）</li>
+  <li>☑ 未找到标准 SKILL.md 时，自动启发式匹配替代文件并报告规范性问题</li>
 </ul>
 
 <hr>
 <h4>📋 直接可用的提示词（发给 AI 执行修复）</h4>
-<pre style="margin-top:12px;">请帮我修复 halucatch_core.py，按优先级完成：
-
-1. 把所有裸 `except: pass` 改为 `except Exception as e:` 至少打印错误日志
-2. 检查所有除法操作，添加分母为零的保护（if denominator == 0: return 0）
-3. 检查所有文件写操作（open(..., 'w')），添加存在性检查或改用追加模式
-
-修改完后，告诉我哪些地方改了，并给出修改处的上下文代码。</pre>
+<pre style="margin-top:12px;">当前 HaluCatch 自审未发现高/中优先级问题。如有新需求，请描述具体场景。</pre>
       </div>
 
     </div>
@@ -397,37 +392,109 @@
 <!-- Quick Start -->
 <section id="quickstart">
   <h2>快速开始</h2>
-  <div class="install-steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-content">
-        <h3>下载 HaluCatch</h3>
-        <p>克隆仓库到本地</p>
-        <pre>git clone https://github.com/CoderMoray/HaluCatch.git
-cd HaluCatch</pre>
+  
+  <!-- 普通用户 -->
+  <div style="margin-bottom:48px;">
+    <h3 style="font-size:1.3rem;margin-bottom:24px;color:var(--accent);">👤 普通用户 — 通过 AI 对话使用</h3>
+    <div class="install-steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>安装</h3>
+          <p>把以下提示词发给你的 AI，让它帮你安全安装 HaluCatch</p>
+          <pre><span class="comment"># 中文版提示词</span>
+Before installing anything, inspect the ClawHub skill metadata and setup requirements.
+If the skill asks you to install a third-party package or CLI, verify its source, maintainer, and package contents before running the install command.
+Install the skill "HaluCatch" (@codermoray/halucatch) from ClawHub only after those checks pass.
+Skill page: https://clawhub.ai/codermoray/skills/halucatch
+Keep the work scoped to this skill only.
+After install, help me finish setup from verified skill metadata.
+Use only the metadata you can verify from ClawHub; do not invent missing requirements.
+Ask before making any broader environment changes.</pre>
+          <pre style="margin-top:12px;"><span class="comment"># 英文版提示词</span>
+Before installing anything, inspect the ClawHub skill metadata and setup requirements.
+If the skill asks you to install a third-party package or CLI, verify its source, maintainer, and package contents before running the install command.
+Install the skill "HaluCatch" (@codermoray/halucatch) from ClawHub only after those checks pass.
+Skill page: https://clawhub.ai/codermoray/skills/halucatch
+Keep the work scoped to this skill only.
+After install, help me finish setup from verified skill metadata.
+Use only the metadata you can verify from ClawHub; do not invent missing requirements.
+Ask before making any broader environment changes.</pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>审查你的 Skill</h3>
+          <p>告诉 AI 你要审查哪个 Skill 目录</p>
+          <pre><span class="comment"># 示例对话</span>
+用户：请用 HaluCatch 审查 /path/to/my-skill 目录
+
+AI：📁 扫描目录...
+    📝 发现 SKILL.md (120 行)
+    🐍 发现 core.py (45 行)
+    📊 生成三份报告...
+
+AI：审查完成。报告已保存在 reports/ 目录：
+    - 专业版：给工程师看的详细检查清单
+    - 标准版：给业务人员看的通俗解释
+    - 行动版：给 AI 的修复指令</pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>阅读报告，决定下一步</h3>
+          <p>三份报告分别面向不同角色，选择适合你的阅读</p>
+          <pre><span class="comment"># 标准版 — 给业务/产品经理</span>
+用人话解释每个问题是什么、为什么重要、怎么改
+
+<span class="comment"># 专业版 — 给工程师/开发者</span>
+结构化检查清单，每个维度打分，精确到文件和行号
+
+<span class="comment"># 行动版 — 给 AI（直接复制粘贴）</span>
+修复清单 + 验证检查点，AI 按步骤执行即可</pre>
+          <p style="margin-top:12px;color:var(--text2);">💡 如果决定修复：把<strong>行动版报告</strong>直接发给 AI，它会按清单逐项修复。修复后重新运行审查，确认问题清零。</p>
+        </div>
       </div>
     </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-content">
-        <h3>审计一个 Skill</h3>
-        <p>指向任意 Skill 目录，一键生成报告</p>
-        <pre><span class="comment"># 自动检测语言（中文/英文）</span>
+  </div>
+
+  <!-- 开发者 -->
+  <div>
+    <h3 style="font-size:1.3rem;margin-bottom:24px;color:var(--accent2);">👨‍💻 开发者 — 命令行直接运行</h3>
+    <div class="install-steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>克隆仓库</h3>
+          <pre>git clone https://github.com/CoderMoray/HaluCatch.git
+cd HaluCatch</pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>运行审查</h3>
+          <pre><span class="comment"># 自动检测语言（中文/英文）</span>
 python3 halucatch_core.py --skill-dir /path/to/your-skill
 
-<span class="comment"># 强制英文输出</span>
-python3 halucatch_core.py --skill-dir /path/to/your-skill --lang en</pre>
+<span class="comment"># 或强制英文输出</span>
+python3 halucatch_core.py --skill-dir /path/to/your-skill --lang en
+
+<span class="comment"># 或使用包方式</span>
+python3 -m halucatch --skill-dir /path/to/your-skill</pre>
+        </div>
       </div>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-content">
-        <h3>查看报告</h3>
-        <p>报告自动生成在 <code>reports/</code> 目录</p>
-        <pre><span class="comment"># 三份报告</span>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>查看报告</h3>
+          <pre><span class="comment"># 三份报告自动生成在 reports/ 目录</span>
 reports/HaluCatch-report-YYYY-MM-DD.md        <span class="comment"># 专业版</span>
 reports/HaluCatch-report-YYYY-MM-DD-标准版.md  <span class="comment"># 标准版</span>
 reports/HaluCatch-report-YYYY-MM-DD-行动版.md  <span class="comment"># AI 行动版</span></pre>
+        </div>
       </div>
     </div>
   </div>

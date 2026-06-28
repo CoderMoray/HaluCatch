@@ -30,7 +30,13 @@ check_file() {
 }
 
 check_file "$ROOT/SKILL.md" "SKILL.md" 400
-check_file "$ROOT/halucatch_core.py" "halucatch_core.py" 800
+check_file "$ROOT/halucatch_core.py" "halucatch_core.py (compat entry)" 50
+
+echo "  📂 halucatch/ package:"
+for f in "$ROOT/halucatch"/*.py "$ROOT/halucatch/evaluators"/*.py; do
+  name=$(basename "$f")
+  check_file "$f" "  halucatch/$name" 250
+done
 
 echo ""
 if [[ $warnings -eq 0 ]]; then

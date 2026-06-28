@@ -16,6 +16,33 @@
 
 ---
 
+## [V1.7.1] - 2026-06-28
+
+### Fixed
+- **高优先级代码修复**
+  - `except:` → `except Exception:`（防吞系统级异常）
+  - `score / total` → `score / max(total, 1)`（3处，防除零崩溃）
+  - `check_code_risks` 字符串/注释误扫描 → 预处理移除字面量后再正则匹配
+- **中优先级文档修复**
+  - 报告文件名含版本号，冲突时自动加序号（`-1`、`-2`...）
+  - SKILL.md 新增"数据要求"章节（时效性 + 前提假设）
+  - 移除 `ToolCard.md` 认知污染，规范化为 `SKILL.md`
+- **低优先级架构重构**
+  - 1191 行 `halucatch_core.py` 拆分为 11 个模块，单文件 ≤270 行
+  - 新增 `halucatch/` 包：`config`, `scanner`, `classifier`, `evaluators/`, `reporter`, `cli`
+  - 保留 `halucatch_core.py` 向后兼容入口
+
+### Added
+- **版本号自动提取**：从 `_meta.json` / `meta.json` / 任意 `.md` frontmatter
+- **无 SKILL.md 替代机制**：启发式匹配（frontmatter 优先 + 文件大小），报告规范性问题后继续工作
+- **无 .md 文件严格拒绝**：直接报错，拒绝非标准 Skill 目录
+- **测试覆盖**：新增 3 个扫描测试，总计 24 个测试全部通过
+
+### Changed
+- `build-skillhub.sh` / `check-file-size.sh` / `release.yml` / `manifest.json` 适配新包结构
+
+---
+
 ## [V1.7.0] - 2026-06-26
 
 ### Added

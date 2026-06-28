@@ -24,6 +24,7 @@ mkdir -p "$ROOT/releases"
 echo "  复制文件..."
 cp "$ROOT/SKILL.md" "$TMPDIR/"
 cp "$ROOT/halucatch_core.py" "$TMPDIR/"
+cp -r "$ROOT/halucatch" "$TMPDIR/"
 cp "$ROOT/README.md" "$TMPDIR/"
 [[ -f "$ROOT/docs/CHANGELOG.md" ]] && cp "$ROOT/docs/CHANGELOG.md" "$TMPDIR/CHANGELOG.md"
 # SkillHub 不接受 LICENSE 文件
