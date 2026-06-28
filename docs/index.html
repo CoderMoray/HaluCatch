@@ -201,8 +201,31 @@
       overflow-x: auto;
       font-size: 0.85rem;
       line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
     pre .comment { color: var(--text2); }
+
+    /* Tab Switch */
+    .qs-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+    .qs-tab {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 20px;
+      font-size: 0.9rem;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .qs-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .qs-tab:hover:not(.active) { background: var(--border); }
+    .qs-panel { display: none; }
+    .qs-panel.active { display: block; }
 
     /* Footer */
     footer {
@@ -392,34 +415,29 @@
 <!-- Quick Start -->
 <section id="quickstart">
   <h2>快速开始</h2>
-  
+
+  <div class="qs-tabs">
+    <button class="qs-tab active" onclick="switchQsTab('user')">👤 普通用户</button>
+    <button class="qs-tab" onclick="switchQsTab('dev')">👨‍💻 开发者</button>
+  </div>
+
   <!-- 普通用户 -->
-  <div style="margin-bottom:48px;">
-    <h3 style="font-size:1.3rem;margin-bottom:24px;color:var(--accent);">👤 普通用户 — 通过 AI 对话使用</h3>
+  <div id="qs-user" class="qs-panel active">
     <div class="install-steps">
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-content">
           <h3>安装</h3>
           <p>把以下提示词发给你的 AI，让它帮你安全安装 HaluCatch</p>
-          <pre><span class="comment"># 中文版提示词</span>
-Before installing anything, inspect the ClawHub skill metadata and setup requirements.
-If the skill asks you to install a third-party package or CLI, verify its source, maintainer, and package contents before running the install command.
-Install the skill "HaluCatch" (@codermoray/halucatch) from ClawHub only after those checks pass.
-Skill page: https://clawhub.ai/codermoray/skills/halucatch
-Keep the work scoped to this skill only.
-After install, help me finish setup from verified skill metadata.
-Use only the metadata you can verify from ClawHub; do not invent missing requirements.
-Ask before making any broader environment changes.</pre>
-          <pre style="margin-top:12px;"><span class="comment"># 英文版提示词</span>
-Before installing anything, inspect the ClawHub skill metadata and setup requirements.
-If the skill asks you to install a third-party package or CLI, verify its source, maintainer, and package contents before running the install command.
-Install the skill "HaluCatch" (@codermoray/halucatch) from ClawHub only after those checks pass.
-Skill page: https://clawhub.ai/codermoray/skills/halucatch
-Keep the work scoped to this skill only.
-After install, help me finish setup from verified skill metadata.
-Use only the metadata you can verify from ClawHub; do not invent missing requirements.
-Ask before making any broader environment changes.</pre>
+          <pre><span class="comment"># 复制这段发给 AI</span>
+请先检查 ClawHub 上 skill 的元数据和安装要求。
+如果这个 skill 要求安装第三方包或 CLI，请先验证来源、维护者和包内容，再执行安装命令。
+只有在确认安全后，才从 ClawHub 安装 skill "HaluCatch"（@codermoray/halucatch）。
+Skill 页面：https://clawhub.ai/codermoray/skills/halucatch
+请把安装范围限定在这个 skill 内。
+安装完成后，请根据 ClawHub 上验证过的元数据帮我完成设置。
+只使用你在 ClawHub 上能验证的元数据，不要编造缺失的要求。
+在做出任何更广泛的环境变更前，请先询问我。</pre>
         </div>
       </div>
       <div class="step">
@@ -461,8 +479,7 @@ AI：审查完成。报告已保存在 reports/ 目录：
   </div>
 
   <!-- 开发者 -->
-  <div>
-    <h3 style="font-size:1.3rem;margin-bottom:24px;color:var(--accent2);">👨‍💻 开发者 — 命令行直接运行</h3>
+  <div id="qs-dev" class="qs-panel">
     <div class="install-steps">
       <div class="step">
         <div class="step-num">1</div>
@@ -518,6 +535,13 @@ function switchTab(name) {
   document.querySelectorAll('.report-content').forEach(c => c.classList.remove('active'));
   event.currentTarget.classList.add('active');
   document.getElementById('tab-' + name).classList.add('active');
+}
+
+function switchQsTab(name) {
+  document.querySelectorAll('.qs-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.qs-panel').forEach(p => p.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('qs-' + name).classList.add('active');
 }
 </script>
 
