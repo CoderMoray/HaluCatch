@@ -25,6 +25,20 @@
       background: var(--bg);
       color: var(--text);
       line-height: 1.6;
+      position: relative;
+    }
+
+    /* 顶部固定渐变光晕，防止下拉时断层 */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 500px;
+      background: radial-gradient(ellipse at top, #1a1a3e 0%, transparent 60%);
+      pointer-events: none;
+      z-index: -1;
     }
     a { color: var(--accent2); text-decoration: none; }
     a:hover { text-decoration: underline; }
@@ -33,7 +47,8 @@
     .hero {
       text-align: center;
       padding: 80px 20px 60px;
-      background: radial-gradient(ellipse at top, #1a1a3e 0%, transparent 60%);
+      position: relative;
+      z-index: 1;
     }
     .hero h1 {
       font-size: 3rem;
