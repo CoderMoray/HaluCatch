@@ -110,7 +110,21 @@ After the audit, the AI asks whether to apply fixes (Execute / Skip / Suggest) �
 ```
 HaluCatch/
 ├── SKILL.md                  ← Workflow instructions (AI reads)
-├── halucatch_core.py         ← Engine script (standardized audit + --validate)
+├── halucatch_core.py         ← Backward-compatible entry (14 lines, imports halucatch package)
+├── halucatch/                ← Core package (11 modules, zero dependencies)
+│   ├── __init__.py
+│   ├── config.py             ← MESSAGES i18n dict + locale detection
+│   ├── scanner.py            ← File scanning + version extraction
+│   ├── classifier.py         ← Skill type classification
+│   ├── evaluators/           ← Four-dimension assessment + methodology
+│   │   ├── __init__.py
+│   │   ├── foundation.py     ← Foundation (paths/validation/dependencies)
+│   │   ├── code_risks.py     ← Code risk scanning (tamper points)
+│   │   ├── rules.py          ← Rules assessment (definitions/boundaries/fuzzy)
+│   │   ├── guardrails.py     ← Guardrails assessment (safety/prohibitions/misuse)
+│   │   └── methodology.py    ← Methodology assessment (steps/branches/error handling)
+│   ├── reporter.py           ← Three-version report generator
+│   └── cli.py                ← CLI entry + flow orchestration
 ├── README.md                 ← Project overview (zh-CN)
 ├── README.en.md              ← English version
 ├── docs/
@@ -120,11 +134,13 @@ HaluCatch/
 │   └── decision-flowchart-prompt.md
 ├── tests/
 │   ├── __init__.py
-│   └── test_halucatch.py     ← 21 unit tests
+│   └── test_halucatch.py     ← 24 unit tests
 ├── scripts/
 │   ├── release.sh
 │   ├── lint-paths.sh
-│   └── build-skillhub.sh
+│   ├── build-skillhub.sh
+│   ├── check-file-size.sh
+│   └── sync-version.sh       ← Single-source version sync
 └── .gitignore
 ```
 
@@ -209,9 +225,13 @@ git push
 `halucatch_core.py` is the low-level engine — call it directly for debugging:
 
 ```bash
+# Backward-compatible entry
 python3 halucatch_core.py --skill-dir /path/to/skill               # Full audit (auto-detect language)
 python3 halucatch_core.py --skill-dir /path/to/skill --validate    # Scan only
 python3 halucatch_core.py --skill-dir /path/to/skill --lang en      # Force English output
+
+# Package mode (equivalent)
+python3 -m halucatch --skill-dir /path/to/skill
 ```
 
 > For daily use, invoke via AI Skill — no need to run the script manually.
@@ -221,7 +241,9 @@ python3 halucatch_core.py --skill-dir /path/to/skill --lang en      # Force Engl
 ## Testing
 
 ```bash
-pytest tests/ -v    # 21 tests, all passing
+pytest tests/ -v    # 24 tests, all passing
+# Or run directly
+python3 tests/test_halucatch.py
 ```
 
 Battle-tested on 10 Skills of different types:
