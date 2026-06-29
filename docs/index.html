@@ -590,13 +590,23 @@ new AIChatDemo({
       ]
     },
     explain: {
+      thinking: [
+        '🤔 用户想了解工具功能...',
+        '📋 从 HaluCatch 的 SKILL.md 中提取核心能力描述...',
+        '✅ 确认：四维度评估（地基/代码/规则/护栏）'
+      ],
       aiMessage: 'HaluCatch 是一个 AI Skill 执行可靠性审查工具。它会检查你的 Skill 是否有数据管线漏洞、代码篡改风险、业务口径模糊、以及 AI 执行时的安全护栏缺失。',
       options: [
         { text: '明白了，请审查这个项目', next: 'audit' }
       ]
     },
     prepare: {
-      aiMessage: '你需要准备一个 Skill 目录，里面至少包含 SKILL.md（指令文件）。如果有 .py 脚本或数据文件，审查会更全面。',
+      thinking: [
+        '🤔 用户询问准备工作...',
+        '📂 分析 Skill 目录的标准结构要求...',
+        '✅ 确认：需要 SKILL.md + 可选 .py / 数据文件'
+      ],
+      aiMessage: '你需要准备一个 Skill 目录，里面至少包含 SKILL.md（指令文件）。Skill 目录中如果有 .py 脚本或数据文件，审查会更全面。',
       options: [
         { text: '好的，开始审查', next: 'audit' }
       ]
@@ -612,7 +622,7 @@ new AIChatDemo({
         '🛡️ 检查护栏：输出格式 ✓ / 禁止声明 ✓ / 数据时效性 ✓ / 前提假设 ✓',
         '📊 生成三份报告 (专业版 / 标准版 / 行动版)...'
       ],
-      aiMessage: '审查完成！已生成三份报告。你可以在右侧查看。整体评级：地基 🟡 / 代码 🟢 / 规则 🟢 / 护栏 🟢',
+      aiMessage: '让我们从审查 HaluCatch 这个 Skill 本身来快速开始。审查完成！已生成三份报告。你可以在右侧查看。整体评级：地基 🟡 / 代码 🟢 / 规则 🟢 / 护栏 🟢',
       showReports: true
     }
   },

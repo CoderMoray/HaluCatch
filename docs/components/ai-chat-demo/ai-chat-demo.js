@@ -55,6 +55,7 @@ class AIChatDemo {
                   <span class="dropdown-arrow">▼</span>
                 </button>
                 <div class="model-dropdown-menu" style="display:none;">
+                  <div class="model-dropdown-header">模型选择</div>
                   <div class="model-dropdown-item active" data-model="${this.modelName}">
                     <span class="model-dropdown-icon">⚡</span>
                     <span class="model-dropdown-name">${this.modelName}</span>
@@ -370,50 +371,88 @@ class AIChatDemo {
   }
   
   renderMarkdown(text) {
-    // Try marked.js first
-    if (typeof marked !== 'undefined' && marked.parse) {
+    // Try marked.js v3 — marked is a callable function
+    const md = (typeof window !== 'undefined' && window.marked) || (typeof marked !== 'undefined' ? marked : null);
+    if (md && typeof md === 'function') {
       try {
-        return marked.parse(text);
+        return md(text);
       } catch (e) {
-        console.warn('marked.parse failed, using fallback:', e);
+        console.warn('marked failed:', e);
       }
     }
-    // Fallback
     return this.simpleMarkdown(text);
   }
   
   simpleMarkdown(text) {
-    let html = text
-      .replace(/### (.*)/g, '<h3>$1</h3>')
-      .replace(/## (.*)/g, '<h2>$1</h2>')
-      .replace(/# (.*)/g, '<h1>$1</h1>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/`([^`]+)`/g, '<code>$1</code>')
-      .replace(/^\[ \] (.*)/gm, '<li><input type="checkbox" disabled> $1</li>')
-      .replace(/^\[x\] (.*)/gm, '<li><input type="checkbox" checked disabled> $1</li>')
-      .replace(/^- (.*)/gm, '<li>$1</li>')
-      .replace(/^\* (.*)/gm, '<li>$1</li>')
-      .replace(/^> (.*)/gm, '<blockquote>$1</blockquote>')
-      .replace(/^---$/gm, '<hr>');
+    // Escape HTML first
+    let html = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     
-    // Code blocks
-    html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+    // Code blocks (must be before inline code)
+    html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
     
-    // Tables (simple: | a | b |
-    html = html.replace(/\|([^\n|]*)\|([^\n|]*)\|/g, '<td>$1</td><td>$2</td>');
-    html = html.replace(/(<td>.*<\/td>)+/g, '<tr>$&</tr>');
-    html = html.replace(/(<tr>.*<\/tr>\n?)+/g, '<table>$&</table>');
+    // Inline code
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+    
+    // Headers
+    html = html.replace(/^#{3}\s+(.*)/gm, '<h3>$1</h3>');
+    html = html.replace(/^#{2}\s+(.*)/gm, '<h2>$1</h2>');
+    html = html.replace(/^#{1}\s+(.*)/gm, '<h1>$1</h1>');
+    
+    // Bold
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // Checkboxes
+    html = html.replace(/^\[ \]\s+(.*)/gm, '<li><input type="checkbox" disabled> $1</li>');
+    html = html.replace(/^\[x\]\s+(.*)/gm, '<li><input type="checkbox" checked disabled> $1</li>');
+    
+    // List items
+    html = html.replace(/^-\s+(.*)/gm, '<li>$1</li>');
+    html = html.replace(/^\*\s+(.*)/gm, '<li>$1</li>');
+    
+    // Blockquote
+    html = html.replace(/^>\s+(.*)/gm, '<blockquote>$1</blockquote>');
+    
+    // HR
+    html = html.replace(/^---$/gm, '<hr>');
+    
+    // Tables: detect lines starting with |
+    const lines = html.split('\n');
+    let result = [];
+    let inTable = false;
+    let tableRows = [];
+    
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+        // Table row
+        if (!inTable) inTable = true;
+        const cells = trimmed.slice(1, -1).split('|').map(c => c.trim());
+        const rowHtml = '<tr>' + cells.map(c => '<td>' + c + '</td>').join('') + '</tr>';
+        tableRows.push(rowHtml);
+      } else if (inTable) {
+        // End of table
+        result.push('<table>' + tableRows.join('') + '</table>');
+        tableRows = [];
+        inTable = false;
+        if (trimmed) result.push('<p>' + trimmed + '</p>');
+      } else {
+        if (trimmed) {
+          if (trimmed.startsWith('<')) {
+            result.push(trimmed);
+          } else {
+            result.push('<p>' + trimmed + '</p>');
+          }
+        }
+      }
+    }
+    if (inTable) {
+      result.push('<table>' + tableRows.join('') + '</table>');
+    }
+    
+    html = result.join('\n');
     
     // Wrap consecutive <li> in <ul>
     html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
-    
-    // Wrap in paragraphs for plain text lines
-    html = html.split('\n').map(line => {
-      line = line.trim();
-      if (!line) return '';
-      if (line.startsWith('<')) return line;
-      return '<p>' + line + '</p>';
-    }).join('\n');
     
     return html;
   }

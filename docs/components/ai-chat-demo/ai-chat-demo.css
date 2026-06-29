@@ -214,6 +214,7 @@
   align-items: center;
   gap: 8px;
   padding: 0 2px;
+  justify-content: flex-end;
 }
 
 /* Thinking Mode Button */
@@ -304,20 +305,28 @@
 /* Model Dropdown Menu */
 .chat-model-dropdown-wrapper {
   position: relative;
-  margin-left: auto;
 }
 
 .model-dropdown-menu {
   position: absolute;
   bottom: calc(100% + 4px);
   right: 0;
-  min-width: 200px;
+  min-width: 220px;
   background: var(--chat-surface);
   border: 1px solid var(--chat-border);
   border-radius: 10px;
-  padding: 6px;
+  padding: 8px 0;
   z-index: 100;
   animation: dropdownSlide 0.2s ease;
+  white-space: nowrap;
+}
+
+.model-dropdown-header {
+  padding: 6px 14px 8px;
+  font-size: 0.7rem;
+  color: var(--chat-text2);
+  border-bottom: 1px solid var(--chat-border);
+  margin-bottom: 4px;
 }
 
 @keyframes dropdownSlide {
@@ -329,12 +338,14 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 12px;
+  padding: 10px 14px;
   border-radius: 6px;
   font-size: 0.8rem;
   color: var(--chat-text);
   cursor: pointer;
   transition: background 0.15s;
+  white-space: nowrap;
+  margin: 0 6px;
 }
 
 .model-dropdown-item:hover {
@@ -345,8 +356,9 @@
   color: var(--chat-accent);
 }
 
-.model-dropdown-icon { font-size: 0.9rem; }
-.model-dropdown-name { flex: 1; }
+.model-dropdown-icon { font-size: 0.9rem; flex-shrink: 0; }
+.model-dropdown-name { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+.model-dropdown-check { font-size: 0.75rem; color: var(--chat-accent); flex-shrink: 0; }
 .model-dropdown-check { font-size: 0.75rem; color: var(--chat-accent); }
 
 /* Input Row */
