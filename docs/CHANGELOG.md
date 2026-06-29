@@ -11,8 +11,24 @@
 
 ## [Unreleased]
 
+### Added
+- 三态主题切换（暗色 / 亮色 / 跟随系统），药丸滑块 + localStorage 持久化 + 防屏闪
+- 页面入场动画序列（光球 → 导航 → Hero → Demo，IntersectionObserver 滚入触发）
+- 在线体验 Demo（AI 对话 + 深度思考 + 模型选择 + 报告面板）
+- 导航栏 smart 隐现（下滑隐藏 + 鼠标触发展示）
+- Report Tab 切换动画（滑动指示条 + 内容横切 + 容器高度平滑过渡）
+- Blog 文稿（掘金版 + CSDN 版）
+- 离线混淆构建脚本 `scripts/build-standalone.py`
+
 ### Changed
-- (暂无未发布更改)
+- 导航栏重构（brand 左锚 + links 居中 + 主题药丸右锚）
+- Hero 图标从 emoji 替换为 Lucide scan-search SVG
+- 默认主题设为跟随系统（system）
+- 光球随页面滚动消失
+
+### Fixed
+- 主题切换防屏闪（blocking script + document.write 预注入底色）
+- Tab 切换容器高度瞬跳（锁高→测高→过渡到新高）
 
 ---
 
