@@ -371,14 +371,23 @@ class AIChatDemo {
   }
   
   renderMarkdown(text) {
-    // Try marked.js v3 — marked is a callable function
-    const md = (typeof window !== 'undefined' && window.marked) || (typeof marked !== 'undefined' ? marked : null);
-    if (md && typeof md === 'function') {
-      try {
-        return md(text);
-      } catch (e) {
-        console.warn('marked failed:', e);
+    try {
+      // marked v3/v4: try sync parse first
+      if (typeof marked !== 'undefined') {
+        const result = marked.parse(text, { async: false });
+        if (typeof result === 'string') return result;
+        // If async result (Promise), handle it
+        if (result && typeof result.then === 'function') {
+          result.then(html => {
+            this.el.reportContent.innerHTML = html;
+          }).catch(() => {
+            this.el.reportContent.innerHTML = this.simpleMarkdown(text);
+          });
+          return this.simpleMarkdown(text); // Show fallback immediately
+        }
       }
+    } catch (e) {
+      console.warn('Markdown render fallback:', e);
     }
     return this.simpleMarkdown(text);
   }

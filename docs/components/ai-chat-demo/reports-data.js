@@ -1,5 +1,5 @@
 // HaluCatch 三版报告静态数据（v1.7.1 自审真实报告）
-const REPORTS_DATA = {
+var REPORTS_DATA = {
   professional: `# HaluCatch 审计报告 — halucatch
 
 **日期**: 2026-06-28
