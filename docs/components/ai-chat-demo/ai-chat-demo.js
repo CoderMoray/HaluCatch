@@ -18,7 +18,7 @@ class AIChatDemo {
     this.currentStage = 'init';
     this.isTyping = false;
     this.reportVisible = false;
-    this.thinkingBlock = null;
+    this.currentAiMessage = null;
     
     this.init();
   }
@@ -36,7 +36,6 @@ class AIChatDemo {
         <div class="chat-panel">
           <div class="chat-header">
             <div class="chat-header-left">
-              <div class="chat-avatar">${this.avatar}</div>
               <span class="chat-model-name">${this.modelName}</span>
             </div>
           </div>
@@ -140,17 +139,17 @@ class AIChatDemo {
   
   // ── Stage Management ──────────────────────────────────────
   
-  startStage(stageName) {
+  async startStage(stageName) {
     this.currentStage = stageName;
     const stage = this.stages[stageName];
     if (!stage) return;
     
     if (stage.aiMessage) {
-      this.typeMessage(stage.aiMessage, 'ai');
+      await this.typeMessage(stage.aiMessage, 'ai');
     }
     
     if (stage.options) {
-      setTimeout(() => this.showOptionsInInputArea(stage.options), stage.aiMessage ? 100 : 0);
+      this.showOptionsInInputArea(stage.options);
     } else {
       this.showInput();
     }
@@ -196,13 +195,25 @@ class AIChatDemo {
     if (this.isTyping) return;
     this.isTyping = true;
     
-    const msg = document.createElement('div');
-    msg.className = `chat-message ${sender}`;
-    msg.innerHTML = `<div class="chat-bubble typing-cursor"></div>`;
-    this.el.messages.appendChild(msg);
+    let msg;
+    if (sender === 'ai' && this.currentAiMessage) {
+      // Reuse existing AI container (thinking already rendered in it)
+      msg = this.currentAiMessage;
+      this.currentAiMessage = null;
+    } else {
+      msg = document.createElement('div');
+      msg.className = `chat-message ${sender}`;
+      if (sender === 'ai') {
+        msg.innerHTML = this.aiMessageHeader();
+      }
+      this.el.messages.appendChild(msg);
+    }
+    
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble typing-cursor';
+    msg.appendChild(bubble);
     this.scrollToBottom();
     
-    const bubble = msg.querySelector('.chat-bubble');
     let currentText = '';
     
     for (let i = 0; i < text.length; i++) {
@@ -233,17 +244,15 @@ class AIChatDemo {
       return;
     }
     
-    // 1. Show "thinking..." status message
-    const statusBubble = this.createSystemBubble(`${this.thinkingLabel}中...`);
-    this.el.messages.appendChild(statusBubble);
-    this.scrollToBottom();
+    // Create AI message container with avatar + name
+    const msg = document.createElement('div');
+    msg.className = 'chat-message ai';
+    msg.innerHTML = this.aiMessageHeader();
     
-    await this.delay(800);
-    
-    // 2. Create thinking block (expanded)
-    this.thinkingBlock = document.createElement('div');
-    this.thinkingBlock.className = 'chat-thinking expanded';
-    this.thinkingBlock.innerHTML = `
+    // Create thinking block inside this message
+    const thinkingBlock = document.createElement('div');
+    thinkingBlock.className = 'chat-thinking expanded';
+    thinkingBlock.innerHTML = `
       <div class="chat-thinking-header">
         <span class="chat-thinking-icon">▶</span>
         <span>${this.thinkingLabel}</span>
@@ -252,18 +261,18 @@ class AIChatDemo {
         <div class="chat-thinking-lines"></div>
       </div>
     `;
-    
-    const header = this.thinkingBlock.querySelector('.chat-thinking-header');
-    header.addEventListener('click', () => this.thinkingBlock.classList.toggle('expanded'));
-    
-    this.el.messages.appendChild(this.thinkingBlock);
+    msg.appendChild(thinkingBlock);
+    this.el.messages.appendChild(msg);
     this.scrollToBottom();
     
-    // 3. Remove status bubble
-    statusBubble.remove();
+    // Store for typeMessage to reuse
+    this.currentAiMessage = msg;
     
-    // 4. Type each thinking line character by character
-    const linesContainer = this.thinkingBlock.querySelector('.chat-thinking-lines');
+    const header = thinkingBlock.querySelector('.chat-thinking-header');
+    header.addEventListener('click', () => thinkingBlock.classList.toggle('expanded'));
+    
+    // Type each thinking line
+    const linesContainer = thinkingBlock.querySelector('.chat-thinking-lines');
     
     for (let i = 0; i < lines.length; i++) {
       const lineEl = document.createElement('div');
@@ -271,38 +280,35 @@ class AIChatDemo {
       lineEl.style.opacity = '1';
       linesContainer.appendChild(lineEl);
       
-      // Type this line char by char
       let currentText = '';
       for (let j = 0; j < lines[i].length; j++) {
-        await this.delay(20); // slightly faster for thinking lines
+        await this.delay(20);
         currentText += lines[i][j];
         lineEl.textContent = currentText;
         this.scrollToBottom();
       }
       lineEl.classList.remove('typing-cursor');
-      
-      // Small delay between lines
       await this.delay(200 + Math.random() * 300);
     }
     
-    // 5. Pause, then collapse thinking block
+    // Pause, then collapse
     await this.delay(600);
-    this.thinkingBlock.classList.remove('expanded');
+    thinkingBlock.classList.remove('expanded');
     
     setTimeout(() => onComplete(), 400);
   }
   
-  createSystemBubble(text) {
-    const div = document.createElement('div');
-    div.className = 'chat-message ai';
-    div.style.opacity = '0.6';
-    div.innerHTML = `<div class="chat-bubble">${text}</div>`;
-    return div;
+  aiMessageHeader() {
+    return `<div class="chat-message-header">
+      <div class="chat-message-avatar">🔍</div>
+      <span class="chat-message-name">HaluCatch Agent</span>
+    </div>`;
   }
   
   // ── User Interaction ────────────────────────────────────
   
   handleOptionClick(option) {
+    if (this.isTyping) return;
     this.el.optionsArea.innerHTML = '';
     this.el.optionsArea.style.display = 'none';
     
@@ -327,31 +333,33 @@ class AIChatDemo {
     if (!stage) return;
     
     if (stage.thinking && stage.thinking.length > 0) {
-      this.runThinking(stage.thinking, () => {
+      this.runThinking(stage.thinking, async () => {
         if (stage.aiMessage) {
-          this.typeMessage(stage.aiMessage, 'ai');
+          await this.typeMessage(stage.aiMessage, 'ai');
         }
         if (stage.showReports) {
           this.showReports();
           this.showInput();
         } else if (stage.options) {
-          setTimeout(() => this.showOptionsInInputArea(stage.options), 100);
+          this.showOptionsInInputArea(stage.options);
         } else {
           this.showInput();
         }
       });
     } else {
-      if (stage.aiMessage) {
-        this.typeMessage(stage.aiMessage, 'ai');
-      }
-      if (stage.showReports) {
-        this.showReports();
-        this.showInput();
-      } else if (stage.options) {
-        setTimeout(() => this.showOptionsInInputArea(stage.options), 100);
-      } else {
-        this.showInput();
-      }
+      (async () => {
+        if (stage.aiMessage) {
+          await this.typeMessage(stage.aiMessage, 'ai');
+        }
+        if (stage.showReports) {
+          this.showReports();
+          this.showInput();
+        } else if (stage.options) {
+          this.showOptionsInInputArea(stage.options);
+        } else {
+          this.showInput();
+        }
+      })();
     }
   }
   

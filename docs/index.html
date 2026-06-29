@@ -148,37 +148,37 @@
       border-bottom-color: var(--accent2);
     }
     .preview-body { padding: 32px; overflow-x: auto; }
-    .report-content { display: none; }
-    .report-content.active { display: block; }
+    .preview-body .report-content { display: none; }
+    .preview-body .report-content.active { display: block; }
 
     /* Report styles */
-    .report-content h3 { font-size: 1.1rem; margin: 24px 0 12px; color: var(--accent2); }
-    .report-content h4 { font-size: 1rem; margin: 16px 0 8px; }
-    .report-content table {
+    .preview-body .report-content h3 { font-size: 1.1rem; margin: 24px 0 12px; color: var(--accent2); }
+    .preview-body .report-content h4 { font-size: 1rem; margin: 16px 0 8px; }
+    .preview-body .report-content table {
       width: 100%;
       border-collapse: collapse;
       margin: 12px 0;
       font-size: 0.9rem;
     }
-    .report-content th, .report-content td {
+    .preview-body .report-content th, .preview-body .report-content td {
       border: 1px solid var(--border);
       padding: 8px 12px;
       text-align: left;
     }
-    .report-content th { background: var(--surface2); }
-    .report-content .pass { color: var(--green); }
-    .report-content .warn { color: var(--orange); }
-    .report-content .fail { color: var(--red); }
-    .report-content ul { padding-left: 20px; margin: 8px 0; }
-    .report-content li { margin: 4px 0; font-size: 0.9rem; }
-    .report-content code {
+    .preview-body .report-content th { background: var(--surface2); }
+    .preview-body .report-content .pass { color: var(--green); }
+    .preview-body .report-content .warn { color: var(--orange); }
+    .preview-body .report-content .fail { color: var(--red); }
+    .preview-body .report-content ul { padding-left: 20px; margin: 8px 0; }
+    .preview-body .report-content li { margin: 4px 0; font-size: 0.9rem; }
+    .preview-body .report-content code {
       background: var(--surface2);
       padding: 2px 6px;
       border-radius: 4px;
       font-size: 0.85rem;
     }
-    .report-content hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
-    .report-content .tip-box {
+    .preview-body .report-content hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+    .preview-body .report-content .tip-box {
       background: var(--surface2);
       border-left: 3px solid var(--accent2);
       padding: 12px 16px;
@@ -285,8 +285,7 @@
 
 <!-- Interactive Demo -->
 <section id="demo">
-  <h2>🎮 在线体验</h2>
-  <p style="color:var(--text2);margin-bottom:24px;">无需安装，直接体验 HaluCatch 审查流程</p>
+  <h2>在线体验 HaluCatch</h2>
   <div id="ai-chat-demo-container"></div>
 </section>
 
@@ -556,7 +555,7 @@ reports/HaluCatch-report-YYYY-MM-DD-行动版.md  <span class="comment"># AI 行
 <script>
 function switchTab(name) {
   document.querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.report-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.preview-body .report-content').forEach(c => c.classList.remove('active'));
   event.currentTarget.classList.add('active');
   document.getElementById('tab-' + name).classList.add('active');
 }
@@ -575,7 +574,7 @@ function switchQsTab(name) {
 // Initialize AI Chat Demo
 new AIChatDemo({
   container: '#ai-chat-demo-container',
-  modelName: 'HaluCatch LLM Demo',
+  modelName: 'HaluCatch 1.7',
   avatar: '🔮',
   thinkingEnabled: true,
   thinkingLabel: '深度思考',

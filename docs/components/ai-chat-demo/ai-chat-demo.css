@@ -95,6 +95,33 @@
 
 .chat-message.ai {
   align-self: flex-start;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chat-message-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-message-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--chat-accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.chat-message-name {
+  font-size: 0.75rem;
+  color: var(--chat-text2);
+  font-weight: 500;
 }
 
 .chat-bubble {
@@ -138,7 +165,7 @@
 
 /* Thinking Block */
 .chat-thinking {
-  margin: 4px 0 8px 42px;
+  margin: 4px 0 8px 0;
   background: var(--thinking-bg);
   border: 1px solid var(--thinking-border);
   border-radius: 8px;
