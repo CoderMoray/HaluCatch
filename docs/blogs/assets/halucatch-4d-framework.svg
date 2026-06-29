@@ -1,0 +1,88 @@
+<svg viewBox="-50 0 780 520" role="img" aria-label="HaluCatch 四维评估框架矩阵" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="axisTip" viewBox="0 0 10 8" refX="7" refY="4" markerWidth="6" markerHeight="5" orient="auto">
+      <path d="M2 2L7 4L2 6" fill="none" stroke="#888" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="340" y="36" text-anchor="middle" style="font: 500 15px system-ui; fill: #2C2C2A;">HaluCatch · 四维评估框架</text>
+
+  <!-- ============ COORDINATE AXES ============ -->
+  <!-- X-axis: horizontal, AI 执行前 → AI 执行后 -->
+  <line x1="24" y1="265" x2="656" y2="265" stroke="#888" stroke-width="1" marker-start="url(#axisTip)" marker-end="url(#axisTip)"/>
+  <!-- Y-axis: vertical, 技术层面 → 业务层面 -->
+  <line x1="340" y1="458" x2="340" y2="74" stroke="#888" stroke-width="1" marker-start="url(#axisTip)" marker-end="url(#axisTip)"/>
+
+  <!-- Axis endpoint labels -->
+  <text x="16" y="261" text-anchor="end" style="font: 500 13px system-ui; fill: #2C2C2A;">AI 执行前</text>
+  <text x="668" y="261" text-anchor="start" style="font: 500 13px system-ui; fill: #2C2C2A;">AI 执行后</text>
+  <text x="340" y="60" text-anchor="middle" style="font: 500 13px system-ui; fill: #2C2C2A;">技术层面</text>
+  <text x="340" y="490" text-anchor="middle" style="font: 500 13px system-ui; fill: #2C2C2A;">业务层面</text>
+
+  <!-- ============ 4 CELLS ============ -->
+  <!-- Top-left: 地基 -->
+  <rect x="40" y="80" width="290" height="180" rx="12" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+  <!-- Top-right: 代码 -->
+  <rect x="350" y="80" width="290" height="180" rx="12" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+  <!-- Bottom-left: 规则 -->
+  <rect x="40" y="270" width="290" height="180" rx="12" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+  <!-- Bottom-right: 护栏 -->
+  <rect x="350" y="270" width="290" height="180" rx="12" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+
+  <!-- Top-left content: 地基 -->
+  <text x="185" y="112" text-anchor="middle" style="font: 500 14px system-ui; fill: #185FA5;">🏗️ 地基评估</text>
+  <text x="185" y="134" text-anchor="middle" style="font: 12px system-ui; fill: #0C447C;">数据管线是否稳固</text>
+  <line x1="55" y1="144" x2="315" y2="144" stroke="#185FA5" stroke-width="0.5" opacity="0.3"/>
+  <g style="font: 12px/2 system-ui; fill: #2C2C2A;">
+    <circle cx="67" cy="164" r="3" fill="#0F6E56"/><text x="79" y="168">固化 .py 脚本</text>
+    <circle cx="67" cy="184" r="3" fill="#0F6E56"/><text x="79" y="188">路径参数化（无硬编码）</text>
+    <circle cx="67" cy="204" r="3" fill="#0F6E56"/><text x="79" y="208">输入校验 / validate 模式</text>
+    <circle cx="67" cy="224" r="3" fill="#0F6E56"/><text x="79" y="228">依赖声明明确</text>
+    <circle cx="67" cy="244" r="3" fill="#BA7517"/><text x="79" y="248">文件发现机制（glob）</text>
+  </g>
+
+  <!-- Top-right content: 代码 -->
+  <text x="495" y="112" text-anchor="middle" style="font: 500 14px system-ui; fill: #0F6E56;">🤖 代码风险</text>
+  <text x="495" y="134" text-anchor="middle" style="font: 12px system-ui; fill: #085041;">AI 复现代码会否出错</text>
+  <line x1="365" y1="144" x2="625" y2="144" stroke="#0F6E56" stroke-width="0.5" opacity="0.3"/>
+  <g style="font: 12px/2 system-ui; fill: #2C2C2A;">
+    <circle cx="377" cy="164" r="3" fill="#A32D2D"/><text x="389" y="168">统计函数被替换（高风险）</text>
+    <circle cx="377" cy="184" r="3" fill="#993C1D"/><text x="389" y="188">字符串匹配逻辑被改写</text>
+    <circle cx="377" cy="204" r="3" fill="#BA7517"/><text x="389" y="208">浮点比较方式不一致</text>
+    <circle cx="377" cy="224" r="3" fill="#0F6E56"/><text x="389" y="228">异常处理过于宽泛</text>
+    <circle cx="377" cy="244" r="3" fill="#0F6E56"/><text x="389" y="248">聚合逻辑 fill_value 丢失</text>
+  </g>
+
+  <!-- Bottom-left content: 规则 -->
+  <text x="185" y="302" text-anchor="middle" style="font: 500 14px system-ui; fill: #854F0B;">📝 规则与口径</text>
+  <text x="185" y="324" text-anchor="middle" style="font: 12px system-ui; fill: #633806;">业务规则是否明确无歧义</text>
+  <line x1="55" y1="334" x2="315" y2="334" stroke="#854F0B" stroke-width="0.5" opacity="0.3"/>
+  <g style="font: 12px/2 system-ui; fill: #2C2C2A;">
+    <circle cx="67" cy="354" r="3" fill="#0F6E56"/><text x="79" y="358">渠道/分类口径明确列举</text>
+    <circle cx="67" cy="374" r="3" fill="#BA7517"/><text x="79" y="378">异常值/边界条件已定义</text>
+    <circle cx="67" cy="394" r="3" fill="#A32D2D"/><text x="79" y="398">代际/映射关系已固化</text>
+    <circle cx="67" cy="414" r="3" fill="#BA7517"/><text x="79" y="418">对比口径（同店/同比）定义</text>
+    <circle cx="67" cy="434" r="3" fill="#0F6E56"/><text x="79" y="438">文件名/列名/格式已约定</text>
+  </g>
+
+  <!-- Bottom-right content: 护栏 -->
+  <text x="495" y="302" text-anchor="middle" style="font: 500 14px system-ui; fill: #534AB7;">🛡️ 解读护栏</text>
+  <text x="495" y="324" text-anchor="middle" style="font: 12px system-ui; fill: #3C3489;">AI 输出是否受约束</text>
+  <line x1="365" y1="334" x2="625" y2="334" stroke="#534AB7" stroke-width="0.5" opacity="0.3"/>
+  <g style="font: 12px/2 system-ui; fill: #2C2C2A;">
+    <circle cx="377" cy="354" r="3" fill="#A32D2D"/><text x="389" y="358">因果语言禁令（严重缺失）</text>
+    <circle cx="377" cy="374" r="3" fill="#993C1D"/><text x="389" y="378">四象限/效应量框架</text>
+    <circle cx="377" cy="394" r="3" fill="#993C1D"/><text x="389" y="398">自检机制（self-check）</text>
+    <circle cx="377" cy="414" r="3" fill="#BA7517"/><text x="389" y="418">限制性声明模板</text>
+    <circle cx="377" cy="434" r="3" fill="#BA7517"/><text x="389" y="438">阶段性状态输出</text>
+  </g>
+
+  <!-- Legend -->
+  <text x="340" y="510" text-anchor="middle" style="font: 12px system-ui; fill: #888;">
+    <tspan style="fill:#0F6E56;">● 低风险</tspan>
+    <tspan dx="16" style="fill:#BA7517;">● 中风险</tspan>
+    <tspan dx="16" style="fill:#993C1D;">● 高风险</tspan>
+    <tspan dx="16" style="fill:#A32D2D;">● 严重</tspan>
+  </text>
+</svg>

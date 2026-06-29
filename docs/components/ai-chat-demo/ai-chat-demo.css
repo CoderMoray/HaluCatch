@@ -1,5 +1,5 @@
-/* AI Chat Demo Component — HaluCatch Dark Theme */
-
+/* AI Chat Demo Component — HaluCatch */
+/* Dark theme (default) */
 .ai-chat-demo {
   --chat-bg: #0f0f1a;
   --chat-surface: #16162a;
@@ -16,10 +16,8 @@
   --report-bg: #12121f;
   --thinking-active: #3a3a5e;
   --thinking-hover: #2a2a45;
-}
 
-/* Demo Layout */
-.ai-chat-demo {
+  /* Layout */
   display: flex;
   gap: 0;
   border: 1px solid var(--chat-border);
@@ -28,6 +26,29 @@
   background: var(--chat-bg);
   min-height: 520px;
   max-height: 640px;
+}
+
+.ai-chat-demo, .chat-panel, .chat-header, .chat-messages, .chat-input-area,
+.chat-bubble, .chat-thinking, .report-panel, .report-content,
+.chat-option-btn, .chat-model-selector, .model-dropdown-menu { transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease; }
+
+/* Light theme */
+[data-theme="light"] .ai-chat-demo {
+  --chat-bg: #f4f5f9;
+  --chat-surface: #ebecf3;
+  --chat-border: #d5d7e2;
+  --chat-user-bubble: #5a52e0;
+  --chat-ai-bubble: #ffffff;
+  --chat-input-bg: #ebecf3;
+  --chat-text: #1a1a2e;
+  --chat-text2: #6e6e86;
+  --chat-accent: #5a52e0;
+  --chat-green: #3b8c4a;
+  --thinking-bg: #ebecf3;
+  --thinking-border: #c8cad6;
+  --report-bg: #ebecf3;
+  --thinking-active: #c8cad6;
+  --thinking-hover: #d5d7e2;
 }
 
 /* Chat Panel */

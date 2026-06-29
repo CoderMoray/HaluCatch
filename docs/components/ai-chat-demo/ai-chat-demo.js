@@ -164,7 +164,7 @@ class AIChatDemo {
     
     const hint = document.createElement('div');
     hint.className = 'chat-options-hint';
-    hint.textContent = '👆 选择一个选项继续';
+    hint.textContent = '👇 选择一个选项继续';
     this.el.optionsArea.appendChild(hint);
     
     const list = document.createElement('div');
@@ -300,7 +300,7 @@ class AIChatDemo {
   
   aiMessageHeader() {
     return `<div class="chat-message-header">
-      <div class="chat-message-avatar">🔍</div>
+      <div class="chat-message-avatar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8" /><rect width="16" height="12" x="4" y="8" rx="2" /><path d="M2 14h2" /><path d="M20 14h2" /><path d="M15 13v2" /><path d="M9 13v2" /></svg></div>
       <span class="chat-message-name">HaluCatch Agent</span>
     </div>`;
   }

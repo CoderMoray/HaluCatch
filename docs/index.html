@@ -19,14 +19,168 @@
       --orange: #ffa94d;
       --green: #51cf66;
       --blue: #339af0;
+      --glow: #1a1a3e;
+      --h1-from: #6c63ff;
+      --h1-to: #00d4aa;
     }
+    [data-theme="light"] {
+      --bg: #f7f7fb;
+      --surface: #ffffff;
+      --surface2: #eeeef5;
+      --border: #dddde8;
+      --text: #1a1a2e;
+      --text2: #6e6e86;
+      --accent: #5a52e0;
+      --accent2: #0d8a5e;
+      --red: #d94a4a;
+      --orange: #d9812e;
+      --green: #3b8c4a;
+      --blue: #2878c8;
+      --glow: #d0dff5;
+      --h1-from: #6c63ff;
+      --h1-to: #00d4aa;
+    }
+    :root { --glow-opacity: 1; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.6;
       position: relative;
+      padding-top: 52px;
+      transition: background-color 0.5s ease, color 0.5s ease;
     }
+    html { scroll-behavior: smooth; }
+
+    /* Nav */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0; z-index: 100;
+      height: 52px;
+      background: linear-gradient(to bottom, rgba(10,10,15,1) 0%, rgba(10,10,15,1) 40%, rgba(10,10,15,0.9) 50%, rgba(10,10,15,0.5) 75%, rgba(10,10,15,0.12) 92%, rgba(10,10,15,0) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s ease;
+    }
+    .nav.hidden { transform: translateY(-100%); }
+    [data-theme="light"] .nav {
+      background: linear-gradient(to bottom, rgba(247,247,251,1) 0%, rgba(247,247,251,1) 40%, rgba(247,247,251,0.9) 50%, rgba(247,247,251,0.5) 75%, rgba(247,247,251,0.12) 92%, rgba(247,247,251,0) 100%);
+    }
+    .nav-inner {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+      position: relative;
+    }
+    .nav-brand {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-brand:hover { text-decoration: none; }
+    .nav-brand svg { flex-shrink: 0; }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .nav-link {
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      color: var(--text2);
+      text-decoration: none;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .nav-link:hover { color: var(--text); background: var(--surface2); text-decoration: none; }
+    .nav-blog { position: relative; }
+    .nav-blog-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      min-width: 160px;
+      padding: 6px;
+      z-index: 200;
+    }
+    .nav-blog:hover .nav-blog-menu,
+    .nav-blog:focus-within .nav-blog-menu { display: block; }
+    .nav-blog-item {
+      display: block;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      color: var(--text2);
+      text-decoration: none;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .nav-blog-item:hover { color: var(--text); background: var(--surface2); text-decoration: none; }
+    .nav-blog-item.empty { color: var(--text2); opacity: 0.5; cursor: default; }
+    .nav-blog-item.empty:hover { background: transparent; color: var(--text2); }
+
+    /* Smooth theme transitions */
+    .nav, .nav-link, .problem-card, .preview-container, .badge, pre, .btn,
+    .qs-tab, .step-num, footer, .theme-pill, .nav-blog-menu, .nav-blog-item {
+      transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+    }
+    .theme-pill {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      background: var(--surface2);
+      border-radius: 22px;
+      padding: 2px;
+      gap: 0;
+      flex-shrink: 0;
+    }
+    .theme-pill-indicator {
+      position: absolute;
+      top: 2px;
+      height: calc(100% - 4px);
+      background: var(--bg);
+      border-radius: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      transition: left 0.3s ease, width 0.3s ease;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .theme-pill-btn {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: none;
+      background: transparent;
+      color: var(--text2);
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: color 0.3s ease;
+      font-family: inherit;
+    }
+    .theme-pill-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .theme-pill-btn.active { color: var(--text); }
+    .theme-pill-btn:hover:not(.active) { color: var(--text); }
 
     /* 顶部固定渐变光晕，防止下拉时断层 */
     body::before {
@@ -36,9 +190,11 @@
       left: 0;
       width: 100%;
       height: 500px;
-      background: radial-gradient(ellipse at top, #1a1a3e 0%, transparent 60%);
+      background: radial-gradient(ellipse at top, var(--glow) 0%, transparent 60%);
+      opacity: var(--glow-opacity);
       pointer-events: none;
       z-index: -1;
+      transition: opacity 0.4s ease;
     }
     a { color: var(--accent2); text-decoration: none; }
     a:hover { text-decoration: underline; }
@@ -53,10 +209,11 @@
     .hero h1 {
       font-size: 3rem;
       font-weight: 800;
-      background: linear-gradient(135deg, #6c63ff, #00d4aa);
+      background: linear-gradient(135deg, var(--h1-from), var(--h1-to));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 12px;
+      transition: background 0.5s ease;
     }
     .hero .subtitle {
       font-size: 1.2rem;
@@ -256,6 +413,10 @@
       .hero h1 { font-size: 2rem; }
       .preview-tabs { overflow-x: auto; }
       .cta-group { flex-direction: column; align-items: center; }
+      .nav-inner { padding: 0 12px; }
+      .nav-links { gap: 0; }
+      .nav-link { padding: 5px 7px; font-size: 0.78rem; }
+      .nav-brand { font-size: 0.85rem; }
     }
   </style>
   <link rel="stylesheet" href="components/ai-chat-demo/ai-chat-demo.css">
@@ -263,13 +424,40 @@
 </head>
 <body>
 
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+      HaluCatch 1.7
+    </a>
+    <div class="nav-links">
+      <a href="#demo" class="nav-link">在线体验</a>
+      <a href="#report-preview" class="nav-link">报告预览</a>
+      <a href="#quickstart" class="nav-link">快速开始</a>
+      <div class="nav-blog">
+        <a href="#" class="nav-link" onclick="return false">Blog ▾</a>
+        <div class="nav-blog-menu">
+          <span class="nav-blog-item empty">即将更新...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="theme-pill" id="theme-pill">
+    <button class="theme-pill-btn" data-theme="light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>Light</button>
+    <button class="theme-pill-btn" data-theme="dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>Night</button>
+    <button class="theme-pill-btn" data-theme="system"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Auto</button>
+  </div>
+    </div>
+  </div>
+</nav>
+
 <!-- Hero -->
 <section class="hero">
-  <h1>🎯 HaluCatch</h1>
+  <h1><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -6px; margin-right: 6px;"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/><path d="m16 16-1.9-1.9"/></svg>HaluCatch</h1>
   <p class="subtitle">AI Skill 执行可靠性审计工具<br>在 AI 执行前，发现 Skill 里的隐患</p>
   <div class="badges">
     <span class="badge">v1.7.1</span>
-    <span class="badge">🐍 Python CLI</span>
+    <span class="badge">🐍 Python</span>
     <span class="badge">📋 3 份报告</span>
     <span class="badge">🌏 中英文</span>
     <span class="badge">📦 零依赖</span>
@@ -279,7 +467,6 @@
     <a href="https://github.com/CoderMoray/HaluCatch" class="btn btn-outline">⭐ GitHub 开源</a>
     <a href="https://skillhub.cn/skills/halucatch" class="btn btn-outline" target="_blank">📦 SkillHub</a>
     <a href="https://clawhub.ai/codermoray/skills/halucatch" class="btn btn-outline" target="_blank">🦞 ClawHub</a>
-    <a href="#quickstart" class="btn btn-outline">🚀 快速开始</a>
   </div>
 </section>
 
@@ -317,7 +504,7 @@
 </section>
 
 <!-- Report Preview -->
-<section>
+<section id="report-preview">
   <h2>审计报告预览</h2>
   <p style="text-align:center;color:var(--text2);margin-bottom:24px;">同一份 Skill，三份视角 — 以下是 HaluCatch 审计自身的真实报告</p>
   <div class="preview-container">
@@ -631,6 +818,98 @@ new AIChatDemo({
     action: REPORTS_DATA.action
   }
 });
+</script>
+
+<script>
+// Smart nav bar — auto hide on scroll, mouse reveal at top
+(function() {
+  var nav = document.querySelector('.nav');
+  var demoSection = document.getElementById('demo');
+  var threshold, mouseNearTop = false, scrollPast = false;
+
+  function updateThreshold() { threshold = demoSection ? demoSection.getBoundingClientRect().top + window.scrollY - (window.innerHeight / 2) : 800; }
+  updateThreshold();
+  window.addEventListener('resize', updateThreshold);
+
+  function shouldShow() { return !scrollPast || mouseNearTop; }
+
+  function refresh() {
+    scrollPast = window.scrollY > threshold && window.scrollY > 100;
+    if (shouldShow()) nav.classList.remove('hidden');
+    else nav.classList.add('hidden');
+  }
+
+  window.addEventListener('scroll', refresh, { passive: true });
+
+  document.addEventListener('mousemove', function(e) {
+    var near = e.clientY < 60;
+    if (near !== mouseNearTop) {
+      mouseNearTop = near;
+      refresh();
+    }
+  });
+})();
+</script>
+
+<script>
+// Theme switcher — dark / light / system (sliding pill, 3-step glow)
+(function() {
+  var STORAGE_KEY = 'halucatch-theme';
+  var pill = document.getElementById('theme-pill');
+  var btns = pill.querySelectorAll('.theme-pill-btn');
+  var mql = window.matchMedia('(prefers-color-scheme: dark)');
+
+  var indicator = document.createElement('div');
+  indicator.className = 'theme-pill-indicator';
+  pill.insertBefore(indicator, pill.firstChild);
+
+  function getTheme() { return localStorage.getItem(STORAGE_KEY) || 'dark'; }
+
+  function setTheme(t) {
+    // Step 1: fade out glow quickly
+    document.documentElement.style.setProperty('--glow-opacity', '0');
+
+    setTimeout(function() {
+      // Step 2: apply theme (triggers 0.5s color transitions)
+      localStorage.setItem(STORAGE_KEY, t);
+      applyThemeInternal();
+
+      // Step 3: fade glow back in after transitions finish
+      setTimeout(function() {
+        document.documentElement.style.setProperty('--glow-opacity', '1');
+      }, 600);
+    }, 300);
+  }
+
+  function resolveTheme(t) {
+    if (t === 'system') return mql.matches ? 'dark' : 'light';
+    return t;
+  }
+
+  function applyThemeInternal() {
+    var t = getTheme();
+    var resolved = resolveTheme(t);
+    document.documentElement.setAttribute('data-theme', resolved);
+    btns.forEach(function(b) {
+      var active = b.dataset.theme === t;
+      b.classList.toggle('active', active);
+      if (active) {
+        indicator.style.left = b.offsetLeft + 'px';
+        indicator.style.width = b.offsetWidth + 'px';
+      }
+    });
+  }
+
+  btns.forEach(function(b) {
+    b.addEventListener('click', function() { setTheme(b.dataset.theme); });
+  });
+
+  mql.addEventListener('change', function() {
+    if (getTheme() === 'system') applyThemeInternal();
+  });
+
+  applyThemeInternal();
+})();
 </script>
 
 </body>
