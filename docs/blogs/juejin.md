@@ -95,7 +95,7 @@ Skill 审查这个赛道目前只有四个工具，切角完全不同：
 
 ## 在线体验
 
-不想装 CLI？直接在浏览器里试试 HaluCatch：
+不方便装 Skill？直接在浏览器里试试 HaluCatch：
 
 👉 **[在线 Demo](https://codermoray.github.io/HaluCatch/)**
 
