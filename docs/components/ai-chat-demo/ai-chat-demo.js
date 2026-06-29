@@ -17,6 +17,7 @@ class AIChatDemo {
     this.currentStage = 'init';
     this.isTyping = false;
     this.reportVisible = false;
+    this.typingSpeed = 30; // ms per character
     
     this.init();
   }
@@ -37,15 +38,27 @@ class AIChatDemo {
               <div class="chat-avatar">${this.avatar}</div>
               <span class="chat-model-name">${this.modelName}</span>
             </div>
-            <label class="chat-thinking-toggle">
-              <input type="checkbox" ${this.thinkingEnabled ? 'checked' : ''}>
-              <span>${this.thinkingLabel}</span>
-            </label>
           </div>
           <div class="chat-messages"></div>
           <div class="chat-input-area">
-            <textarea class="chat-input" rows="1" placeholder="输入消息..."></textarea>
-            <button class="chat-send-btn">➤</button>
+            <!-- Toolbar: thinking button + model selector -->
+            <div class="chat-input-toolbar">
+              <button class="chat-thinking-btn ${this.thinkingEnabled ? 'active' : ''}">
+                <span class="brain-icon">🧠</span>
+                <span>${this.thinkingLabel}</span>
+              </button>
+              <div class="chat-model-selector">
+                <span class="model-icon">⚡</span>
+                <span class="model-name">${this.modelName}</span>
+              </div>
+            </div>
+            <!-- Input row: textarea + send button -->
+            <div class="chat-input-row" id="input-row">
+              <textarea class="chat-input" rows="1" placeholder="输入消息..." disabled></textarea>
+              <button class="chat-send-btn" disabled>↑</button>
+            </div>
+            <!-- Options area (replaces input row in certain stages) -->
+            <div class="chat-options-area" id="options-area" style="display:none;"></div>
           </div>
         </div>
         <div class="report-panel">
@@ -63,9 +76,11 @@ class AIChatDemo {
   cacheElements() {
     this.el = {
       messages: this.container.querySelector('.chat-messages'),
+      inputRow: this.container.querySelector('#input-row'),
       input: this.container.querySelector('.chat-input'),
       sendBtn: this.container.querySelector('.chat-send-btn'),
-      thinkingToggle: this.container.querySelector('.chat-thinking-toggle input'),
+      optionsArea: this.container.querySelector('#options-area'),
+      thinkingBtn: this.container.querySelector('.chat-thinking-btn'),
       reportPanel: this.container.querySelector('.report-panel'),
       reportContent: this.container.querySelector('.report-content'),
       reportTabs: this.container.querySelectorAll('.report-tab')
@@ -79,6 +94,11 @@ class AIChatDemo {
         e.preventDefault();
         this.handleUserInput();
       }
+    });
+    
+    this.el.thinkingBtn.addEventListener('click', () => {
+      this.thinkingEnabled = !this.thinkingEnabled;
+      this.el.thinkingBtn.classList.toggle('active', this.thinkingEnabled);
     });
     
     this.el.reportTabs.forEach(tab => {
@@ -98,33 +118,72 @@ class AIChatDemo {
     }
     
     if (stage.options) {
-      setTimeout(() => this.showOptions(stage.options), stage.aiMessage ? 600 : 0);
+      setTimeout(() => this.showOptionsInInputArea(stage.options), stage.aiMessage ? 100 : 0);
+    } else {
+      this.showInput();
     }
   }
   
-  // ── Message Rendering ───────────────────────────────────────
+  // ── Input/Options Toggle ─────────────────────────────────────
+  
+  showOptionsInInputArea(options) {
+    this.el.inputRow.style.display = 'none';
+    this.el.optionsArea.style.display = 'flex';
+    this.el.optionsArea.innerHTML = '';
+    
+    const hint = document.createElement('div');
+    hint.className = 'chat-options-hint';
+    hint.textContent = '👆 选择一个选项继续';
+    this.el.optionsArea.appendChild(hint);
+    
+    const list = document.createElement('div');
+    list.className = 'chat-options-list';
+    
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'chat-option-btn';
+      btn.textContent = opt.text;
+      btn.addEventListener('click', () => this.handleOptionClick(opt));
+      list.appendChild(btn);
+    });
+    
+    this.el.optionsArea.appendChild(list);
+  }
+  
+  showInput() {
+    this.el.optionsArea.style.display = 'none';
+    this.el.inputRow.style.display = 'flex';
+    this.el.input.disabled = false;
+    this.el.sendBtn.disabled = false;
+    this.el.input.focus();
+  }
+  
+  // ── Message Rendering — Character by Character ─────────────────
   
   async typeMessage(text, sender) {
     if (this.isTyping) return;
     this.isTyping = true;
     
-    // Show typing indicator
-    const indicator = document.createElement('div');
-    indicator.className = 'chat-message ai';
-    indicator.innerHTML = `
-      <div class="chat-bubble">
-        <div class="typing-indicator"><span></span><span></span><span></span></div>
-      </div>
-    `;
-    this.el.messages.appendChild(indicator);
+    // Create message element
+    const msg = document.createElement('div');
+    msg.className = `chat-message ${sender}`;
+    msg.innerHTML = `<div class="chat-bubble typing-cursor"></div>`;
+    this.el.messages.appendChild(msg);
     this.scrollToBottom();
     
-    // Simulate typing delay
-    await this.delay(800 + text.length * 8);
+    const bubble = msg.querySelector('.chat-bubble');
+    let currentText = '';
     
-    // Remove indicator, show real message
-    indicator.remove();
-    this.addMessage(text, sender);
+    // Type character by character
+    for (let i = 0; i < text.length; i++) {
+      await this.delay(this.typingSpeed);
+      currentText += text[i];
+      bubble.textContent = currentText;
+      this.scrollToBottom();
+    }
+    
+    // Remove cursor after typing
+    bubble.classList.remove('typing-cursor');
     this.isTyping = false;
   }
   
@@ -137,26 +196,10 @@ class AIChatDemo {
     this.scrollToBottom();
   }
   
-  showOptions(options) {
-    const container = document.createElement('div');
-    container.className = 'chat-options';
-    
-    options.forEach(opt => {
-      const btn = document.createElement('button');
-      btn.className = 'chat-option-btn';
-      btn.textContent = opt.text;
-      btn.addEventListener('click', () => this.handleOptionClick(opt));
-      container.appendChild(btn);
-    });
-    
-    this.el.messages.appendChild(container);
-    this.scrollToBottom();
-  }
-  
   // ── Thinking Flow ─────────────────────────────────────────
   
   async runThinking(lines, onComplete) {
-    if (!this.el.thinkingToggle.checked) {
+    if (!this.thinkingEnabled) {
       onComplete();
       return;
     }
@@ -173,7 +216,6 @@ class AIChatDemo {
       </div>
     `;
     
-    // Click to toggle
     const header = block.querySelector('.chat-thinking-header');
     header.addEventListener('click', () => block.classList.toggle('expanded'));
     
@@ -196,25 +238,21 @@ class AIChatDemo {
     await this.delay(600);
     block.classList.remove('expanded');
     
-    setTimeout(() => {
-      onComplete();
-    }, 400);
+    setTimeout(() => onComplete(), 400);
   }
   
   // ── User Interaction ────────────────────────────────────
   
   handleOptionClick(option) {
-    // Remove option buttons
-    const optionsContainer = this.container.querySelector('.chat-options');
-    if (optionsContainer) optionsContainer.remove();
+    // Remove options
+    this.el.optionsArea.innerHTML = '';
+    this.el.optionsArea.style.display = 'none';
     
     // Show user message
     this.addMessage(option.text, 'user');
     
-    // Transition to next stage
-    setTimeout(() => {
-      this.transitionTo(option.next);
-    }, 400);
+    // Transition
+    setTimeout(() => this.transitionTo(option.next), 400);
   }
   
   async handleUserInput() {
@@ -224,7 +262,6 @@ class AIChatDemo {
     this.addMessage(text, 'user');
     this.el.input.value = '';
     
-    // End stage: always show end message
     await this.delay(300);
     this.typeMessage(this.endMessage, 'ai');
   }
@@ -240,6 +277,11 @@ class AIChatDemo {
         }
         if (stage.showReports) {
           this.showReports();
+          this.showInput();
+        } else if (stage.options) {
+          setTimeout(() => this.showOptionsInInputArea(stage.options), 100);
+        } else {
+          this.showInput();
         }
       });
     } else {
@@ -248,6 +290,11 @@ class AIChatDemo {
       }
       if (stage.showReports) {
         this.showReports();
+        this.showInput();
+      } else if (stage.options) {
+        setTimeout(() => this.showOptionsInInputArea(stage.options), 100);
+      } else {
+        this.showInput();
       }
     }
   }
@@ -267,13 +314,11 @@ class AIChatDemo {
     if (typeof marked !== 'undefined') {
       this.el.reportContent.innerHTML = marked.parse(content);
     } else {
-      // Fallback: simple line-based rendering
       this.el.reportContent.innerHTML = this.simpleMarkdown(content);
     }
   }
   
   simpleMarkdown(text) {
-    // Minimal markdown parser for fallback
     let html = text
       .replace(/^### (.*$)/gim, '<h3>$1</h3>')
       .replace(/^## (.*$)/gim, '<h2>$1</h2>')
@@ -288,9 +333,7 @@ class AIChatDemo {
       .replace(/^---$/gim, '<hr>')
       .replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>');
     
-    // Wrap lists
     html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
-    
     return html;
   }
   
