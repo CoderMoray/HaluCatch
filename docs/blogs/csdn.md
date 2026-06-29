@@ -3,6 +3,26 @@
 > 项目地址：https://github.com/CoderMoray/HaluCatch  
 > 适用人群：AI 工具使用者、Skill 开发者、对 AI 输出质量有要求的数据/产品同学
 
+<!--
+图片插入指南：
+1. halucatch-4d-framework.png → 插在「四维评估框架」标题下方
+2. halucatch-report-comparison.png → 插在「报告怎么看」标题下方
+发布时拖拽 PNG 到编辑器对应位置即可，无需上传到图床。
+-->
+
+---
+
+---
+
+## 目录
+
+1. [HaluCatch 是什么？](#一halucatch-是什么)
+2. [四维评估框架（核心原理）](#二四维评估框架核心原理)
+3. [安装与使用](#三安装与使用)
+4. [报告怎么看？](#四报告怎么看)
+5. [实战：审查一个真实 Skill](#五实战审查一个真实-skill)
+6. [常见问题 FAQ](#六常见问题-faq)
+
 ---
 
 ## 前言：AI 执行的 Skill，你敢信吗？
@@ -45,7 +65,7 @@
 
 ## 二、四维评估框架（核心原理）
 
-> *[四维框架矩阵图](https://raw.githubusercontent.com/CoderMoray/HaluCatch/main/docs/blogs/assets/halucatch-4d-framework.png)*
+![四维评估框架矩阵](这里插入 halucatch-4d-framework.png)
 
 HaluCatch 从一个核心问题出发：
 
@@ -64,7 +84,15 @@ HaluCatch 从一个核心问题出发：
 
 ## 三、安装与使用
 
-### 3.1 获取 HaluCatch
+### 3.1 在线体验（零安装）
+
+不想装 CLI？直接在浏览器里试试 HaluCatch：
+
+👉 **[在线 Demo](https://codermoray.github.io/HaluCatch/)**
+
+进入页面后，AI 对话将带你走一遍完整审查流程，三版报告 Tab 可以随时切换查看，支持暗色 / 亮色 / 跟随系统主题。
+
+### 3.2 获取 HaluCatch
 
 ```bash
 git clone https://github.com/CoderMoray/HaluCatch.git
@@ -104,7 +132,7 @@ python3 halucatch_core.py --skill-dir /path/to/your-skill --validate
 
 ## 四、报告怎么看？
 
-> *[三版报告对比图](https://raw.githubusercontent.com/CoderMoray/HaluCatch/main/docs/blogs/assets/halucatch-report-comparison.png)*
+![三版报告对比](这里插入 halucatch-report-comparison.png)
 
 审查完成后，在 `reports/` 目录下生成三份报告：
 
@@ -167,6 +195,7 @@ A：支持。HaluCatch 会根据你的系统语言自动切换输出语言，也
 | 资源 | 链接 |
 |------|------|
 | GitHub 仓库 | https://github.com/CoderMoray/HaluCatch |
+| 在线 Demo | https://codermoray.github.io/HaluCatch/ |
 | 在线流程图 | https://codermoray.github.io/HaluCatch/decision-flowchart.html |
 | 问题反馈 | https://github.com/CoderMoray/HaluCatch/issues |
 

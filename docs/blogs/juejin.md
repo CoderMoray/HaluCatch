@@ -3,6 +3,23 @@
 > 项目地址：https://github.com/CoderMoray/HaluCatch  
 > 适用人群：正在开发或使用 AI Skill 的开发者
 
+<!--
+图片插入指南：
+1. halucatch-4d-framework.png → 插在「四维评估框架」标题下方
+2. halucatch-workflow.png → 插在「四维评估框架」小节末尾
+发布时拖拽 PNG 到编辑器对应位置即可，无需上传到图床。
+-->
+
+---
+
+---
+
+## TL;DR
+
+> AI 执行 Skill 会出错，而且它不会告诉你。  
+> HaluCatch 用四维框架审查 Skill 可靠性：地基 · 代码 · 规则 · 护栏。  
+> 零依赖 Python CLI，开源 MIT。→ [GitHub](https://github.com/CoderMoray/HaluCatch)
+
 ---
 
 ## 一个问题
@@ -35,7 +52,7 @@ AI 执行 Skill 时最常见的问题，不是"不会做"，而是**以为自己
 
 ### 四维评估框架
 
-> *[HaluCatch 四维框架图](https://raw.githubusercontent.com/CoderMoray/HaluCatch/main/docs/blogs/assets/halucatch-4d-framework.png)*
+![四维评估框架矩阵](这里插入 halucatch-4d-framework.png)
 
 ```
 🏗️ 地基  — 数据管线是否稳固（路径/校验/依赖声明）
@@ -46,7 +63,7 @@ AI 执行 Skill 时最常见的问题，不是"不会做"，而是**以为自己
 
 前两项靠脚本扫描（确定性高），后两项靠 AI 语义判断（需要上下文）。
 
-*[审查工作流全链路图](https://raw.githubusercontent.com/CoderMoray/HaluCatch/main/docs/blogs/assets/halucatch-workflow.png)*
+![HaluCatch 审查工作流](这里插入 halucatch-workflow.png)
 
 ### 三版报告
 
@@ -73,6 +90,18 @@ Skill 审查这个赛道目前只有四个工具，切角完全不同：
 1. **唯一有骨架脚本** — `halucatch_core.py` 提供可复现的基线检查，不依赖 AI 主观判断
 2. **唯一含修复闭环** — 发现 → 修复方案 → 重新审查验证
 3. **唯一跨语言** — 用结构信号（清单/图标/表格密度）替代语义关键词，中英文都支持
+
+---
+
+## 在线体验
+
+不想装 CLI？直接在浏览器里试试 HaluCatch：
+
+👉 **[在线 Demo](https://codermoray.github.io/HaluCatch/)**
+
+进入页面后，AI 会带你走一遍完整审查流程——从扫描 Skill 目录到输出三版报告，全部在浏览器里完成。支持暗色/亮色/跟随系统三种主题。
+
+三版报告 Tab（标准版 / 专业版 / AI 行动版）可随时切换，滑动指示条 + 内容横切动画 + 高度平滑过渡，交互细节拉满。
 
 ---
 
@@ -119,6 +148,7 @@ python3 halucatch_core.py --skill-dir ~/.workbuddy/skills/xlsx
 
 - **开源协议**：MIT
 - **GitHub**：https://github.com/CoderMoray/HaluCatch
+- **在线体验**：https://codermoray.github.io/HaluCatch/
 - **适用平台**：WorkBuddy / Claude / 任何支持 Skill 机制的 AI 助手
 - **零依赖**：`halucatch/` 包纯 Python 标准库，无需安装任何第三方包
 
