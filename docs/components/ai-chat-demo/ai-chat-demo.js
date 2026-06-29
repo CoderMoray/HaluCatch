@@ -27,6 +27,10 @@ class AIChatDemo {
     this.container.innerHTML = this.buildHTML();
     this.cacheElements();
     this.bindEvents();
+    // startStage deferred — entrance animation triggers begin()
+  }
+  
+  begin() {
     this.startStage('init');
   }
   
@@ -69,14 +73,14 @@ class AIChatDemo {
               <button class="chat-send-btn" disabled>↑</button>
             </div>
             <!-- Options area (replaces input row) -->
-            <div class="chat-options-area" id="options-area" style="display:none;"></div>
+            <div class="chat-options-area" id="options-area"></div>
           </div>
         </div>
         <div class="report-panel">
           <div class="report-tabs">
-            <button class="report-tab active" data-report="standard">标准版</button>
+            <button class="report-tab" data-report="standard">标准版</button>
             <button class="report-tab" data-report="professional">专业版</button>
-            <button class="report-tab" data-report="action">行动版</button>
+            <button class="report-tab" data-report="action">AI 行动版</button>
           </div>
           <div class="report-content"></div>
         </div>
@@ -91,6 +95,7 @@ class AIChatDemo {
       input: this.container.querySelector('.chat-input'),
       sendBtn: this.container.querySelector('.chat-send-btn'),
       optionsArea: this.container.querySelector('#options-area'),
+      toolbar: this.container.querySelector('.chat-input-toolbar'),
       thinkingBtn: this.container.querySelector('.chat-thinking-btn'),
       modelSelector: this.container.querySelector('.chat-model-selector'),
       dropdownMenu: this.container.querySelector('.model-dropdown-menu'),
@@ -158,32 +163,43 @@ class AIChatDemo {
   // ── Input/Options Toggle ─────────────────────────────────────
   
   showOptionsInInputArea(options) {
-    this.el.inputRow.style.display = 'none';
-    this.el.optionsArea.style.display = 'flex';
+    this.el.inputRow.classList.add('hidden');
+    this.el.optionsArea.classList.add('visible');
     this.el.optionsArea.innerHTML = '';
     
-    const hint = document.createElement('div');
+    const hint = document.createElement('span');
     hint.className = 'chat-options-hint';
     hint.textContent = '👇 选择一个选项继续';
-    this.el.optionsArea.appendChild(hint);
+    this.el.toolbar.insertBefore(hint, this.el.toolbar.firstChild);
+    requestAnimationFrame(() => hint.classList.add('visible'));
     
     const list = document.createElement('div');
     list.className = 'chat-options-list';
     
-    options.forEach(opt => {
+    options.forEach((opt, i) => {
       const btn = document.createElement('button');
       btn.className = 'chat-option-btn';
       btn.textContent = opt.text;
+      btn.style.transitionDelay = (i * 0.08) + 's';
       btn.addEventListener('click', () => this.handleOptionClick(opt));
       list.appendChild(btn);
     });
     
     this.el.optionsArea.appendChild(list);
+    requestAnimationFrame(() => {
+      list.querySelectorAll('.chat-option-btn').forEach(b => b.classList.add('visible'));
+    });
   }
   
   showInput() {
-    this.el.optionsArea.style.display = 'none';
-    this.el.inputRow.style.display = 'flex';
+    const hint = this.el.toolbar.querySelector('.chat-options-hint');
+    if (hint) {
+      hint.classList.remove('visible');
+      setTimeout(() => hint.remove(), 300);
+    }
+    this.el.optionsArea.classList.remove('visible');
+    setTimeout(() => { this.el.optionsArea.innerHTML = ''; }, 350);
+    this.el.inputRow.classList.remove('hidden');
     this.el.input.disabled = false;
     this.el.sendBtn.disabled = false;
     this.el.input.focus();
@@ -309,8 +325,12 @@ class AIChatDemo {
   
   handleOptionClick(option) {
     if (this.isTyping) return;
-    this.el.optionsArea.innerHTML = '';
-    this.el.optionsArea.style.display = 'none';
+    const hint = this.el.toolbar.querySelector('.chat-options-hint');
+    if (hint) { hint.classList.remove('visible'); setTimeout(() => hint.remove(), 300); }
+    
+    const btns = this.el.optionsArea.querySelectorAll('.chat-option-btn');
+    btns.forEach(b => b.classList.remove('visible'));
+    this.el.optionsArea.classList.remove('visible');
     
     this.addMessage(option.text, 'user');
     
@@ -367,15 +387,71 @@ class AIChatDemo {
   
   showReports() {
     this.reportVisible = true;
+
+    var indicator = document.createElement('div');
+    indicator.className = 'report-tab-indicator';
+    this.el.reportPanel.querySelector('.report-tabs').appendChild(indicator);
+    this.el.reportTabIndicator = indicator;
+
     this.el.reportPanel.classList.add('visible');
-    this.switchReport('standard');
+    setTimeout(() => this.switchReport('standard'), 520);
   }
   
   switchReport(type) {
-    this.el.reportTabs.forEach(t => t.classList.toggle('active', t.dataset.report === type));
-    
-    const content = this.reports[type] || '> 暂无报告内容';
-    this.el.reportContent.innerHTML = this.renderMarkdown(content);
+    const tabs = this.el.reportTabs;
+    const idxMap = { standard: 0, professional: 1, action: 2 };
+    const oldIdx = Array.from(tabs).findIndex(t => t.classList.contains('active'));
+    const newIdx = idxMap[type];
+    if (oldIdx === newIdx) return;
+
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.report === type));
+
+    // Slide tab indicator
+    const activeTab = this.el.reportPanel.querySelector('.report-tab.active');
+    if (this.el.reportTabIndicator && activeTab) {
+      this.el.reportTabIndicator.style.left = activeTab.offsetLeft + 'px';
+      this.el.reportTabIndicator.style.width = activeTab.offsetWidth + 'px';
+    }
+
+    // Two-phase content slide
+    if (oldIdx === -1) {
+      // First load: just show
+      const c = this.reports[type] || '> 暂无报告内容';
+      this.el.reportContent.innerHTML = this.renderMarkdown(c);
+      return;
+    }
+
+    const dir = newIdx > oldIdx ? 'left' : 'right';
+    const rev = dir === 'left' ? 'right' : 'left';
+
+    // Lock container to current height during slide animation
+    const demoEl = this.container.querySelector('.ai-chat-demo');
+    var oldH = demoEl.offsetHeight;
+    demoEl.style.height = oldH + 'px';
+    demoEl.style.overflow = 'hidden';
+
+    // Phase 1: slide old content out
+    this.el.reportContent.classList.add('slide-out-' + dir);
+    setTimeout(() => {
+      const c = this.reports[type] || '> 暂无报告内容';
+      this.el.reportContent.innerHTML = this.renderMarkdown(c);
+      this.el.reportContent.classList.remove('slide-out-right', 'slide-out-left');
+      this.el.reportContent.classList.add('slide-in-' + rev);
+      this.el.reportContent.offsetHeight;
+      this.el.reportContent.classList.remove('slide-in-right', 'slide-in-left');
+
+      // Measure new height, then transition from old to new
+      demoEl.style.height = '';    // unlock to get natural height
+      var newH = demoEl.offsetHeight;
+      demoEl.style.height = oldH + 'px';  // re-lock
+      demoEl.offsetHeight;                // force reflow
+      demoEl.style.height = newH + 'px';  // transition to new height
+
+      setTimeout(function() {
+        demoEl.style.height = '';
+        demoEl.style.overflow = '';
+      }, 350);
+    }, 550);
   }
   
   renderMarkdown(text) {

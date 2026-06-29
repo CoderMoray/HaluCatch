@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HaluCatch — AI Skill 执行可靠性审计</title>
+  <script>
+    var _t = (function(){ try { return localStorage.getItem('halucatch-theme'); } catch(e){} return null; })() || 'system';
+    if (_t === 'system') _t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', _t);
+    document.write('<style>html,body{background:' + (_t === 'dark' ? '#0a0a0f' : '#f7f7fb') + '}</style>');
+  </script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
@@ -40,7 +46,7 @@
       --h1-from: #6c63ff;
       --h1-to: #00d4aa;
     }
-    :root { --glow-opacity: 1; }
+    :root { --glow-opacity: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: var(--bg);
@@ -64,6 +70,7 @@
       transition: transform 0.3s ease;
     }
     .nav.hidden { transform: translateY(-100%); }
+    .nav.entering { transform: translateY(-100%); }
     [data-theme="light"] .nav {
       background: linear-gradient(to bottom, rgba(247,247,251,1) 0%, rgba(247,247,251,1) 40%, rgba(247,247,251,0.9) 50%, rgba(247,247,251,0.5) 75%, rgba(247,247,251,0.12) 92%, rgba(247,247,251,0) 100%);
     }
@@ -137,9 +144,9 @@
     /* Smooth theme transitions */
     .nav, .nav-link, .problem-card, .preview-container, .badge, pre, .btn,
     .qs-tab, .step-num, footer, .theme-pill, .nav-blog-menu, .nav-blog-item {
-      transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+      transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, opacity 0.55s ease-out, transform 0.55s ease-out;
     }
-    .nav { transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, transform 0.3s ease; }
+    .nav { transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, transform 0.4s ease-out; }
     .theme-pill {
       position: absolute;
       right: 20px;
@@ -186,7 +193,7 @@
     /* 顶部固定渐变光晕，防止下拉时断层 */
     body::before {
       content: '';
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
@@ -194,9 +201,19 @@
       background: radial-gradient(ellipse at top, var(--glow) 0%, transparent 60%);
       opacity: var(--glow-opacity);
       pointer-events: none;
-      z-index: -1;
-      transition: opacity 0.4s ease;
+      z-index: 0;
+      transition: opacity 0.5s ease;
     }
+
+    /* ── Entrance animations ── */
+    .anim-item {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.55s ease-out, transform 0.55s ease-out;
+    }
+    .anim-item.in { opacity: 1; transform: translateY(0); }
+    .anim-spring { transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+
     a { color: var(--accent2); text-decoration: none; }
     a:hover { text-decoration: underline; }
 
@@ -214,7 +231,7 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 12px;
-      transition: background 0.5s ease;
+      transition: background 0.5s ease, opacity 0.55s ease-out, transform 0.55s ease-out;
     }
     .hero .subtitle {
       font-size: 1.2rem;
@@ -425,7 +442,7 @@
 </head>
 <body>
 
-<nav class="nav">
+<nav class="nav entering">
   <div class="nav-inner">
     <a href="#" class="nav-brand">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
@@ -452,9 +469,9 @@
 
 <!-- Hero -->
 <section class="hero">
-  <h1><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -6px; margin-right: 6px;"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/><path d="m16 16-1.9-1.9"/></svg>HaluCatch</h1>
-  <p class="subtitle">AI Skill 执行可靠性审计工具<br>在 AI 执行前，发现 Skill 里的隐患</p>
-  <div class="badges">
+  <h1 class="anim-item" data-anim="600"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -6px; margin-right: 6px;"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/><path d="m16 16-1.9-1.9"/></svg>HaluCatch</h1>
+  <p class="subtitle anim-item" data-anim="900">AI Skill 执行可靠性审计工具<br>在 AI 执行前，发现 Skill 里的隐患</p>
+  <div class="badges anim-item" data-anim="1200">
     <span class="badge">v1.7.1</span>
     <span class="badge">🐍 Python</span>
     <span class="badge">📋 3 份报告</span>
@@ -462,7 +479,7 @@
     <span class="badge">📦 零依赖</span>
     <span class="badge">MIT 开源</span>
   </div>
-  <div class="cta-group" style="margin-top: 32px;">
+  <div class="cta-group anim-item" data-anim="1500" style="margin-top: 32px;">
     <a href="https://github.com/CoderMoray/HaluCatch" class="btn btn-outline">⭐ GitHub 开源</a>
     <a href="https://skillhub.cn/skills/halucatch" class="btn btn-outline" target="_blank">📦 SkillHub</a>
     <a href="https://clawhub.ai/codermoray/skills/halucatch" class="btn btn-outline" target="_blank">🦞 ClawHub</a>
@@ -470,13 +487,13 @@
 </section>
 
 <!-- Interactive Demo -->
-<section id="demo">
+<section id="demo" class="anim-item" data-anim="1900">
   <h2>在线体验 HaluCatch</h2>
   <div id="ai-chat-demo-container"></div>
 </section>
 
 <!-- Problem -->
-<section>
+<section class="anim-item scroll-anim">
   <h2>AI 创建/执行 Skill 时，这些坑你遇到过吗？</h2>
   <div class="problem-grid">
     <div class="problem-card">
@@ -503,7 +520,7 @@
 </section>
 
 <!-- Report Preview -->
-<section id="report-preview">
+<section id="report-preview" class="anim-item scroll-anim">
   <h2>审计报告预览</h2>
   <p style="text-align:center;color:var(--text2);margin-bottom:24px;">同一份 Skill，三份视角 — 以下是 HaluCatch 审计自身的真实报告</p>
   <div class="preview-container">
@@ -622,7 +639,7 @@
 </section>
 
 <!-- Quick Start -->
-<section id="quickstart">
+<section id="quickstart" class="anim-item scroll-anim">
   <h2>快速开始</h2>
 
   <div class="qs-tabs">
@@ -727,7 +744,7 @@ reports/HaluCatch-report-YYYY-MM-DD-行动版.md  <span class="comment"># AI 行
 </section>
 
 <!-- Footer -->
-<footer>
+<footer class="anim-item scroll-anim">
   <p>
     <a href="https://github.com/CoderMoray/HaluCatch">GitHub</a>
     <a href="https://github.com/CoderMoray/HaluCatch/releases">Releases</a>
@@ -758,7 +775,7 @@ function switchQsTab(name) {
 <script src="components/ai-chat-demo/ai-chat-demo.js"></script>
 <script>
 // Initialize AI Chat Demo
-new AIChatDemo({
+window.halucatchDemo = new AIChatDemo({
   container: '#ai-chat-demo-container',
   modelName: 'HaluCatch 1.7',
   avatar: '🔮',
@@ -899,6 +916,25 @@ new AIChatDemo({
     });
   }
 
+  function animateToTheme(resolvedColor) {
+    document.documentElement.style.setProperty('--glow-opacity', '0');
+    setTimeout(function() {
+      document.documentElement.setAttribute('data-theme', resolvedColor);
+      var saved = getTheme();
+      btns.forEach(function(b) {
+        var active = b.dataset.theme === saved;
+        b.classList.toggle('active', active);
+        if (active) {
+          indicator.style.left = b.offsetLeft + 'px';
+          indicator.style.width = b.offsetWidth + 'px';
+        }
+      });
+      setTimeout(function() {
+        document.documentElement.style.setProperty('--glow-opacity', '1');
+      }, 600);
+    }, 300);
+  }
+
   btns.forEach(function(b) {
     b.addEventListener('click', function() { setTheme(b.dataset.theme); });
   });
@@ -907,9 +943,69 @@ new AIChatDemo({
     if (getTheme() === 'system') applyThemeInternal();
   });
 
-  applyThemeInternal();
+  // Initial load: page already has correct theme from blocking script, just sync pill
+  var saved = getTheme();
+  btns.forEach(function(b) {
+    var active = b.dataset.theme === saved;
+    b.classList.toggle('active', active);
+    if (active) {
+      indicator.style.left = b.offsetLeft + 'px';
+      indicator.style.width = b.offsetWidth + 'px';
+    }
+  });
 })();
 </script>
 
+<script>
+// Entrance animation — staggered above-fold, IntersectionObserver below-fold
+(function() {
+  var nav = document.querySelector('.nav');
+  var isTop = window.scrollY < 200;
+
+  if (!isTop) {
+    // Scrolled down — show everything immediately, no animations
+    nav.classList.remove('entering');
+    document.documentElement.style.setProperty('--glow-opacity', '1');
+    document.querySelectorAll('.anim-item').forEach(function(el) { el.classList.add('in'); });
+    if (window.halucatchDemo) window.halucatchDemo.begin();
+    return;
+  }
+
+  // Step 1: Glow fade in
+  setTimeout(function() {
+    document.documentElement.style.setProperty('--glow-opacity', '1');
+  }, 0);
+
+  // Step 2: Nav slide down
+  setTimeout(function() {
+    nav.classList.remove('entering');
+  }, 200);
+
+  // Step 3: Above-fold elements staggered by data-anim delay
+  document.querySelectorAll('.anim-item[data-anim]').forEach(function(el) {
+    var delay = parseInt(el.getAttribute('data-anim')) || 0;
+    setTimeout(function() { el.classList.add('in'); }, delay);
+  });
+
+  // Start demo typing after section fades in (1900ms + 0.55s transition)
+  setTimeout(function() {
+    if (window.halucatchDemo) window.halucatchDemo.begin();
+  }, 2500);
+
+  // Step 4: Below-fold scroll-triggered (once per element)
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('.anim-item.scroll-anim').forEach(function(el) {
+    observer.observe(el);
+  });
+})();
+</script>
 </body>
 </html>

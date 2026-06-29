@@ -1,4 +1,4 @@
-<svg viewBox="0 0 680 930" role="img" aria-label="HaluCatch 执行决策流程图" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="-40 0 720 930" role="img" aria-label="HaluCatch 执行决策流程图" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
       <path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -125,7 +125,7 @@
   <text class="ts" x="24" y="704" dominant-baseline="central" fill="#888780">建议</text>
 
   <!-- ============ LEGEND (text inside color blocks) ============ -->
-  <g transform="translate(68, 880)">
+  <g transform="translate(171, 880)">
     <rect x="0" y="0" width="70" height="22" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
     <text x="35" y="13" text-anchor="middle" style="font: 500 11px system-ui; fill: #185FA5;" dominant-baseline="central">AI 执行</text>
 

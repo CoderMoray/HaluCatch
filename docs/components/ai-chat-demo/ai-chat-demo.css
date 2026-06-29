@@ -26,11 +26,13 @@
   background: var(--chat-bg);
   min-height: 520px;
   max-height: 640px;
+  transition: height 0.3s ease;
 }
 
 .ai-chat-demo, .chat-panel, .chat-header, .chat-messages, .chat-input-area,
 .chat-bubble, .chat-thinking, .report-panel, .report-content,
 .chat-option-btn, .chat-model-selector, .model-dropdown-menu { transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease; }
+.ai-chat-demo { transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, height 0.3s ease; }
 
 /* Light theme */
 [data-theme="light"] .ai-chat-demo {
@@ -414,6 +416,15 @@
   display: flex;
   align-items: flex-end;
   gap: 8px;
+  max-height: 80px;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease, margin 0.5s ease;
+}
+.chat-input-row.hidden {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
 }
 
 .chat-input {
@@ -463,17 +474,27 @@
 
 /* Options (replace input area) */
 .chat-options-area {
-  display: flex;
   flex-direction: column;
   gap: 8px;
   padding: 4px 0;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.35s ease;
+}
+.chat-options-area.visible {
+  max-height: 400px;
+  opacity: 1;
 }
 
 .chat-options-hint {
   font-size: 0.75rem;
   color: var(--chat-text2);
-  padding-left: 4px;
+  margin-right: auto;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
+.chat-options-hint.visible { opacity: 1; }
 
 .chat-options-list {
   display: flex;
@@ -490,8 +511,14 @@
   font-size: 0.85rem;
   cursor: pointer;
   text-align: left;
-  transition: all 0.2s;
+  transition: background-color 0.2s, border-color 0.2s, opacity 0.48s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.48s cubic-bezier(0.34, 1.56, 0.64, 1);
   line-height: 1.5;
+  opacity: 0;
+  transform: translateY(14px) scale(0.9);
+}
+.chat-option-btn.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
 .chat-option-btn:hover {
@@ -519,29 +546,40 @@
 }
 
 .report-tabs {
+  position: relative;
   display: flex;
   gap: 0;
   border-bottom: 1px solid var(--chat-border);
   background: var(--chat-surface);
   flex-shrink: 0;
+  height: 47px;
+}
+.report-tab-indicator {
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  background: var(--chat-accent);
+  transition: left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .report-tab {
   flex: 1;
-  padding: 10px 8px;
+  height: 100%;
+  padding: 0 8px;
   background: none;
   border: none;
-  border-bottom: 2px solid transparent;
   color: var(--chat-text2);
   font-size: 0.8rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: color 0.3s ease;
   white-space: nowrap;
+  position: relative;
+  line-height: 47px;
 }
 
 .report-tab.active {
   color: var(--chat-accent);
-  border-bottom-color: var(--chat-accent);
+  border-bottom-color: transparent;
 }
 
 .report-tab:hover:not(.active) {
@@ -551,11 +589,17 @@
 .report-content {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 16px 20px;
   font-size: 0.8rem;
   line-height: 1.7;
   color: var(--chat-text);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.55s ease, min-height 0.6s ease;
 }
+.report-content.slide-out-right { transform: translateX(160px); opacity: 0; }
+.report-content.slide-out-left  { transform: translateX(-160px); opacity: 0; }
+.report-content.slide-in-right { transform: translateX(160px); opacity: 0; }
+.report-content.slide-in-left  { transform: translateX(-160px); opacity: 0; }
 
 /* Markdown Styles in Report */
 .report-content h1 { font-size: 1.1rem; margin-bottom: 12px; border-bottom: 1px solid var(--chat-border); padding-bottom: 8px; }
