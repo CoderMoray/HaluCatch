@@ -258,6 +258,8 @@
       .cta-group { flex-direction: column; align-items: center; }
     }
   </style>
+  <link rel="stylesheet" href="components/ai-chat-demo/ai-chat-demo.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
@@ -279,6 +281,13 @@
     <a href="https://clawhub.ai/codermoray/skills/halucatch" class="btn btn-outline" target="_blank">🦞 ClawHub</a>
     <a href="#quickstart" class="btn btn-outline">🚀 快速开始</a>
   </div>
+</section>
+
+<!-- Interactive Demo -->
+<section id="demo">
+  <h2>🎮 在线体验</h2>
+  <p style="color:var(--text2);margin-bottom:24px;">无需安装，直接体验 HaluCatch 审查流程</p>
+  <div id="ai-chat-demo-container"></div>
 </section>
 
 <!-- Problem -->
@@ -558,6 +567,61 @@ function switchQsTab(name) {
   event.currentTarget.classList.add('active');
   document.getElementById('qs-' + name).classList.add('active');
 }
+</script>
+
+<script src="components/ai-chat-demo/reports-data.js"></script>
+<script src="components/ai-chat-demo/ai-chat-demo.js"></script>
+<script>
+// Initialize AI Chat Demo
+new AIChatDemo({
+  container: '#ai-chat-demo-container',
+  modelName: 'HaluCatch LLM Demo',
+  avatar: '🔮',
+  thinkingEnabled: true,
+  thinkingLabel: '深度思考',
+  endMessage: '这是演示环境。请复制上方安装提示词，在你自己的 AI 平台（如 Kimi、ChatGPT、ClawHub）中继续使用 HaluCatch。',
+  stages: {
+    init: {
+      aiMessage: 'HaluCatch 已就绪。我可以帮你审查任何 Skill 目录，从地基、代码、规则、护栏四个维度评估执行可靠性。需要我演示一下吗？',
+      options: [
+        { text: '好的，请用 HaluCatch 审查这个项目本身', next: 'audit' },
+        { text: '这是什么工具？', next: 'explain' },
+        { text: '我需要准备什么？', next: 'prepare' }
+      ]
+    },
+    explain: {
+      aiMessage: 'HaluCatch 是一个 AI Skill 执行可靠性审查工具。它会检查你的 Skill 是否有数据管线漏洞、代码篡改风险、业务口径模糊、以及 AI 执行时的安全护栏缺失。',
+      options: [
+        { text: '明白了，请审查这个项目', next: 'audit' }
+      ]
+    },
+    prepare: {
+      aiMessage: '你需要准备一个 Skill 目录，里面至少包含 SKILL.md（指令文件）。如果有 .py 脚本或数据文件，审查会更全面。',
+      options: [
+        { text: '好的，开始审查', next: 'audit' }
+      ]
+    },
+    audit: {
+      thinking: [
+        '📁 扫描目录结构...',
+        '🔍 读取 SKILL.md (340 行, 11 个模块)...',
+        '🐍 扫描 Python 模块 (1100+ 行代码)...',
+        '🏗️ 评估地基：路径参数化 ✓ / 输入验证 ✗ / 文件发现 ✗',
+        '🤖 扫描代码风险：0 个篡改点 ✓',
+        '📝 检查规则/方法论：模糊词 0 / 边界定义 ✓ / 异常处理 ✓',
+        '🛡️ 检查护栏：输出格式 ✓ / 禁止声明 ✓ / 数据时效性 ✓ / 前提假设 ✓',
+        '📊 生成三份报告 (专业版 / 标准版 / 行动版)...'
+      ],
+      aiMessage: '审查完成！已生成三份报告。你可以在右侧查看。整体评级：地基 🟡 / 代码 🟢 / 规则 🟢 / 护栏 🟢',
+      showReports: true
+    }
+  },
+  reports: {
+    standard: REPORTS_DATA.standard,
+    professional: REPORTS_DATA.professional,
+    action: REPORTS_DATA.action
+  }
+});
 </script>
 
 </body>
