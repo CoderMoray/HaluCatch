@@ -1,6 +1,6 @@
 # HaluCatch 项目进度总结
 
-> 生成时间：2026-06-27
+> 生成时间：2026-06-30
 > 范围：不含未来计划，仅记录已完成工作
 
 ---
@@ -75,16 +75,23 @@
 - [x] SkillHub 发布（https://skillhub.cn/skills/halucatch）
 - [x] ClawHub 发布（https://clawhub.ai/codermoray/skills/halucatch）
 
-### GitHub Pages（v1.7.0）
+### GitHub Pages（v1.7.1）
 
 - [x] `docs/index.html` — 静态首页
-  - Hero 区（标题 + 副标题 + Badges + 4 个 CTA 按钮）
+  - Hero 区（标题 + 副标题 + Badges + 3 个 CTA 按钮）
   - 问题展示区（4 张卡片：硬编码路径 / 分支缺失 / 模糊表述 / 无护栏）
   - 审计报告预览（三 Tab：标准版 / 专业版 / AI 行动版，含 HaluCatch 自审真实报告）
-  - 快速开始（3 步安装指引）
-  - 响应式设计，暗色主题
+  - 快速开始（3 步安装指引，普通用户/开发者切换）
+  - 在线体验 Demo（AI 对话 + 深度思考 + 模型选择 + 报告面板）
+  - 三态主题切换（暗色 / 亮色 / 跟随系统，药丸滑块 + localStorage 持久化 + 防屏闪）
+  - 页面入场动画序列（光球 → 导航 → Hero → Demo，下方 IntersectionObserver 滚入触发）
+  - 导航栏（brand 左锚 + links 居中 + 主题药丸右锚，下滑隐藏 + 鼠标触发展示）
+  - Report Tab 切换动画（滑动指示条 + 内容横切 + 容器高度平滑过渡）
+  - 响应式设计，暗色默认主题
 - [x] 按钮样式统一（默认 outline → 悬停实心 → 点击深紫实心）
 - [x] 在线决策流程图（https://codermoray.github.io/HaluCatch/decision-flowchart.html）
+- [x] Blog 文稿（掘金版 juejin.md + CSDN 版 csdn.md，存放 `docs/blogs/`）
+- [x] 离线混淆构建脚本（`scripts/build-standalone.py`，固化为 `~/.workbuddy/scripts/`）
 
 ### 文档
 
@@ -135,16 +142,23 @@ HaluCatch/
 │   ├── index.html            ← GitHub Pages 首页
 │   ├── CHANGELOG.md         ← 变更日志
 │   ├── FAQ.md               ← 常见问题
+│   ├── PROGRESS.md          ← 项目进度总结
 │   ├── decision-flowchart.html      ← 在线决策流程图
-│   └── decision-flowchart-prompt.md ← 流程图生成 Prompt
+│   ├── decision-flowchart-prompt.md ← 流程图生成 Prompt
+│   ├── components/
+│   │   └── ai-chat-demo/    ← Demo 组件（CSS + JS + 报告数据）
+│   └── blogs/               ← 推广博文
+│       ├── juejin.md        ← 掘金版
+│       └── csdn.md          ← CSDN 版
 ├── reports/                  ← 审计报告输出目录
 │   ├── HaluCatch-report-2026-06-27.md             ← 最新专业版
 │   ├── HaluCatch-report-2026-06-27-标准版.md      ← 最新标准版
 │   └── HaluCatch-report-2026-06-27-行动版.md      ← 最新行动版
 ├── scripts/
-│   ├── release.sh           ← 自动化发布（已修复：dry-run 模式、-e 移除、干净树检测）
+│   ├── release.sh           ← 自动化发布
 │   ├── bump-version.sh      ← 版本号 bump
 │   ├── build-skillhub.sh    ← SkillHub 格式构建
+│   ├── build-standalone.py  ← 离线混淆单文件构建
 │   ├── lint-paths.sh        ← 路径硬编码检测
 │   └── check-file-size.sh   ← 文件尺寸保护
 ├── tests/
