@@ -14,7 +14,7 @@
 
 ---
 
-## TL;DR
+## Intro
 
 > AI 执行 Skill 会出错，而且它不会告诉你。  
 > HaluCatch 用四维框架审查 Skill 可靠性：地基 · 代码 · 规则 · 护栏。  

@@ -138,8 +138,6 @@
       transition: all 0.15s;
     }
     .nav-blog-item:hover { color: var(--text); background: var(--surface2); text-decoration: none; }
-    .nav-blog-item.empty { color: var(--text2); opacity: 0.5; cursor: default; }
-    .nav-blog-item.empty:hover { background: transparent; color: var(--text2); }
 
     /* Smooth theme transitions */
     .nav, .nav-link, .problem-card, .preview-container, .badge, pre, .btn,
@@ -427,6 +425,31 @@
     }
     footer a { margin: 0 12px; }
 
+    /* Blog Section */
+    .blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .blog-card {
+      display: block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .blog-card:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+    .blog-card h3 { font-size: 1.05rem; margin: 8px 0; font-weight: 600; }
+    .blog-card p { color: var(--text2); font-size: 0.9rem; line-height: 1.6; }
+    .blog-platform {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 4px;
+    }
+    [data-theme="dark"] .blog-platform { background: #1a3a5c; color: #339af0; }
+    [data-theme="light"] .blog-platform { background: #e6f1fb; color: #2878c8; }
+
     @media (max-width: 600px) {
       .hero h1 { font-size: 2rem; }
       .preview-tabs { overflow-x: auto; }
@@ -455,7 +478,8 @@
       <div class="nav-blog">
         <a href="#" class="nav-link" onclick="return false">Blog ▾</a>
         <div class="nav-blog-menu">
-          <span class="nav-blog-item empty">即将更新...</span>
+          <a class="nav-blog-item" href="https://juejin.cn/post/7656841584964599842" target="_blank">掘金 · 介绍</a>
+          <a class="nav-blog-item" href="https://blog.csdn.net/weixin_41767324/article/details/162432750" target="_blank">CSDN · 教程</a>
         </div>
       </div>
     </div>
@@ -740,6 +764,23 @@ reports/HaluCatch-report-YYYY-MM-DD-行动版.md  <span class="comment"># AI 行
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- Blog -->
+<section class="anim-item scroll-anim">
+  <h2>📝 相关文章</h2>
+  <div class="blog-grid">
+    <a href="https://juejin.cn/post/7656841584964599842" target="_blank" class="blog-card">
+      <div class="blog-platform">掘金</div>
+      <h3>AI Skill 也会"说胡话"？我做了一个执行可靠性审查工具</h3>
+      <p>介绍 HaluCatch 的设计思路、四维评估框架和实战案例</p>
+    </a>
+    <a href="https://blog.csdn.net/weixin_41767324/article/details/162432750" target="_blank" class="blog-card">
+      <div class="blog-platform">CSDN</div>
+      <h3>如何检查你的 AI Skill 是否可靠？HaluCatch 使用指南</h3>
+      <p>从安装到实战的完整教程，零基础也能上手</p>
+    </a>
   </div>
 </section>
 
