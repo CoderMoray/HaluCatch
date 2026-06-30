@@ -634,17 +634,26 @@
       .pill-label { opacity: 0; max-width: 0; padding: 0; }
     }
 
-    /* ≤720px: hamburger menu */
-    @media (max-width: 720px) {
+    /* ≤860px: hamburger menu */
+    @media (max-width: 860px) {
       .nav-hamburger { display: flex; }
       .nav-links {
-        display: none; position: absolute; top: 100%; left: 0; right: 0;
-        flex-direction: column; background: var(--surface); border: 1px solid var(--border);
-        border-radius: 0 0 12px 12px; padding: 8px; gap: 2px; z-index: 99;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        position: fixed; top: 52px; right: 12px;
+        flex-direction: column; align-items: stretch;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px; padding: 8px; gap: 4px; z-index: 99;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+        opacity: 0; visibility: hidden; pointer-events: none;
+        transform: translateY(-8px);
+        transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
       }
-      .nav-links.open { display: flex; }
+      .nav-links.open {
+        opacity: 1; visibility: visible; pointer-events: auto;
+        transform: translateY(0);
+      }
       .nav-link { padding: 10px 14px; font-size: 0.9rem; border-radius: 8px; }
+      .nav-link:hover { background: var(--surface2); }
     }
   </style>
   <link rel="stylesheet" href="components/ai-chat-demo/ai-chat-demo.css">
@@ -658,9 +667,6 @@
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
       HaluCatch 1.7
     </a>
-    <button class="nav-hamburger" id="nav-hamburger" aria-label="菜单">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
     <div class="nav-links" id="nav-links">
       <a href="#demo" class="nav-link">在线体验</a>
       <a href="#report-preview" class="nav-link">报告预览</a>
@@ -669,6 +675,9 @@
       <a href="#faq" class="nav-link">FAQ</a>
     </div>
     <div class="nav-tools">
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="菜单">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
     <div class="theme-pill" id="theme-pill">
       <button class="theme-pill-btn" data-theme="light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg><span class="pill-label">Light</span></button>
       <button class="theme-pill-btn" data-theme="dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="pill-label">Night</span></button>
