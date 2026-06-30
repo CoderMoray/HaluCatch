@@ -1229,6 +1229,17 @@ window.halucatchDemo = new AIChatDemo({
     if (getTheme() === 'system') applyThemeInternal();
   });
 
+  function updateIndicator() {
+    var saved = getTheme();
+    btns.forEach(function(b) {
+      if (b.dataset.theme === saved) {
+        indicator.style.left = b.offsetLeft + 'px';
+        indicator.style.width = b.offsetWidth + 'px';
+      }
+    });
+  }
+  window.addEventListener('resize', updateIndicator);
+
   // Initial load: page already has correct theme from blocking script, just sync pill
   var saved = getTheme();
   btns.forEach(function(b) {
