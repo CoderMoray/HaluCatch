@@ -688,7 +688,7 @@
       .nav-link:hover { background: var(--surface2); }
     }
 
-    .brand-text { white-space: nowrap; }
+    .brand-text { white-space: nowrap; transition: opacity 0.24s ease; }
   </style>
   <link rel="stylesheet" href="components/ai-chat-demo/ai-chat-demo.css">
   <script src="https://cdn.jsdelivr.net/npm/marked@3.0.8/marked.min.js"></script>
@@ -1345,12 +1345,22 @@ window.halucatchDemo = new AIChatDemo({
     if (e.target.classList.contains('nav-link')) navLinks.classList.remove('open');
   });
 
-  // Brand text swap at 460px
+  // Brand text swap at 460px with smooth fade
   (function() {
     var brand = document.getElementById('brand-text');
     var full = 'HaluCatch / 捕幻', compact = '捕幻';
+    var current = full, swapping = false;
     function updateBrand() {
-      brand.textContent = window.innerWidth <= 460 ? compact : full;
+      var want = window.innerWidth <= 460 ? compact : full;
+      if (want === current || swapping) return;
+      swapping = true;
+      brand.style.opacity = '0';
+      setTimeout(function() {
+        brand.textContent = want;
+        current = want;
+        brand.style.opacity = '1';
+        swapping = false;
+      }, 240);
     }
     window.addEventListener('resize', updateBrand);
     updateBrand();
