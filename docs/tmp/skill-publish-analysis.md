@@ -306,32 +306,136 @@ if [[ "$UNRELEASED" -gt 0 ]]; then
 
 ---
 
-### 3.8 `lint-paths.sh` — 发布前自检
+---
+
+### 3.8 `lint-paths.sh` — 发布前自检（⚠️ 注意：实为「结构完整性检查」，非「代码 Lint」）
+
+这是一个命名容易混淆的脚本。它**不做任何代码层面的语法/格式检查**（如 ruff、eslint），而是做**项目结构完整性验证**——确保发布前所有必需文件就位、版本号一致。为避免误解，将其命名为 `lint-paths.sh` 而非 `lint-code.sh` 是正确的，但分析时必须区分清楚。
+
+#### 四步检查清单
+
+| 检查步骤 | 内容 | 严重度 | 分类 |
+|---------|------|--------|------|
+| **Step 1** | `manifest.json` 存在性 | ❌ 错误 | 结构检查 |
+| **Step 2** | `required_files` 清单中每个文件存在 | ❌ 错误 | 结构检查 |
+| **Step 3** | 版本号一致性 (`_meta.json` vs `SKILL.md`) | ❌ 错误 | 数据检查 |
+| **Step 4** | CHANGELOG 最新版本匹配 | ⚠️ 警告 | 数据检查 |
 
 #### 🔒 平台规则（检查标准）
 
 | 检查项 | 标准 | 违反后果 |
 |--------|------|---------|
-| `manifest.json` 存在 | 必须存在 | 无法构建 |
+| `manifest.json` 存在 | 必须存在 | 无法构建 SkillHub 包 |
 | `required_files` 全部存在 | 清单中每个文件都必须在磁盘上 | 运行时缺失 |
-| 版本号一致 | `_meta.json` == `SKILL.md` | 平台展示版本混乱 |
+| 版本号一致 | `_meta.json` == `SKILL.md` | 平台展示版本混乱，SkillHub 与 ClawHub 不同步 |
 | CHANGELOG 版本匹配（可选） | `docs/CHANGELOG.md` 最新版本与 `_meta.json` 一致 | 用户困惑 |
 
 #### 🧠 AI 动态填充
 
 | 内容 | AI 推断 | 说明 |
 |------|---------|------|
-| `required_files` 清单 | 读取 `manifest.json` 动态获取 | 不同项目清单不同 |
-| 版本号提取模式 | 每文件用不同正则 | `SKILL.md` 用 YAML regex，`_meta.json` 用 JSON |
-| 错误计数与退出码 | 智能判断 | `--strict` 时 `exit 1`，否则 `exit 0` |
+| `required_files` 清单 | 读取 `manifest.json` 动态获取 | 不同项目清单不同，无法写死 |
+| 版本号提取模式 | 每文件用不同正则/解析器 | `SKILL.md` 用 YAML regex，`manifest.json` 用 JSON，`pyproject.toml` 用 TOML |
+| 错误计数与退出码 | 智能判断 | `--strict` 时 `exit 1`（阻断发布），否则 `exit 0`（仅警告，继续发布） |
 
 #### 🎨 自定义内容
 
 | 内容 | 自由度 | 说明 |
 |------|--------|------|
-| 检查项列表 | 完全自定义 | 可添加新检查（如 `ruff check`） |
+| 检查项列表 | 完全自定义 | 可添加新检查（如 `pyproject.toml` 存在性、LICENSE 存在性） |
 | 严格模式开关 | 自定义 | `--strict` 可改 `--fail-fast` |
-| 警告 vs 错误区分 | 自定义 | CHANGELOG 不匹配是 `⚠️` 警告而非 `❌` 错误 |
+| 警告 vs 错误区分 | 自定义 | CHANGELOG 不匹配是 `⚠️` 警告而非 `❌` 错误，这是可复用的模式 |
+| 退出策略 | 自定义 | 默认「错误继续」（多平台互不影响），严格模式「错误阻断」 |
+
+---
+
+### 3.8b 代码级 Lint 检查 —— 发布流程中的缺失（🔴 关键 gap）
+
+#### 现状：Lint 分散在两个管道中
+
+HaluCatch 的 lint 体系实际上是**分裂的**：
+
+```
+┌────────────────────┐          ┌────────────────────┐
+│  CI 管道 (ci.yml)  │          │  发布管道 (release.sh)│
+│                    │          │                    │
+│  ruff check        │  ✓ 有    │  lint-paths.sh     │  ✓ 有（结构检查）│
+│  pytest            │  ✓ 有    │  check-file-size.sh│  ✓ 有（尺寸检查）│
+│  ruff format       │  ✗ 无    │  ruff check        │  ✗ 无（代码 lint 缺失）│
+│  mypy              │  ✗ 无    │  pytest            │  ✗ 无（测试缺失）│
+└────────────────────┘          └────────────────────┘
+```
+
+**问题**：`release.sh` 的 7 步发布流程中，没有任何代码级 lint 检查。这意味着：
+- 代码可能有语法错误、未使用的导入、格式问题，但发布流程不会发现
+- CI 只在 `push main` / `pull_request` 时跑 ruff，但发布时可能跳过（如直接从本地 tag 发布）
+- 如果开发者跳过 CI 直接本地执行 `release.sh`，代码问题会被带入生产包
+
+#### `pyproject.toml` 中的 ruff 配置（真实存在的 lint 规则）
+
+```toml
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "B", "SIM"]
+ignore = ["E501"]
+```
+
+解读：
+- `E` — pycodestyle 错误（语法、缩进等）
+- `F` — Pyflakes（未定义变量、未使用导入等）
+- `W` — pycodestyle 警告
+- `I` — isort（导入排序）
+- `N` — pep8-naming（命名规范）
+- `B` — flake8-bugbear（常见 bug 模式）
+- `SIM` — flake8-simplify（简化建议）
+- `ignore = ["E501"]` — 忽略行长度检查（因为 line-length = 100 已设定）
+
+#### 🧠 AI 动态填充（代码 lint 的可推断内容）
+
+| 内容 | AI 推断 | 说明 |
+|------|---------|------|
+| lint 工具 | 扫描配置文件 | `pyproject.toml` 有 `[tool.ruff]` → ruff；`.eslint` → eslint |
+| lint 目标范围 | 扫描项目结构 | 有 `tests/` → 包含测试；有 `src/` → 包含源码 |
+| lint 命令 | 从配置文件推断 | `ruff check .` 或 `ruff check src/ tests/` |
+| 是否应加入发布流程 | 项目类型判断 | 有 `.py` 代码 → 强烈建议加入；纯 `.md` → 可跳过 |
+| 是否需要 format 检查 | 配置文件判断 | `[tool.ruff]` 存在 → 可建议 `ruff format --check` |
+
+#### 🎨 自定义内容（lint 规则的可配置项）
+
+| 内容 | 自由度 | 说明 |
+|------|--------|------|
+| lint 工具选择 | 完全自定义 | ruff / black / mypy / eslint / prettier |
+| lint 规则集 | 自定义 | ruff 的 `select` 和 `ignore` 列表 |
+| 目标范围 | 自定义 | 哪些目录/文件需要 lint |
+| 是否阻断发布 | 自定义 | 默认 `exit 0`（警告），可改为 `--strict-lint`（阻断） |
+| 行长度 | 自定义 | 80 / 100 / 120 |
+| 目标 Python 版本 | 自定义 | `py310` / `py311` / `py312` |
+
+#### 改进建议：将代码 lint 纳入发布流程
+
+```bash
+# 在 release.sh 的 Step 2（Lint）中，增强为两层检查：
+
+# Layer 1: 结构检查（现有）
+bash "$SCRIPTS/lint-paths.sh"        # 文件存在性、版本一致性
+
+# Layer 2: 代码检查（建议新增）
+# 自动检测 ruff 配置并执行
+if [[ -f "$ROOT/pyproject.toml" ]] && grep -q '\[tool.ruff\]' "$ROOT/pyproject.toml"; then
+  echo "  运行 ruff check..."
+  ruff check "$ROOT" || echo "  ⚠️ ruff 检查发现代码问题（非阻断）"
+fi
+
+# 或者更通用的：检测任何 lint 配置并执行
+if command -v ruff &>/dev/null && [[ -f "$ROOT/pyproject.toml" ]]; then
+  ruff check "$ROOT" || LINT_FAILED=1
+fi
+```
+
+---
 
 ---
 
