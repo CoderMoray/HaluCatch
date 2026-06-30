@@ -543,8 +543,8 @@
       padding: 20px;
       text-align: center;
     }
-    .install-card-header { margin-bottom: 4px; }
-    .install-region { font-size: 1rem; font-weight: 600; color: var(--text); }
+    .install-title { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .install-desc { font-size: 0.8rem; color: var(--text2); margin-bottom: 16px; }
     .install-copy-btn {
       display: inline-flex; align-items: center; gap: 6px;
       background: var(--accent); border: none; border-radius: 8px;
@@ -555,6 +555,8 @@
     .install-copy-btn:hover { opacity: 0.9; transform: translateY(-1px); }
     .install-copy-btn:active { transform: translateY(0); }
     .install-copy-btn.copied { background: var(--green); }
+    .install-title { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .install-desc { font-size: 0.8rem; color: var(--text2); margin-bottom: 16px; }
 
     /* Share button */
     .nav-share {
@@ -853,19 +855,13 @@
           <p>复制下方提示词发给 AI，即可安装 HaluCatch</p>
           <div class="install-cards">
             <div class="install-card">
-              <div class="install-card-header">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px;margin-right:6px;color:var(--accent);"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                <span class="install-region">SkillHub 国区</span>
-              </div>
-              <p style="font-size:0.82rem;color:var(--text2);padding:0 16px;margin-bottom:12px;">面向中国用户，通过 SkillHub 安装</p>
+              <p class="install-title">为国内用户：一键复制 SkillHub 安装提示词</p>
+              <p class="install-desc">中文环境 · 免费 · 开箱即用</p>
               <button class="install-copy-btn" onclick="var t='请先检查是否已安装 SkillHub 商店，若未安装，请根据 https://skillhub.cn/install/skillhub.md 安装SkillHub商店，但是只安装CLI，然后安装halucatch技能。若已安装，则直接安装halucatch技能。';navigator.clipboard.writeText(t).then(()=>{this.classList.add('copied');this.textContent='已复制';setTimeout(()=>{this.classList.remove('copied');this.textContent='复制提示词'},2000)})">复制提示词</button>
             </div>
             <div class="install-card">
-              <div class="install-card-header">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px;margin-right:6px;color:var(--accent);"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                <span class="install-region">ClawHub 国际</span>
-              </div>
-              <p style="font-size:0.82rem;color:var(--text2);padding:0 16px;margin-bottom:12px;">面向国际用户，通过 ClawHub 安装</p>
+              <p class="install-title">为国际用户：一键复制 ClawHub 安装提示词</p>
+              <p class="install-desc">Global AI skill marketplace</p>
               <button class="install-copy-btn" onclick="var t='Before installing anything, inspect the ClawHub skill metadata and setup requirements. If the skill asks you to install a third-party package or CLI, verify its source, maintainer, and package contents before running the install command. Install the skill HaluCatch (@codermoray/halucatch) from ClawHub only after those checks pass. Skill page: https://clawhub.ai/codermoray/skills/halucatch. Keep the work scoped to this skill only. After install, help me finish setup from verified skill metadata. Use only the metadata you can verify from ClawHub; do not invent missing requirements. Ask before making any broader environment changes.';navigator.clipboard.writeText(t).then(()=>{this.classList.add('copied');this.textContent='已复制';setTimeout(()=>{this.classList.remove('copied');this.textContent='复制提示词'},2000)})">复制提示词</button>
             </div>
           </div>
