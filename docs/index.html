@@ -688,9 +688,8 @@
       .nav-link:hover { background: var(--surface2); }
     }
 
-    .brand-text { display: inline-block; white-space: nowrap; overflow: hidden; text-align: right; max-width: 180px; transition: max-width 0.6s ease; }
+    .brand-text { display: inline-block; white-space: nowrap; overflow: hidden; text-align: right; max-width: 180px; transition: max-width 0.48s ease; }
     @media (max-width: 460px) { .brand-text { max-width: 3em; } }
-  </style>
   <link rel="stylesheet" href="components/ai-chat-demo/ai-chat-demo.css">
   <script src="https://cdn.jsdelivr.net/npm/marked@3.0.8/marked.min.js"></script>
 </head>
@@ -1345,17 +1344,6 @@ window.halucatchDemo = new AIChatDemo({
   navLinks.addEventListener('click', function(e) {
     if (e.target.classList.contains('nav-link')) navLinks.classList.remove('open');
   });
-
-  // Brand text swap at 400px
-  (function() {
-    var brand = document.getElementById('brand-text');
-    var full = 'HaluCatch / 捕幻', compact = '捕幻';
-    function updateBrand() {
-      brand.textContent = window.innerWidth <= 460 ? compact : full;
-    }
-    window.addEventListener('resize', updateBrand);
-    updateBrand();
-  })();
 
   // Initial load: page already has correct theme from blocking script, just sync pill
   var saved = getTheme();
