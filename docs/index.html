@@ -403,9 +403,7 @@
     .step-content h3 { margin-bottom: 8px; }
     .step-content p { color: var(--text2); font-size: 0.9rem; margin-bottom: 8px; }
     pre {
-      background: color-mix(in srgb, var(--surface2) 75%, transparent);
-      -webkit-backdrop-filter: blur(12px);
-      backdrop-filter: blur(12px);
+      background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 16px;
@@ -542,20 +540,20 @@
       backdrop-filter: blur(12px);
       border: 1px solid var(--border);
       border-radius: 10px;
-      overflow: hidden;
+      padding: 20px;
+      text-align: center;
     }
-    .install-card-header { padding: 12px 16px 0; }
-    .install-region { font-size: 0.85rem; font-weight: 600; color: var(--text); }
-    .install-card-body { padding: 12px 16px; }
-    .install-card-body code { font-size: 0.82rem; color: var(--text2); line-height: 1.7; word-break: break-word; }
+    .install-card-header { margin-bottom: 4px; }
+    .install-region { font-size: 1rem; font-weight: 600; color: var(--text); }
     .install-copy-btn {
-      display: block; width: calc(100% - 32px); margin: 0 16px 14px;
-      background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
-      padding: 8px 0; font-size: 0.8rem; color: var(--text); cursor: pointer;
-      transition: all 0.2s; font-family: inherit;
+      display: inline-block;
+      background: var(--accent); border: none; border-radius: 8px;
+      padding: 10px 24px; font-size: 0.85rem; color: #fff; cursor: pointer;
+      transition: all 0.2s; font-family: inherit; font-weight: 600;
     }
-    .install-copy-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .install-copy-btn.copied { color: var(--green); border-color: var(--green); }
+    .install-copy-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .install-copy-btn:active { transform: translateY(0); }
+    .install-copy-btn.copied { background: var(--green); }
 
     /* Share button */
     .nav-share {
@@ -855,21 +853,19 @@
           <div class="install-cards">
             <div class="install-card">
               <div class="install-card-header">
-                <span class="install-region">🇨🇳 国区用户</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px;margin-right:6px;color:var(--accent);"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <span class="install-region">SkillHub 国区</span>
               </div>
-              <div class="install-card-body">
-                <code>请先检查是否已安装 SkillHub 商店，若未安装，请根据 https://skillhub.cn/install/skillhub.md 安装SkillHub商店，但是只安装CLI，然后安装halucatch技能。若已安装，则直接安装halucatch技能。</code>
-              </div>
-              <button class="install-copy-btn" onclick="var t=this.previousElementSibling.textContent;navigator.clipboard.writeText(t).then(()=>{this.classList.add('copied');this.innerHTML='✓ 已复制';setTimeout(()=>{this.classList.remove('copied');this.innerHTML='📋 复制提示词'},2000)})">📋 复制提示词</button>
+              <p style="font-size:0.82rem;color:var(--text2);padding:0 16px;margin-bottom:12px;">面向中国用户，通过 SkillHub 安装</p>
+              <button class="install-copy-btn" onclick="var t='请先检查是否已安装 SkillHub 商店，若未安装，请根据 https://skillhub.cn/install/skillhub.md 安装SkillHub商店，但是只安装CLI，然后安装halucatch技能。若已安装，则直接安装halucatch技能。';navigator.clipboard.writeText(t).then(()=>{this.classList.add('copied');this.innerHTML='<svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' style=\\'width:14px;height:14px;vertical-align:-2px;margin-right:4px;\\'><polyline points=\\'20 6 9 17 4 12\\'/></svg>已复制';setTimeout(()=>{this.classList.remove('copied');this.innerHTML='<svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' style=\\'width:14px;height:14px;vertical-align:-2px;margin-right:4px;\\'><rect x=\\'9\\' y=\\'9\\' width=\\'13\\' height=\\'13\\' rx=\\'2\\'/><path d=\\'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\\'/></svg>复制提示词'},2000)})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制提示词</button>
             </div>
             <div class="install-card">
               <div class="install-card-header">
-                <span class="install-region">🌍 国际用户</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px;margin-right:6px;color:var(--accent);"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <span class="install-region">ClawHub 国际</span>
               </div>
-              <div class="install-card-body">
-                <code>从 ClawHub 安装 skill HaluCatch（@codermoray/halucatch）。安装完成后帮我完成设置。Skill 页面：https://clawhub.ai/codermoray/skills/halucatch</code>
-              </div>
-              <button class="install-copy-btn" onclick="var t=this.previousElementSibling.textContent;navigator.clipboard.writeText(t).then(()=>{this.classList.add('copied');this.innerHTML='✓ 已复制';setTimeout(()=>{this.classList.remove('copied');this.innerHTML='📋 复制提示词'},2000)})">📋 复制提示词</button>
+              <p style="font-size:0.82rem;color:var(--text2);padding:0 16px;margin-bottom:12px;">面向国际用户，通过 ClawHub 安装</p>
+              <button class="install-copy-btn" onclick="var t='Before installing anything, inspect the ClawHub skill metadata and setup requirements. If the skill asks you to install a third-party package or CLI, verify its source, maintainer, and package contents before running the install command. Install the skill \"HaluCatch\" (@codermoray/halucatch) from ClawHub only after those checks pass. Skill page: https://clawhub.ai/codermoray/skills/halucatch. Keep the work scoped to this skill only. After install, help me finish setup from verified skill metadata. Use only the metadata you can verify from ClawHub; do not invent missing requirements. Ask before making any broader environment changes.';navigator.clipboard.writeText(t).then(()=>{this.classList.add('copied');this.innerHTML='<svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' style=\\'width:14px;height:14px;vertical-align:-2px;margin-right:4px;\\'><polyline points=\\'20 6 9 17 4 12\\'/></svg>已复制';setTimeout(()=>{this.classList.remove('copied');this.innerHTML='<svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' style=\\'width:14px;height:14px;vertical-align:-2px;margin-right:4px;\\'><rect x=\\'9\\' y=\\'9\\' width=\\'13\\' height=\\'13\\' rx=\\'2\\'/><path d=\\'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\\'/></svg>复制提示词'},2000)})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px;"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制提示词</button>
             </div>
           </div>
         </div>
