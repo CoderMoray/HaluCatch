@@ -349,90 +349,148 @@ if [[ "$UNRELEASED" -gt 0 ]]; then
 
 ---
 
-### 3.8b 代码级 Lint 检查 —— 发布流程中的缺失（🔴 关键 gap）
+### 3.8b 代码级 Lint 与测试 —— 发布流程中的「正确缺席」
 
-#### 现状：Lint 分散在两个管道中
+#### 为什么 `release.sh` 不做代码 lint 和测试是对的
 
-HaluCatch 的 lint 体系实际上是**分裂的**：
+初看时，`release.sh` 缺少代码 lint 和测试像是一个 gap。但重新思考后，这实际上是一个**合理的职责划分**——lint 和测试应该在**更早阶段**完成，而不是在发布时重复。
 
 ```
-┌────────────────────┐          ┌────────────────────┐
-│  CI 管道 (ci.yml)  │          │  发布管道 (release.sh)│
-│                    │          │                    │
-│  ruff check        │  ✓ 有    │  lint-paths.sh     │  ✓ 有（结构检查）│
-│  pytest            │  ✓ 有    │  check-file-size.sh│  ✓ 有（尺寸检查）│
-│  ruff format       │  ✗ 无    │  ruff check        │  ✗ 无（代码 lint 缺失）│
-│  mypy              │  ✗ 无    │  pytest            │  ✗ 无（测试缺失）│
-└────────────────────┘          └────────────────────┘
+┌────────────────────┐          ┌────────────────────┐          ┌────────────────────┐
+│  本地开发阶段       │          │  提交/合并阶段      │          │  发布阶段          │
+│                    │          │                    │          │                    │
+│  ruff (编辑器集成)  │  ✅ 有   │  CI: ruff check    │  ✅ 有   │  lint-paths.sh     │  ✅ 有 │
+│  pytest (本地测试)  │  ✅ 有   │  CI: pytest        │  ✅ 有   │  check-file-size   │  ✅ 有 │
+│  pre-commit hook   │  ✅ 有   │  ruff format       │  ✅ 有   │  版本一致性检查     │  ✅ 有 │
+│                    │          │  PR review         │  ✅ 有   │  包构建验证        │  ✅ 有 │
+│                    │          │                    │          │  ruff check        │  ❓ 讨论 │
+│                    │          │                    │          │  pytest            │  ❓ 讨论 │
+└────────────────────┘          └────────────────────┘          └────────────────────┘
 ```
 
-**问题**：`release.sh` 的 7 步发布流程中，没有任何代码级 lint 检查。这意味着：
-- 代码可能有语法错误、未使用的导入、格式问题，但发布流程不会发现
-- CI 只在 `push main` / `pull_request` 时跑 ruff，但发布时可能跳过（如直接从本地 tag 发布）
-- 如果开发者跳过 CI 直接本地执行 `release.sh`，代码问题会被带入生产包
+#### 三层防线模型
 
-#### `pyproject.toml` 中的 ruff 配置（真实存在的 lint 规则）
+| 防线 | 阶段 | 检查类型 | 执行方式 | 失败时 | 耗时 |
+|------|------|---------|---------|--------|------|
+| **第一层** | 本地开发 | 语法、格式、风格 | 编辑器/IDE 实时 + 手动 `ruff check` | 立即修复，零等待 | 秒级 |
+| **第二层** | 提交/PR | 全量 lint + 测试 + 审查 | GitHub Actions CI | 阻塞合并，回到第一层 | 分钟级 |
+| **第三层** | 发布 | 结构完整性、版本一致性、包验证 | `release.sh` 专属 | 中断发布，回滚 | 秒级 |
 
-```toml
-[tool.ruff]
-line-length = 100
-target-version = "py310"
+**核心原则**：
+- 第一层解决 90% 的代码问题 → 实时反馈，无需等待
+- 第二层解决剩余 9% → 自动化验证，确保质量门槛
+- 第三层只解决「发布专属」问题 → 不重复前两层的检查
 
-[tool.ruff.lint]
-select = ["E", "F", "W", "I", "N", "B", "SIM"]
-ignore = ["E501"]
+如果 `release.sh` 加入 `ruff check` 和 `pytest`：
+- 发布时 lint 失败 → 修复 → 重新发布 → 循环，低效且挫败
+- 发布脚本变慢，开发者可能跳过（因为"我已经通过了 CI"）
+- 混淆了「发布检查」和「代码质量检查」的职责边界
+
+#### 但有一个问题：CI 不是发布的强制前置条件
+
+HaluCatch 的发布流程是：本地 `release.sh` → 打 tag → `git push` → GitHub Actions 触发。这里有一个**时间顺序问题**：
+
+```
+[本地] release.sh 运行 → 成功 → [本地] git push → [远程] GitHub Actions CI 触发
+                          ↑
+                     此时 lint 还没跑！
+                     如果本地有 lint 未发现的错误，代码已 push
 ```
 
-解读：
-- `E` — pycodestyle 错误（语法、缩进等）
-- `F` — Pyflakes（未定义变量、未使用导入等）
-- `W` — pycodestyle 警告
-- `I` — isort（导入排序）
-- `N` — pep8-naming（命名规范）
-- `B` — flake8-bugbear（常见 bug 模式）
-- `SIM` — flake8-simplify（简化建议）
-- `ignore = ["E501"]` — 忽略行长度检查（因为 line-length = 100 已设定）
+**风险**：如果开发者跳过了本地 lint 执行，也没有做 pre-commit hook，直接跑 `release.sh` → `git push` → CI 跑完才发现 lint 失败 → tag 已打在坏代码上。
 
-#### 🧠 AI 动态填充（代码 lint 的可推断内容）
+#### 推荐方案：发布流程中的「健康度检查」而非「执行检查」
 
-| 内容 | AI 推断 | 说明 |
-|------|---------|------|
-| lint 工具 | 扫描配置文件 | `pyproject.toml` 有 `[tool.ruff]` → ruff；`.eslint` → eslint |
-| lint 目标范围 | 扫描项目结构 | 有 `tests/` → 包含测试；有 `src/` → 包含源码 |
-| lint 命令 | 从配置文件推断 | `ruff check .` 或 `ruff check src/ tests/` |
-| 是否应加入发布流程 | 项目类型判断 | 有 `.py` 代码 → 强烈建议加入；纯 `.md` → 可跳过 |
-| 是否需要 format 检查 | 配置文件判断 | `[tool.ruff]` 存在 → 可建议 `ruff format --check` |
-
-#### 🎨 自定义内容（lint 规则的可配置项）
-
-| 内容 | 自由度 | 说明 |
-|------|--------|------|
-| lint 工具选择 | 完全自定义 | ruff / black / mypy / eslint / prettier |
-| lint 规则集 | 自定义 | ruff 的 `select` 和 `ignore` 列表 |
-| 目标范围 | 自定义 | 哪些目录/文件需要 lint |
-| 是否阻断发布 | 自定义 | 默认 `exit 0`（警告），可改为 `--strict-lint`（阻断） |
-| 行长度 | 自定义 | 80 / 100 / 120 |
-| 目标 Python 版本 | 自定义 | `py310` / `py311` / `py312` |
-
-#### 改进建议：将代码 lint 纳入发布流程
+最好的方案是**不执行** lint 和测试，但**检查**它们是否已被执行：
 
 ```bash
-# 在 release.sh 的 Step 2（Lint）中，增强为两层检查：
+# 发布流程中的 lint 检查（推荐模式：验证而非执行）
 
-# Layer 1: 结构检查（现有）
-bash "$SCRIPTS/lint-paths.sh"        # 文件存在性、版本一致性
-
-# Layer 2: 代码检查（建议新增）
-# 自动检测 ruff 配置并执行
-if [[ -f "$ROOT/pyproject.toml" ]] && grep -q '\[tool.ruff\]' "$ROOT/pyproject.toml"; then
-  echo "  运行 ruff check..."
-  ruff check "$ROOT" || echo "  ⚠️ ruff 检查发现代码问题（非阻断）"
+# 1. 检查 pre-commit hook 是否配置（本地防线已建立）
+if [[ -f "$ROOT/.git/hooks/pre-commit" ]]; then
+  echo "  ✅ pre-commit hook 已配置（本地 lint 防线）"
+else
+  echo "  ⚠️ 建议配置 pre-commit hook（如 ruff pre-commit）"
+  echo "     示例: pre-commit install; echo 'ruff check .' > .git/hooks/pre-commit"
 fi
 
-# 或者更通用的：检测任何 lint 配置并执行
-if command -v ruff &>/dev/null && [[ -f "$ROOT/pyproject.toml" ]]; then
-  ruff check "$ROOT" || LINT_FAILED=1
+# 2. 检查 CI 配置是否覆盖 lint（远程防线已建立）
+if [[ -f "$ROOT/.github/workflows/ci.yml" ]]; then
+  if grep -q 'ruff' "$ROOT/.github/workflows/ci.yml" || grep -q 'pytest' "$ROOT/.github/workflows/ci.yml"; then
+    echo "  ✅ CI 已配置 lint/测试（远程防线）"
+  else
+    echo "  ⚠️ CI 配置中未找到 lint 或测试步骤"
+  fi
+else
+  echo "  ⚠️ 未找到 CI 配置（.github/workflows/），建议配置 GitHub Actions"
 fi
+
+# 3. 可选：本地 lint 状态快速验证（非执行，仅检查缓存结果）
+# 如果开发者已手动跑过 lint 并留下结果（如 .ruff_cache），可验证
+# 但不强制执行，避免发布被阻塞
+
+# 4. 最严格但推荐的：检查最后提交是否绿色
+# 如果项目有 CI 且最后提交通过了 CI → 信任 CI 结果
+# 如果项目无 CI → 建议手动执行 lint 后发布
+```
+
+#### 对于 Skill 化发布工具的设计建议
+
+| 场景 | 推荐策略 | 理由 |
+|------|---------|------|
+| 项目有 CI 配置（`.github/workflows/ci.yml`） | 信任 CI，发布不执行 lint | CI 已经在 PR 和 push 时验证 |
+| 项目有 pre-commit hook | 信任 hook，发布不执行 lint | 本地提交时已验证 |
+| 项目无 CI 且无 pre-commit | 建议用户先执行 lint → 再发布 | 提醒，但不强制阻断 |
+| 用户明确要求 `--strict` | 可执行 lint 并阻断失败 | 用户主动选择，非默认 |
+
+#### 总结：lint 和测试的「正确位置」
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  代码 lint 和测试 ≠ 发布检查                                  │
+│                                                              │
+│  正确位置：                                                  │
+│  1. 编辑器/IDE 实时反馈（最快）                              │
+│  2. pre-commit hook（提交前强制）                            │
+│  3. CI / GitHub Actions（合并前验证）                          │
+│  4. 本地手动执行（push 前确认）                              │
+│                                                              │
+│  发布检查只关注：                                            │
+│  - 文件结构完整性（lint-paths.sh）                          │
+│  - 版本号一致性（sync-version.sh）                          │
+│  - 包构建验证（build-skillhub.sh）                          │
+│  - 文件尺寸检查（check-file-size.sh）                       │
+│  - 发布配置健康度（是否有 CI / pre-commit）                 │
+│                                                              │
+│  如果发布流程中包含 lint，应该是：                           │
+│  - 检查「防线是否已建立」而非「执行 lint」                  │
+│  - 默认非阻断，严格模式可选阻断                             │
+│  - 给用户清晰的反馈：「建议先执行 ruff check」              │
+└──────────────────────────────────────────────────────────────┘
+```
+
+---
+
+#### 关于 `lint-paths.sh` 的命名建议
+
+当前命名 `lint-paths.sh` 容易让人误解为「代码 lint 检查」。建议改为更清晰的名称：
+
+| 当前名称 | 建议名称 | 理由 |
+|---------|---------|------|
+| `lint-paths.sh` | `check-structure.sh` 或 `validate-release-readiness.sh` | 明确为「结构完整性」而非「代码质量」 |
+| `check-file-size.sh` | `check-size.sh` 或 `validate-size.sh` | 简洁且一致 |
+
+```
+# 推荐的重命名结构：
+scripts/
+├── check-structure.sh      # 结构完整性检查（原 lint-paths.sh）
+├── check-size.sh           # 文件尺寸检查（原 check-file-size.sh）
+├── check-health.sh         # 发布健康度检查（检查 CI / pre-commit 配置）
+├── bump-version.sh         # 版本号升级
+├── sync-version.sh         # 版本同步
+├── build-skillhub.sh       # SkillHub 包构建
+├── build-standalone.py     # 独立包构建
+└── release.sh              # 一键发布主控
 ```
 
 ---
@@ -719,12 +777,11 @@ description: |
 - 展示即将更新的文件清单（P0/P1/P2 推断结果）
 - 用户确认后执行 `bump-version`
 
-### Phase 3: 质量检查
+### Phase 3: 质量检查（结构检查 + 健康度检查）
 
-- 检查必需文件存在性
-- 检查版本号一致性（跨文件）
-- 检查文件尺寸（阈值可配置）
-- 执行项目级 lint（如有配置）
+- **结构检查**：必需文件存在性、版本号一致性、文件尺寸
+- **健康度检查**：验证 CI 配置和 pre-commit hook 是否存在（不执行 lint/测试，只检查防线是否已建立）
+- **可选**：如果用户明确要求 `--strict`，可执行本地 lint 并阻断失败
 
 ### Phase 4: 构建发布包
 
@@ -775,7 +832,7 @@ description: |
 
 - **原因**：`SKILL.md` 和 `_meta.json` 手动更新，容易遗漏
 - **解决**：始终以 `_meta.json` 为唯一真相源，用脚本同步到所有文件
-- **HaluCatch 经验**：`lint-paths.sh` 在发布前强制校验一致性
+- **HaluCatch 经验**：`lint-paths.sh`（实为结构检查）在发布前强制校验一致性
 
 ### 陷阱 2：zip 包含开发者文件
 
@@ -807,6 +864,12 @@ description: |
 - **解决**：每个平台命令用 `|| echo "⚠️ 失败"` 捕获错误，不阻断后续流程
 - **HaluCatch 经验**：`release.sh` 不用 `set -e`，手动控制错误处理
 
+### 陷阱 7：将代码 lint 和测试放进发布流程
+
+- **原因**：发布时 `ruff check` 或 `pytest` 失败 → 修复 → 重新发布 → 循环，效率低且挫败。发布脚本变慢，开发者可能跳过
+- **解决**：遵循三层防线模型——lint 和测试属于「本地开发阶段」和「CI/PR 阶段」，发布阶段只检查「结构完整性」和「发布健康度」（是否有 CI 配置、pre-commit hook 等）
+- **HaluCatch 经验**：`release.sh` 的 Step 2 只跑 `lint-paths.sh`（结构检查）和 `check-file-size.sh`（尺寸检查），代码 lint 由 `ci.yml` 在 PR 时验证。命名 `lint-paths.sh` 容易误导，建议改为 `check-structure.sh`
+
 ---
 
 ## 九、文件清单映射
@@ -820,8 +883,8 @@ description: |
 | `build-skillhub.sh` | SkillHub 包构建 | SkillHub | 🔒 + 🧠 | 核心可 Skill 化（AI 推断文件清单） |
 | `bump-version.sh` | 版本号升级 | HaluCatch 自定义 | 🧠 + 🎨 | 可 Skill 化（推断+同步） |
 | `sync-version.sh` | 版本同步 | HaluCatch 自定义 | 🧠 + 🎨 | 可 Skill 化（推断+同步） |
-| `lint-paths.sh` | 发布前自检 | HaluCatch 自定义 | 🧠 + 🎨 | 可 Skill 化（检查框架） |
-| `check-file-size.sh` | 尺寸检查 | HaluCatch 自定义 | 🧠 + 🎨 | 可 Skill 化（阈值可配置） |
+| `lint-paths.sh` | 结构完整性检查（非代码 lint） | HaluCatch 自定义 | 🧠 + 🎨 | 可 Skill 化（检查框架，建议重命名为 `check-structure.sh`） |
+| `check-file-size.sh` | 文件尺寸检查 | HaluCatch 自定义 | 🧠 + 🎨 | 可 Skill 化（阈值可配置，建议重命名为 `check-size.sh`） |
 | `.clawhubignore` | ClawHub 排除 | ClawHub | 🔒 | 可从 `manifest.json` 生成 |
 | `.github/workflows/*.yml` | CI/CD | GitHub | 🔒 + 🎨 | 框架模板固定，项目信息 AI 填充 |
 | `README.md` | 项目说明 | 通用 | 🎨 | 辅助性，非发布必需 |
