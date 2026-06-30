@@ -477,6 +477,34 @@
     [data-theme="dark"] .blog-card:nth-child(1) .blog-platform { background: #1a2840; color: #5aa8ff; }
     [data-theme="dark"] .blog-card:nth-child(2) .blog-platform { background: #2a1818; color: #fc8181; }
 
+    /* FAQ Accordion */
+    .faq-list { display: flex; flex-direction: column; gap: 10px; }
+    .faq-item {
+      background: color-mix(in srgb, var(--surface) 75%, transparent);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .faq-q {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; background: none; border: none; padding: 14px 18px;
+      font-size: 0.9rem; color: var(--text); cursor: pointer; text-align: left;
+      font-family: inherit;
+    }
+    .faq-q:hover { color: var(--accent); }
+    .faq-arrow { flex-shrink: 0; transition: transform 0.3s ease; color: var(--text2); }
+    .faq-item.open .faq-arrow { transform: rotate(180deg); color: var(--accent); }
+    .faq-a {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+    }
+    .faq-item.open .faq-a { max-height: 400px; }
+    .faq-a p, .faq-a ol { padding: 0 18px 14px 18px; font-size: 0.85rem; color: var(--text2); line-height: 1.7; }
+    .faq-a ol { padding-left: 40px; }
+    .faq-a code { background: var(--surface2); padding: 1px 6px; border-radius: 4px; font-size: 0.8em; }
+
     /* Share button */
     .nav-share {
       position: relative;
@@ -552,6 +580,7 @@
       <a href="#report-preview" class="nav-link">报告预览</a>
       <a href="#quickstart" class="nav-link">快速开始</a>
       <a href="#blog" class="nav-link">Blogs</a>
+      <a href="#faq" class="nav-link">常见问题</a>
     </div>
     <div class="nav-tools">
     <div class="theme-pill" id="theme-pill">
@@ -874,6 +903,58 @@ reports/HaluCatch-report-YYYY-MM-DD-行动版.md  <span class="comment"># AI 行
       <p>从安装到实战的完整教程，零基础也能上手</p>
     </a>
   </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="anim-item scroll-anim">
+  <h2>❓ 常见问题</h2>
+  <div class="faq-list">
+    <div class="faq-item glass">
+      <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+        <span>HaluCatch 需要联网吗？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>不需要。全程离线运行，仅扫描本地文件夹中的 SKILL.md 和 .py 文件，不会发起任何网络请求。</p></div>
+    </div>
+    <div class="faq-item glass">
+      <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+        <span>HaluCatch 怎么用？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>对 AI 说「请用 HaluCatch 审查 /path/to/skill」即可。AI 自动扫描、评估、生成三份报告到 <code>reports/</code> 目录：</p><ol><li>跑一次审查 → 看通俗版报告了解问题</li><li>打开 <code>-行动版.md</code> → 从第一条开始逐项修复</li><li>修复后重新跑 → 对比分数是否改善</li></ol></div>
+    </div>
+    <div class="faq-item glass">
+      <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+        <span>我的 Skill 没有 .py 文件，能用吗？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>可以。HaluCatch 会自动分类为「纯方法论型」并跳过地基/代码检查，只评估方法论结构和护栏完整度。</p></div>
+    </div>
+    <div class="faq-item glass">
+      <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+        <span>审查结果说「护栏薄弱」，怎么修？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>看同目录下的 <code>HaluCatch-report-日期-行动版.md</code>，它逐条列出了修复方案。按清单逐项改，改完后重新审查验证。</p></div>
+    </div>
+    <div class="faq-item glass">
+      <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+        <span>代码风险检查有哪些规则？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>当前 7 条通用规则：裸 except: pass / 浮点比较 (== 0.0) / 除零风险 / 硬编码阈值 / 路径拼接 / 静默覆盖 / 超时缺失。</p></div>
+    </div>
+    <div class="faq-item glass">
+      <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+        <span>能一次审查多个 Skill 吗？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>当前版本暂不支持批量模式。你可以逐个运行。批量功能已在 roadmap 中。</p></div>
+    </div>
+  </div>
+  <p style="text-align:center;margin-top:20px;">
+    <a href="FAQ.md" class="btn btn-outline">查看完整 FAQ →</a>
+  </p>
 </section>
 
 <!-- Footer -->
