@@ -688,7 +688,14 @@
       .nav-link:hover { background: var(--surface2); }
     }
 
-    .brand-text { white-space: nowrap; transition: opacity 0.24s ease; }
+    .brand-wrap { position: relative; display: inline-block; vertical-align: middle; }
+    .brand-full { white-space: nowrap; clip-path: inset(0 0 0 0); transition: clip-path 0.48s ease; }
+    .brand-short { position: absolute; right: 0; top: 0; white-space: nowrap; opacity: 0; transition: opacity 0.36s ease; }
+
+    @media (max-width: 460px) {
+      .brand-full { clip-path: inset(0 0 0 calc(100% - 2.2em)); }
+      .brand-short { opacity: 1; }
+    }
   </style>
   <link rel="stylesheet" href="components/ai-chat-demo/ai-chat-demo.css">
   <script src="https://cdn.jsdelivr.net/npm/marked@3.0.8/marked.min.js"></script>
@@ -699,7 +706,7 @@
   <div class="nav-inner">
     <a href="#" class="nav-brand">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
-      <span class="brand-text" id="brand-text">HaluCatch / 捕幻</span>
+      <span class="brand-wrap"><span class="brand-full">HaluCatch / 捕幻</span><span class="brand-short">捕幻</span></span>
     </a>
     <div class="nav-links" id="nav-links">
       <a href="#demo" class="nav-link">在线体验</a>
@@ -1344,27 +1351,6 @@ window.halucatchDemo = new AIChatDemo({
   navLinks.addEventListener('click', function(e) {
     if (e.target.classList.contains('nav-link')) navLinks.classList.remove('open');
   });
-
-  // Brand text swap at 460px with smooth fade
-  (function() {
-    var brand = document.getElementById('brand-text');
-    var full = 'HaluCatch / 捕幻', compact = '捕幻';
-    var current = full, swapping = false;
-    function updateBrand() {
-      var want = window.innerWidth <= 460 ? compact : full;
-      if (want === current || swapping) return;
-      swapping = true;
-      brand.style.opacity = '0';
-      setTimeout(function() {
-        brand.textContent = want;
-        current = want;
-        brand.style.opacity = '1';
-        swapping = false;
-      }, 240);
-    }
-    window.addEventListener('resize', updateBrand);
-    updateBrand();
-  })();
 
   // Initial load: page already has correct theme from blocking script, just sync pill
   var saved = getTheme();
