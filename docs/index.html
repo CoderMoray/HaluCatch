@@ -622,16 +622,18 @@
       .nav-brand { font-size: 0.85rem; }
     }
 
-    /* Pill label animation */
+    /* Pill & share label animation */
     .pill-label { display: inline; transition: opacity 0.3s ease, max-width 0.3s ease, padding 0.3s ease; max-width: 80px; overflow: hidden; white-space: nowrap; padding: 0; }
+    .share-label { display: inline; transition: opacity 0.3s ease, max-width 0.3s ease; max-width: 50px; overflow: hidden; white-space: nowrap; }
 
     /* Hamburger button (hidden by default) */
     .nav-hamburger { display: none; background: none; border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; cursor: pointer; color: var(--text2); flex-shrink: 0; }
     .nav-hamburger:hover { color: var(--text); border-color: var(--accent); }
 
-    /* ≤1080px: pill icons only */
+    /* ≤1080px: pill & share icons only */
     @media (max-width: 1080px) {
-      .pill-label { opacity: 0; max-width: 0; padding: 0; }
+      .pill-label, .share-label { opacity: 0; max-width: 0; padding: 0; }
+      .nav-share-btn { padding: 4px 8px; }
     }
 
     /* ≤860px: hamburger menu */
@@ -686,7 +688,7 @@
     <div class="nav-share" id="nav-share">
       <button class="nav-share-btn" aria-label="分享页面">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
-        Share
+        <span class="share-label">Share</span>
       </button>
       <div class="nav-share-menu">
         <button class="nav-share-item" data-platform="url">
