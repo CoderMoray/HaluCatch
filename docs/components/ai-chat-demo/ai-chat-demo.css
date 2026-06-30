@@ -283,7 +283,7 @@
   font-size: 0.75rem;
   color: var(--chat-text2);
   background: none;
-  border: 1px solid transparent;
+  border: 1px solid var(--chat-border);
   cursor: pointer;
   transition: all 0.2s;
   user-select: none;
@@ -306,14 +306,14 @@
 }
 
 .chat-thinking-btn:active {
-  background: var(--thinking-active);
+  background: var(--thinking-hover);
   transform: scale(0.97);
 }
 
 .chat-thinking-btn.active {
-  background: var(--thinking-active);
+  background: var(--chat-accent);
   border-color: var(--chat-accent);
-  color: var(--chat-accent);
+  color: #fff;
 }
 
 .chat-thinking-btn.active .brain-icon {
