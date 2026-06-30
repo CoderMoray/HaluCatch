@@ -505,6 +505,33 @@
     .faq-a ol { padding-left: 40px; }
     .faq-a code { background: var(--surface2); padding: 1px 6px; border-radius: 4px; font-size: 0.8em; }
 
+    /* Copy button */
+    .copy-wrapper { position: relative; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      display: flex; align-items: center; gap: 4px;
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 6px;
+      padding: 4px 10px; font-size: 0.75rem; color: var(--text2); cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .copy-btn svg { width: 13px; height: 13px; }
+    .copy-btn.copied { color: var(--green); border-color: var(--green); }
+
+    /* Report cards */
+    .report-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .report-card {
+      background: color-mix(in srgb, var(--surface) 75%, transparent);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .report-card h4 { font-size: 0.95rem; margin-bottom: 6px; }
+    .report-card .rc-audience { font-size: 0.75rem; color: var(--accent); margin-bottom: 8px; font-weight: 600; }
+    .report-card p { font-size: 0.85rem; color: var(--text2); line-height: 1.6; }
+
     /* Share button */
     .nav-share {
       position: relative;
@@ -800,6 +827,7 @@
         <div class="step-content">
           <h3>安装</h3>
           <p>把以下提示词发给你的 AI，让它帮你安全安装 HaluCatch</p>
+          <div class="copy-wrapper">
           <pre><span class="comment"># 复制这段发给 AI</span>
 请先检查 ClawHub 上 skill 的元数据和安装要求。
 如果这个 skill 要求安装第三方包或 CLI，请先验证来源、维护者和包内容，再执行安装命令。
@@ -809,6 +837,8 @@ Skill 页面：https://clawhub.ai/codermoray/skills/halucatch
 安装完成后，请根据 ClawHub 上验证过的元数据帮我完成设置。
 只使用你在 ClawHub 上能验证的元数据，不要编造缺失的要求。
 在做出任何更广泛的环境变更前，请先询问我。</pre>
+          <button class="copy-btn" onclick="var pre=this.previousElementSibling;var t=pre.textContent.replace(/^# 复制这段发给 AI\\n/,'').trim();navigator.clipboard.writeText(t).then(()=>{this.classList.add('copied');this.innerHTML='<svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'><polyline points=\\'20 6 9 17 4 12\\'/></svg>已复制';setTimeout(()=>{this.classList.remove('copied');this.innerHTML='<svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'><rect x=\\'9\\' y=\\'9\\' width=\\'13\\' height=\\'13\\' rx=\\'2\\'/><path d=\\'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\\'/></svg>复制';},2000)})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制</button>
+          </div>
         </div>
       </div>
       <div class="step">
@@ -835,14 +865,23 @@ AI：审查完成。报告已保存在 reports/ 目录：
         <div class="step-content">
           <h3>阅读报告，决定下一步</h3>
           <p>三份报告分别面向不同角色，选择适合你的阅读</p>
-          <pre><span class="comment"># 标准版 — 给业务/产品经理</span>
-用人话解释每个问题是什么、为什么重要、怎么改
-
-<span class="comment"># 专业版 — 给工程师/开发者</span>
-结构化检查清单，每个维度打分，精确到文件和行号
-
-<span class="comment"># 行动版 — 给 AI（直接复制粘贴）</span>
-修复清单 + 验证检查点，AI 按步骤执行即可</pre>
+          <div class="report-cards">
+            <div class="report-card">
+              <h4>📗 标准版</h4>
+              <div class="rc-audience">给业务 / 产品经理</div>
+              <p>用人话解释每个问题是什么、为什么重要、怎么改</p>
+            </div>
+            <div class="report-card">
+              <h4>📊 专业版</h4>
+              <div class="rc-audience">给工程师 / 开发者</div>
+              <p>结构化检查清单，每个维度打分，精确到文件和行号</p>
+            </div>
+            <div class="report-card">
+              <h4>🤖 行动版</h4>
+              <div class="rc-audience">给 AI（直接复制粘贴）</div>
+              <p>修复清单 + 验证检查点，AI 按步骤执行即可</p>
+            </div>
+          </div>
           <p style="margin-top:12px;color:var(--text2);">💡 如果决定修复：把<strong>行动版报告</strong>直接发给 AI，它会按清单逐项修复。修复后重新运行审查，确认问题清零。</p>
         </div>
       </div>
