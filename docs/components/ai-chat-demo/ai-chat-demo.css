@@ -33,7 +33,6 @@
 .chat-bubble, .chat-thinking, .report-panel, .report-content,
 .chat-option-btn, .chat-model-selector, .model-dropdown-menu { transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease; }
 .ai-chat-demo { transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, height 0.3s ease; }
-.ai-chat-demo.glass { background: transparent !important; border-color: transparent !important; }
 
 /* Light theme */
 [data-theme="light"] .ai-chat-demo {
