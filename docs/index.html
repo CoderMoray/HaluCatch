@@ -689,11 +689,11 @@
     }
 
     .brand-wrap { position: relative; display: inline-block; vertical-align: middle; }
-    .brand-full { white-space: nowrap; opacity: 1; transition: opacity 0.48s ease; }
+    .brand-full { white-space: nowrap; clip-path: inset(0 0 0 0); transition: clip-path 0.48s ease; }
     .brand-short { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transform: translateX(var(--brand-shift, 100px)); transition: opacity 0.3s ease 0.24s, transform 0.48s ease 0.48s; }
 
     @media (max-width: 460px) {
-      .brand-full { opacity: 0; }
+      .brand-full { clip-path: inset(0 var(--brand-clip, 2em) 0 0); }
       .brand-short { opacity: 1; transform: translateX(0); }
     }
   </style>
@@ -1362,6 +1362,7 @@ window.halucatchDemo = new AIChatDemo({
       var targetW = 2.2 * em; // width of "捕幻"
       var shift = full.offsetWidth - targetW;
       document.documentElement.style.setProperty('--brand-shift', shift + 'px');
+      document.documentElement.style.setProperty('--brand-clip', targetW + 'px');
     }
     window.addEventListener('resize', calcShift);
     // Measure after font loads
