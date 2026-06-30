@@ -1303,13 +1303,29 @@ window.halucatchDemo = new AIChatDemo({
     });
   }
 
+  // RAF-based smooth tracking during transitions
+  var tracking = false;
+  function scheduleIndicator() {
+    if (!tracking) { tracking = true; requestAnimationFrame(trackLoop); }
+  }
+  function trackLoop() {
+    updateIndicator();
+    requestAnimationFrame(trackLoop);
+  }
+  // Pause tracking when idle (stop requesting frames after 0.1s of no changes)
+  var idleTimer;
+  function resetIdle() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(function() { tracking = false; }, 150);
+  }
+
   // ResizeObserver on pill + nav keeps indicator in sync during layout changes
   if (typeof ResizeObserver !== 'undefined') {
-    var ro = new ResizeObserver(updateIndicator);
+    var ro = new ResizeObserver(function() { scheduleIndicator(); resetIdle(); });
     ro.observe(pill);
     ro.observe(document.querySelector('.nav-inner'));
   }
-  window.addEventListener('resize', updateIndicator);
+  window.addEventListener('resize', function() { scheduleIndicator(); resetIdle(); });
 
   // Hamburger toggle
   var hamburger = document.getElementById('nav-hamburger');
