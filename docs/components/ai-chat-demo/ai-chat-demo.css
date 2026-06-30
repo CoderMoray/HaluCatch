@@ -23,7 +23,9 @@
   border: 1px solid var(--chat-border);
   border-radius: 12px;
   overflow: hidden;
-  background: var(--chat-bg);
+  background: color-mix(in srgb, var(--chat-bg) 75%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   min-height: 520px;
   max-height: 640px;
   transition: height 0.3s ease;
@@ -68,7 +70,9 @@
   justify-content: space-between;
   padding: 12px 16px;
   border-bottom: 1px solid var(--chat-border);
-  background: var(--chat-surface);
+  background: color-mix(in srgb, var(--chat-surface) 75%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .chat-header-left {
@@ -253,7 +257,9 @@
 .chat-input-area {
   padding: 8px 12px 12px;
   border-top: 1px solid var(--chat-border);
-  background: var(--chat-input-bg);
+  background: color-mix(in srgb, var(--chat-input-bg) 75%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -362,7 +368,9 @@
   bottom: calc(100% + 4px);
   right: 0;
   min-width: 220px;
-  background: var(--chat-surface);
+  background: color-mix(in srgb, var(--chat-surface) 75%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   border: 1px solid var(--chat-border);
   border-radius: 10px;
   padding: 8px 0;
@@ -503,7 +511,9 @@
 }
 
 .chat-option-btn {
-  background: var(--chat-surface);
+  background: color-mix(in srgb, var(--chat-surface) 75%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   border: 1px solid var(--chat-border);
   border-radius: 10px;
   padding: 12px 14px;
@@ -535,7 +545,9 @@
   width: 0;
   overflow: hidden;
   transition: width 0.5s ease;
-  background: var(--report-bg);
+  background: color-mix(in srgb, var(--report-bg) 75%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
 }
