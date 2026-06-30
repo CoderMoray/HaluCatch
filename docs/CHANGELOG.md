@@ -19,16 +19,24 @@
 - Report Tab 切换动画（滑动指示条 + 内容横切 + 容器高度平滑过渡）
 - Blog 文稿（掘金版 + CSDN 版）
 - 离线混淆构建脚本 `scripts/build-standalone.py`
+- Blog 板块（导航链接 + 页面底部掘金/CSDN 卡片，品牌 favicon + 品牌色标）
+- Share 分享按钮（导航栏右侧，下拉菜单：复制链接/飞书/X，spring 级联展开动画）
+- SEO 标签（og: + twitter: + canonical + 1200×630 OG 封面图）
+- 全局毛玻璃效果（problem 卡片 / preview 容器 / blog 卡片 / 导航栏 / badge / Demo 组件，统一 blur(12px) + 75% 不透明）
 
 ### Changed
 - 导航栏重构（brand 左锚 + links 居中 + 主题药丸右锚）
 - Hero 图标从 emoji 替换为 Lucide scan-search SVG
 - 默认主题设为跟随系统（system）
 - 光球随页面滚动消失
+- 导航 Blog 按钮从下拉改为直链 #blog
+- 分享按钮与主题药丸归入同一工具组
+- chat-thinking-btn 激活态从灰色改为 brand 紫色 + 白字，默认补可见边框
 
 ### Fixed
 - 主题切换防屏闪（blocking script + document.write 预注入底色）
 - Tab 切换容器高度瞬跳（锁高→测高→过渡到新高）
+- step-num 亮色模式背景与 qs-tab active 统一为 var(--accent)
 
 ---
 
