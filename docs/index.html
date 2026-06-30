@@ -154,7 +154,7 @@
 
     /* Smooth theme transitions */
     .nav, .nav-link, .problem-card, .preview-container, .badge, pre, .btn,
-    .qs-tab, .step-num, footer, .theme-pill, .nav-blog-menu, .nav-blog-item {
+    .qs-tab, .step-num, footer, .theme-pill, .nav-blog-menu, .nav-blog-item, .nav-share-btn, .nav-share-item, .nav-share-menu {
       transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, opacity 0.55s ease-out, transform 0.55s ease-out;
     }
     .nav { transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, transform 0.4s ease-out; }
@@ -468,6 +468,43 @@
     [data-theme="dark"] .blog-card:nth-child(1) .blog-platform { background: #1a2840; color: #5aa8ff; }
     [data-theme="dark"] .blog-card:nth-child(2) .blog-platform { background: #2a1818; color: #fc8181; }
 
+    /* Share button */
+    .nav-share {
+      position: relative;
+      margin-left: 6px;
+    }
+    .nav-share-btn {
+      display: flex; align-items: center; gap: 4px;
+      background: none; border: 1px solid var(--border); border-radius: 8px;
+      padding: 4px 10px; font-size: 0.8rem; color: var(--text); cursor: pointer;
+      transition: border-color 0.3s ease, background 0.3s ease;
+    }
+    .nav-share-btn:hover { border-color: var(--accent); background: var(--surface2); }
+    .nav-share-btn svg { width: 14px; height: 14px; }
+    .nav-share-menu {
+      display: none;
+      position: absolute; top: 40px; right: 0; z-index: 200;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 6px; min-width: 160px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    .nav-share:focus-within .nav-share-menu,
+    .nav-share:hover .nav-share-menu { display: block; }
+    .nav-share-item {
+      display: flex; align-items: center; gap: 8px; width: 100%;
+      background: none; border: none; border-radius: 6px; padding: 8px 10px;
+      font-size: 0.8rem; color: var(--text); cursor: pointer; text-align: left;
+      transition: background 0.2s;
+    }
+    .nav-share-item:hover { background: var(--surface2); }
+    .nav-share-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .share-toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--accent); color: white; padding: 8px 20px; border-radius: 8px;
+      font-size: 0.85rem; z-index: 300; pointer-events: none;
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+    .share-toast.show { opacity: 1; }
+
     @media (max-width: 600px) {
       .hero h1 { font-size: 2rem; }
       .preview-tabs { overflow-x: auto; }
@@ -494,6 +531,30 @@
       <a href="#report-preview" class="nav-link">报告预览</a>
       <a href="#quickstart" class="nav-link">快速开始</a>
       <a href="#blog" class="nav-link">Blogs</a>
+    </div>
+    <div class="nav-share" id="nav-share">
+      <button class="nav-share-btn" aria-label="分享页面">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+        Share
+      </button>
+      <div class="nav-share-menu">
+        <button class="nav-share-item" data-platform="url">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          复制链接
+        </button>
+        <button class="nav-share-item" data-platform="wechat">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.688 13.795c.18.18.18.47 0 .65a.453.453 0 0 1-.325.133.453.453 0 0 1-.325-.133c-.18-.18-.18-.47 0-.65a.453.453 0 0 1 .65 0zm3.44.938a.733.733 0 0 0 0-1.036.733.733 0 0 0-1.036 0c-.285.285-.285.75 0 1.036a.73.73 0 0 0 .52.215.72.72 0 0 0 .516-.215zm-2.66-2.965c.36 0 .65-.295.65-.65a.653.653 0 0 0-.65-.65.653.653 0 0 0-.65.65c0 .355.29.65.65.65zm4.772-.02a.653.653 0 0 0-.644.656c0 .356.29.65.65.65s.65-.294.65-.65a.65.65 0 0 0-.656-.656zm3.306-8.585A9.415 9.415 0 0 0 9.958 0 9.548 9.548 0 0 0 .395 9.553c0 2.943 1.395 5.622 3.668 7.355L2.855 19.47l3.366-2.065a10.937 10.937 0 0 0 3.743.66 9.548 9.548 0 0 0 9.562-9.553 9.118 9.118 0 0 0-1.98-5.788z"/></svg>
+          分享到微信
+        </button>
+        <button class="nav-share-item" data-platform="feishu">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 4.5c-2.625 0-5.5 1.916-5.5 4.375 0 1.298.726 3.112 1.814 4.003L12 17.25l-2.28-4.26C10.156 11.893 10.875 10.187 10.875 8.875 10.875 6.416 8 4.5 5.375 4.5 2.75 4.5 0 6.416 0 8.875S2.75 13.25 5.375 13.25c.707 0 1.375-.204 1.938-.543L12 22l4.688-9.293c.562.339 1.231.543 1.938.543 2.625 0 5.375-1.916 5.375-4.375S20.125 4.5 17.5 4.5z"/></svg>
+          分享到飞书
+        </button>
+        <button class="nav-share-item" data-platform="twitter">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          分享到 X
+        </button>
+      </div>
     </div>
     <div class="theme-pill" id="theme-pill">
       <button class="theme-pill-btn" data-theme="light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>Light</button>
@@ -1057,6 +1118,38 @@ window.halucatchDemo = new AIChatDemo({
 
   document.querySelectorAll('.anim-item.scroll-anim').forEach(function(el) {
     observer.observe(el);
+  });
+})();
+</script>
+
+<script>
+// Share button — copy link with toast
+(function() {
+  var URL = 'https://codermoray.github.io/HaluCatch/';
+  var toast = document.createElement('div');
+  toast.className = 'share-toast';
+  document.body.appendChild(toast);
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(function() { toast.classList.remove('show'); }, 2000);
+  }
+
+  document.querySelectorAll('.nav-share-item').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var platform = btn.getAttribute('data-platform');
+      if (platform === 'twitter') {
+        window.open('https://x.com/intent/post?url=' + encodeURIComponent(URL) + '&text=' + encodeURIComponent('HaluCatch - AI Skill 执行可靠性审计'), '_blank');
+        return;
+      }
+      navigator.clipboard.writeText(URL).then(function() {
+        var labels = { wechat: '微信', feishu: '飞书', url: '' };
+        showToast('链接已复制，到 ' + (labels[platform] || platform) + ' 粘贴即可');
+      }).catch(function() {
+        showToast('复制失败，请手动复制链接');
+      });
+    });
   });
 })();
 </script>
