@@ -482,13 +482,14 @@
     .nav-share-btn:hover { border-color: var(--accent); background: var(--surface2); }
     .nav-share-btn svg { width: 14px; height: 14px; }
     .nav-share-menu {
-      display: none;
       position: absolute; top: 40px; right: 0; z-index: 200;
       background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
       padding: 6px; min-width: 160px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      opacity: 0; transform: translateY(-6px); pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
     }
     .nav-share:focus-within .nav-share-menu,
-    .nav-share:hover .nav-share-menu { display: block; }
+    .nav-share:hover .nav-share-menu { opacity: 1; transform: translateY(0); pointer-events: auto; }
     .nav-share-item {
       display: flex; align-items: center; gap: 8px; width: 100%;
       background: none; border: none; border-radius: 6px; padding: 8px 10px;
