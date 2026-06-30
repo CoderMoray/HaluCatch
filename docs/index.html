@@ -690,7 +690,7 @@
 
     .brand-wrap { position: relative; display: inline-block; vertical-align: middle; }
     .brand-wrap .brand-full { position: relative; z-index: 1; white-space: nowrap; transition: opacity 0.36s ease; }
-    .brand-wrap .brand-short { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transition: opacity 0.36s ease; }
+    .brand-wrap .brand-short { position: absolute; left: 0; top: 50%; transform: translateY(-50%); display: block; white-space: nowrap; opacity: 0; transition: opacity 0.36s ease; }
 
     /* ≤400px: compact brand */
     @media (max-width: 400px) {
