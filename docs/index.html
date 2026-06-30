@@ -1373,10 +1373,10 @@ window.halucatchDemo = new AIChatDemo({
 
       if (isNarrow) {
         // Entering 460px: appear first, then slide left
-        short.style.transition = 'opacity 0.3s ease 0s, transform 0.48s ease 0.4s';
+        short.style.transition = 'opacity 0.3s ease 0s, transform 0.64s ease 0.4s';
       } else {
         // Leaving 460px: slide right first, then fade out
-        short.style.transition = 'opacity 0.3s ease 0.48s, transform 0.48s ease 0s';
+        short.style.transition = 'opacity 0.3s ease 0.64s, transform 0.64s ease 0s';
       }
     }
 
@@ -1386,9 +1386,9 @@ window.halucatchDemo = new AIChatDemo({
       wasNarrow = window.innerWidth <= 460;
       // Set initial transition direction
       if (wasNarrow) {
-        short.style.transition = 'opacity 0.3s ease 0s, transform 0.48s ease 0.4s';
+        short.style.transition = 'opacity 0.3s ease 0s, transform 0.64s ease 0.4s';
       } else {
-        short.style.transition = 'opacity 0.3s ease 0.48s, transform 0.48s ease 0s';
+        short.style.transition = 'opacity 0.3s ease 0.64s, transform 0.64s ease 0s';
       }
     }, 200);
   })();
