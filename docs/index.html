@@ -158,6 +158,12 @@
     }
     .nav-blog-item:hover { color: var(--text); background: var(--surface2); text-decoration: none; }
 
+    /* Smooth reflow for cards & buttons */
+    .problem-card, .report-card, .blog-card, .install-card,
+    .badge, .btn, .chat-option-btn {
+      transition: transform 0.36s ease, width 0.36s ease, margin 0.36s ease, padding 0.36s ease, font-size 0.36s ease;
+    }
+
     /* Smooth theme transitions */
     .nav, .nav-link, .problem-card, .preview-container, .badge, pre, .btn,
     .qs-tab, .step-num, footer, .theme-pill, .nav-blog-menu, .nav-blog-item, .nav-share-btn, .nav-share-menu {
