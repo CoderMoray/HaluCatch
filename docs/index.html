@@ -312,7 +312,9 @@
 
     /* Report Preview */
     .preview-container {
-      background: var(--surface);
+      background: color-mix(in srgb, var(--surface) 75%, transparent);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
       border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
@@ -320,7 +322,7 @@
     .preview-tabs {
       display: flex;
       border-bottom: 1px solid var(--border);
-      background: var(--surface2);
+      background: color-mix(in srgb, var(--surface2) 75%, transparent);
     }
     .preview-tab {
       padding: 12px 24px;
