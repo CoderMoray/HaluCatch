@@ -534,6 +534,29 @@
     .report-card .rc-audience { font-size: 0.75rem; color: var(--accent); margin-bottom: 8px; font-weight: 600; }
     .report-card p { font-size: 0.85rem; color: var(--text2); line-height: 1.6; }
 
+    /* Install cards */
+    .install-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .install-card {
+      background: color-mix(in srgb, var(--surface) 75%, transparent);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .install-card-header { padding: 12px 16px 0; }
+    .install-region { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+    .install-card-body { padding: 12px 16px; }
+    .install-card-body code { font-size: 0.82rem; color: var(--text2); line-height: 1.7; word-break: break-word; }
+    .install-copy-btn {
+      display: block; width: calc(100% - 32px); margin: 0 16px 14px;
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 0; font-size: 0.8rem; color: var(--text); cursor: pointer;
+      transition: all 0.2s; font-family: inherit;
+    }
+    .install-copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .install-copy-btn.copied { color: var(--green); border-color: var(--green); }
+
     /* Share button */
     .nav-share {
       position: relative;
@@ -828,18 +851,26 @@
         <div class="step-num">1</div>
         <div class="step-content">
           <h3>安装</h3>
-          <p>把以下提示词发给你的 AI，让它帮你安全安装 HaluCatch</p>
-          <div class="copy-wrapper">
-          <pre><span class="comment"># 复制这段发给 AI</span>
-请先检查 ClawHub 上 skill 的元数据和安装要求。
-如果这个 skill 要求安装第三方包或 CLI，请先验证来源、维护者和包内容，再执行安装命令。
-只有在确认安全后，才从 ClawHub 安装 skill "HaluCatch"（@codermoray/halucatch）。
-Skill 页面：https://clawhub.ai/codermoray/skills/halucatch
-请把安装范围限定在这个 skill 内。
-安装完成后，请根据 ClawHub 上验证过的元数据帮我完成设置。
-只使用你在 ClawHub 上能验证的元数据，不要编造缺失的要求。
-在做出任何更广泛的环境变更前，请先询问我。</pre>
-          <button class="copy-btn" onclick="var pre=this.previousElementSibling;var t=pre.textContent.replace(/^# 复制这段发给 AI\\n/,'').trim();navigator.clipboard.writeText(t).then(()=>{this.classList.add('copied');this.innerHTML='<svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'><polyline points=\\'20 6 9 17 4 12\\'/></svg>已复制';setTimeout(()=>{this.classList.remove('copied');this.innerHTML='<svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'><rect x=\\'9\\' y=\\'9\\' width=\\'13\\' height=\\'13\\' rx=\\'2\\'/><path d=\\'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\\'/></svg>复制';},2000)})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制</button>
+          <p>复制下方提示词发给 AI，即可安装 HaluCatch</p>
+          <div class="install-cards">
+            <div class="install-card">
+              <div class="install-card-header">
+                <span class="install-region">🇨🇳 国区用户</span>
+              </div>
+              <div class="install-card-body">
+                <code>请先检查是否已安装 SkillHub 商店，若未安装，请根据 https://skillhub.cn/install/skillhub.md 安装SkillHub商店，但是只安装CLI，然后安装halucatch技能。若已安装，则直接安装halucatch技能。</code>
+              </div>
+              <button class="install-copy-btn" onclick="var t=this.previousElementSibling.textContent;navigator.clipboard.writeText(t).then(()=>{this.classList.add('copied');this.innerHTML='✓ 已复制';setTimeout(()=>{this.classList.remove('copied');this.innerHTML='📋 复制提示词'},2000)})">📋 复制提示词</button>
+            </div>
+            <div class="install-card">
+              <div class="install-card-header">
+                <span class="install-region">🌍 国际用户</span>
+              </div>
+              <div class="install-card-body">
+                <code>从 ClawHub 安装 skill HaluCatch（@codermoray/halucatch）。安装完成后帮我完成设置。Skill 页面：https://clawhub.ai/codermoray/skills/halucatch</code>
+              </div>
+              <button class="install-copy-btn" onclick="var t=this.previousElementSibling.textContent;navigator.clipboard.writeText(t).then(()=>{this.classList.add('copied');this.innerHTML='✓ 已复制';setTimeout(()=>{this.classList.remove('copied');this.innerHTML='📋 复制提示词'},2000)})">📋 复制提示词</button>
+            </div>
           </div>
         </div>
       </div>
