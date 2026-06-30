@@ -689,8 +689,8 @@
     }
 
     .brand-wrap { position: relative; display: inline-block; vertical-align: middle; }
-    .brand-full { white-space: nowrap; clip-path: inset(0 0 0 0); transition: clip-path 0.56s ease; }
-    .brand-short { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transform: translateX(var(--brand-shift, 100px)); transition: opacity 0.2s ease 0.1s, transform 0.48s ease var(--brand-delay, 0s); }
+    .brand-full { white-space: nowrap; clip-path: inset(0 0 0 0); transition: clip-path 0.56s ease 0.3s; }
+    .brand-short { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transform: translateX(var(--brand-shift, 100px)); transition: opacity 0.3s ease 0s, transform 0.48s ease var(--brand-delay, 0s); }
 
     @media (max-width: 460px) {
       .brand-full { clip-path: inset(0 100% 0 0); }
@@ -1363,7 +1363,7 @@ window.halucatchDemo = new AIChatDemo({
       var totalW = full.offsetWidth;
       var shift = totalW - targetW;
       // Delay: when does "捕幻" get clipped during 0.56s clip?
-      var delay = ((totalW - targetW) / totalW) * 0.56;
+      var delay = 0.3 + ((totalW - targetW) / totalW) * 0.56;
       document.documentElement.style.setProperty('--brand-shift', shift + 'px');
       document.documentElement.style.setProperty('--brand-delay', delay + 's');
     }
