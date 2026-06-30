@@ -36,7 +36,7 @@ class AIChatDemo {
   
   buildHTML() {
     return `
-      <div class="ai-chat-demo">
+      <div class="ai-chat-demo glass">
         <div class="chat-panel">
           <div class="chat-header">
             <div class="chat-header-left">

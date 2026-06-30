@@ -96,6 +96,12 @@
       padding: 0 20px;
       position: relative;
     }
+
+    /* ── Glass utility ── */
+    .glass { -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+    [data-theme="dark"] .glass { background: rgba(18,18,38,0.72); border-color: rgba(255,255,255,0.08); }
+    [data-theme="light"] .glass { background: rgba(255,255,255,0.7); border-color: rgba(0,0,0,0.06); }
+
     .nav-brand {
       position: absolute;
       left: 20px;
