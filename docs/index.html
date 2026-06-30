@@ -698,11 +698,14 @@
     .brand-wrap .brand-short {
       position: absolute; left: 0; top: 0; opacity: 0; pointer-events: none;
     }
+    .brand-wrap .brand-full {
+      opacity: 1;
+    }
 
     /* ≤400px: compact brand */
     @media (max-width: 400px) {
-      .brand-full { display: none; }
-      .brand-short { display: inline; }
+      .brand-full { opacity: 0; pointer-events: none; }
+      .brand-short { opacity: 1; pointer-events: auto; }
     }
   </style>
   <link rel="stylesheet" href="components/ai-chat-demo/ai-chat-demo.css">
