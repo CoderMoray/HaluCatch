@@ -690,7 +690,7 @@
 
     .brand-wrap { position: relative; display: inline-block; vertical-align: middle; }
     .brand-full { white-space: nowrap; clip-path: inset(0 0 0 0); transition: clip-path 0.56s ease 0.3s; }
-    .brand-short { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transform: translateX(var(--brand-shift, 100px)); }
+    .brand-short { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transform: translateX(var(--brand-shift, 100px)); transition: opacity 0.3s ease, transform 0.64s ease; }
 
     @media (max-width: 460px) {
       .brand-full { clip-path: inset(0 100% 0 0); }
@@ -1352,11 +1352,10 @@ window.halucatchDemo = new AIChatDemo({
     if (e.target.classList.contains('nav-link')) navLinks.classList.remove('open');
   });
 
-  // Brand shift variable + directional transition for clip-path slide animation
+  // Brand shift variable for clip-path slide animation
   (function() {
     var full = document.querySelector('.brand-full');
     var short = document.querySelector('.brand-short');
-    var wasNarrow = window.innerWidth <= 460;
 
     function calcShift() {
       if (!full || !short) return;
@@ -1365,32 +1364,8 @@ window.halucatchDemo = new AIChatDemo({
       document.documentElement.style.setProperty('--brand-shift', (totalW - targetW) + 'px');
     }
 
-    function onResize() {
-      calcShift();
-      var isNarrow = window.innerWidth <= 460;
-      if (isNarrow === wasNarrow) return;
-      wasNarrow = isNarrow;
-
-      if (isNarrow) {
-        // Entering 460px: appear first, then slide left
-        short.style.transition = 'opacity 0.3s ease 0s, transform 0.64s ease 0.4s';
-      } else {
-        // Leaving 460px: slide right first, then fade out
-        short.style.transition = 'opacity 0.3s ease 0.64s, transform 0.64s ease 0s';
-      }
-    }
-
-    window.addEventListener('resize', onResize);
-    setTimeout(function() {
-      calcShift();
-      wasNarrow = window.innerWidth <= 460;
-      // Set initial transition direction
-      if (wasNarrow) {
-        short.style.transition = 'opacity 0.3s ease 0s, transform 0.64s ease 0.4s';
-      } else {
-        short.style.transition = 'opacity 0.3s ease 0.64s, transform 0.64s ease 0s';
-      }
-    }, 200);
+    window.addEventListener('resize', calcShift);
+    setTimeout(calcShift, 200);
   })();
 
   // Initial load: page already has correct theme from blocking script, just sync pill
