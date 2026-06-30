@@ -542,20 +542,12 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
           复制链接
         </button>
-        <button class="nav-share-item" data-platform="wechat">
-          <img src="https://weixin.qq.com/favicon.ico" width="16" height="16" alt="" style="flex-shrink:0;border-radius:2px;">
-          分享到微信
-        </button>
         <button class="nav-share-item" data-platform="feishu">
           <img src="https://www.feishu.cn/favicon.ico" width="16" height="16" alt="" style="flex-shrink:0;border-radius:2px;">
           分享到飞书
         </button>
-        <button class="nav-share-item" data-platform="dingtalk">
-          <img src="https://www.dingtalk.com/favicon.ico" width="16" height="16" alt="" style="flex-shrink:0;border-radius:2px;">
-          分享到钉钉
-        </button>
         <button class="nav-share-item" data-platform="twitter">
-          <img src="https://x.com/favicon.ico" width="16" height="16" alt="" style="flex-shrink:0;border-radius:2px;">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           分享到 X
         </button>
       </div>
@@ -1148,7 +1140,7 @@ window.halucatchDemo = new AIChatDemo({
         return;
       }
       navigator.clipboard.writeText(URL).then(function() {
-        var labels = { wechat: '微信', feishu: '飞书', dingtalk: '钉钉', url: '' };
+        var labels = { feishu: '飞书', url: '' };
         showToast('链接已复制，到 ' + (labels[platform] || platform) + ' 粘贴即可');
       }).catch(function() {
         showToast('复制失败，请手动复制链接');
