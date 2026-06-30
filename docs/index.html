@@ -546,10 +546,11 @@
     .install-card-header { margin-bottom: 4px; }
     .install-region { font-size: 1rem; font-weight: 600; color: var(--text); }
     .install-copy-btn {
-      display: inline-block;
+      display: inline-flex; align-items: center; gap: 6px;
       background: var(--accent); border: none; border-radius: 8px;
-      padding: 10px 24px; font-size: 0.85rem; color: #fff; cursor: pointer;
+      padding: 10px 20px; font-size: 0.85rem; color: #fff; cursor: pointer;
       transition: all 0.2s; font-family: inherit; font-weight: 600;
+      white-space: nowrap;
     }
     .install-copy-btn:hover { opacity: 0.9; transform: translateY(-1px); }
     .install-copy-btn:active { transform: translateY(0); }
