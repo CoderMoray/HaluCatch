@@ -159,10 +159,6 @@
     }
     .nav { transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, transform 0.4s ease-out; }
     .theme-pill {
-      position: absolute;
-      right: 20px;
-      top: 50%;
-      transform: translateY(-50%);
       display: inline-flex;
       background: var(--surface2);
       border-radius: 22px;
@@ -475,6 +471,12 @@
       padding-left: 0;
       border-left: none;
     }
+    .nav-tools {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
     .nav-share-btn {
       display: flex; align-items: center; gap: 4px;
       background: none; border: 1px solid var(--border); border-radius: 8px;
@@ -541,6 +543,7 @@
       <a href="#quickstart" class="nav-link">快速开始</a>
       <a href="#blog" class="nav-link">Blogs</a>
     </div>
+    <div class="nav-tools">
     <div class="theme-pill" id="theme-pill">
       <button class="theme-pill-btn" data-theme="light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>Light</button>
       <button class="theme-pill-btn" data-theme="dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>Night</button>
@@ -565,6 +568,7 @@
           分享到 X
         </button>
       </div>
+    </div>
     </div>
   </div>
 </nav>
