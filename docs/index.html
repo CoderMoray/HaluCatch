@@ -690,11 +690,16 @@
 
     .brand-wrap { position: relative; display: inline-block; vertical-align: middle; }
     .brand-full { white-space: nowrap; clip-path: inset(0 0 0 0); transition: clip-path 0.48s ease; }
-    .brand-short { position: absolute; right: 0; top: 0; white-space: nowrap; opacity: 0; transition: opacity 0.36s ease; }
+    .brand-short {
+      position: absolute; left: 0; top: 0; white-space: nowrap;
+      opacity: 0;
+      transform: translateX(var(--brand-shift, 100px));
+      transition: opacity 0.3s ease 0.24s, transform 0.48s ease 0.48s;
+    }
 
     @media (max-width: 460px) {
       .brand-full { clip-path: inset(0 0 0 calc(100% - 2.2em)); }
-      .brand-short { opacity: 1; }
+      .brand-short { opacity: 1; transform: translateX(0); }
     }
   </style>
   <link rel="stylesheet" href="components/ai-chat-demo/ai-chat-demo.css">
@@ -1351,6 +1356,22 @@ window.halucatchDemo = new AIChatDemo({
   navLinks.addEventListener('click', function(e) {
     if (e.target.classList.contains('nav-link')) navLinks.classList.remove('open');
   });
+
+  // Brand shift variable for clip-path slide animation
+  (function() {
+    var full = document.querySelector('.brand-full');
+    var short = document.querySelector('.brand-short');
+    function calcShift() {
+      if (!full || !short) return;
+      var em = parseFloat(getComputedStyle(full).fontSize);
+      var targetW = 2.2 * em; // width of "捕幻"
+      var shift = full.offsetWidth - targetW;
+      document.documentElement.style.setProperty('--brand-shift', shift + 'px');
+    }
+    window.addEventListener('resize', calcShift);
+    // Measure after font loads
+    setTimeout(calcShift, 100);
+  })();
 
   // Initial load: page already has correct theme from blocking script, just sync pill
   var saved = getTheme();
