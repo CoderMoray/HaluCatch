@@ -629,8 +629,8 @@
     .nav-hamburger { display: none; background: none; border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; cursor: pointer; color: var(--text2); flex-shrink: 0; }
     .nav-hamburger:hover { color: var(--text); border-color: var(--accent); }
 
-    /* ≤850px: pill icons only */
-    @media (max-width: 850px) {
+    /* ≤1080px: pill icons only */
+    @media (max-width: 1080px) {
       .pill-label { opacity: 0; max-width: 0; padding: 0; }
     }
 
@@ -1267,12 +1267,13 @@ window.halucatchDemo = new AIChatDemo({
     });
   }
 
-  // ResizeObserver on pill keeps indicator in sync during width changes
+  // ResizeObserver on pill + nav keeps indicator in sync during layout changes
   if (typeof ResizeObserver !== 'undefined') {
-    new ResizeObserver(updateIndicator).observe(pill);
-  } else {
-    window.addEventListener('resize', updateIndicator);
+    var ro = new ResizeObserver(updateIndicator);
+    ro.observe(pill);
+    ro.observe(document.querySelector('.nav-inner'));
   }
+  window.addEventListener('resize', updateIndicator);
 
   // Hamburger toggle
   var hamburger = document.getElementById('nav-hamburger');
