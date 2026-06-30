@@ -648,6 +648,12 @@
       transition: max-width 0.35s ease, opacity 0.35s ease, gap 0.35s ease;
     }
 
+    /* ≤1080px: pill & share icons only */
+    @media (max-width: 1080px) {
+      .pill-label, .share-label { opacity: 0; max-width: 0; padding: 0; }
+      .nav-share-btn { padding: 4px 8px; }
+    }
+
     /* 960→860px: nav-links collapses, hamburger emerges */
     @media (max-width: 960px) {
       .nav-links { max-width: 0; opacity: 0; gap: 0; }
