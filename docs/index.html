@@ -688,22 +688,23 @@
       .nav-link:hover { background: var(--surface2); }
     }
 
-    .brand-wrap { position: relative; }
+    .brand-wrap { position: relative; display: inline-block; }
     .brand-wrap .brand-full,
     .brand-wrap .brand-short {
-      white-space: nowrap; transition: opacity 0.36s ease;
+      display: inline-block; white-space: nowrap; vertical-align: middle;
+      transition: opacity 0.36s ease, max-width 0.36s ease;
     }
     .brand-wrap .brand-short {
-      position: absolute; left: 0; top: 0; opacity: 0; pointer-events: none;
+      position: absolute; left: 0; top: 0; opacity: 0; max-width: 0; overflow: hidden;
     }
     .brand-wrap .brand-full {
-      opacity: 1;
+      opacity: 1; max-width: 150px;
     }
 
     /* ≤400px: compact brand */
     @media (max-width: 400px) {
-      .brand-full { opacity: 0; pointer-events: none; }
-      .brand-short { opacity: 1; pointer-events: auto; }
+      .brand-full { opacity: 0; max-width: 0; pointer-events: none; }
+      .brand-short { opacity: 1; max-width: 80px; }
     }
   </style>
   <link rel="stylesheet" href="components/ai-chat-demo/ai-chat-demo.css">
