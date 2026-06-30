@@ -471,9 +471,9 @@
     /* Share button */
     .nav-share {
       position: relative;
-      margin-left: 4px;
-      padding-left: 10px;
-      border-left: 1px solid var(--border);
+      margin-left: 0;
+      padding-left: 0;
+      border-left: none;
     }
     .nav-share-btn {
       display: flex; align-items: center; gap: 4px;
@@ -541,6 +541,11 @@
       <a href="#quickstart" class="nav-link">快速开始</a>
       <a href="#blog" class="nav-link">Blogs</a>
     </div>
+    <div class="theme-pill" id="theme-pill">
+      <button class="theme-pill-btn" data-theme="light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>Light</button>
+      <button class="theme-pill-btn" data-theme="dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>Night</button>
+      <button class="theme-pill-btn" data-theme="system"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Auto</button>
+    </div>
     <div class="nav-share" id="nav-share">
       <button class="nav-share-btn" aria-label="分享页面">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
@@ -560,11 +565,6 @@
           分享到 X
         </button>
       </div>
-    </div>
-    <div class="theme-pill" id="theme-pill">
-      <button class="theme-pill-btn" data-theme="light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>Light</button>
-      <button class="theme-pill-btn" data-theme="dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>Night</button>
-      <button class="theme-pill-btn" data-theme="system"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Auto</button>
     </div>
   </div>
 </nav>
