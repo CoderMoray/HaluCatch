@@ -54,8 +54,8 @@ def scan_folder(path, msg):
     skip_dirs = {'.git', '__pycache__', '.pytest_cache', 'node_modules', '.venv', 'venv', 'avatars'}
 
     for root, dirs, filenames in os.walk(path):
-        # 只扫描顶层目录，不递归子目录（避免误读其他 Skill 的 SKILL.md）
-        dirs[:] = []
+        # 递归扫描子目录（过滤 .git / __pycache__ 等排除目录）
+        dirs[:] = [d for d in dirs if d not in skip_dirs]
         for fname in filenames:
             fpath = os.path.join(root, fname)
             size = os.path.getsize(fpath)
