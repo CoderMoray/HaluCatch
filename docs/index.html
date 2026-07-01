@@ -1136,16 +1136,17 @@ reports/HaluCatch-report-YYYY-MM-DD-行动版.md  <span class="comment"># AI 行
   var isOpen = item.classList.contains('open');
 
   if (isOpen) {
-    // Closing: rotate further to 360deg before resetting
+    // Closing: rotate further to 360deg, then instantly snap to 0
     arrow.style.transition = 'transform 0.3s ease';
     arrow.style.transform = 'rotate(360deg)';
+    var done = false;
     arrow.addEventListener('transitionend', function reset() {
+      if (done) return;
+      done = true;
       arrow.removeEventListener('transitionend', reset);
       arrow.style.transition = 'none';
-      arrow.style.transform = 'rotate(0deg)';
-      // Force reflow
+      arrow.style.transform = '';
       arrow.offsetHeight;
-      arrow.style.transition = 'transform 0.3s ease';
     });
     item.classList.remove('open');
     var body = item.querySelector('.faq-a');
