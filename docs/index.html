@@ -570,11 +570,11 @@
     .install-copy-btn:hover { opacity: 0.9; transform: translateY(-1px); }
     .install-copy-btn:active { transform: translateY(0); }
     .install-copy-btn.copied { background: var(--green); }
-    .install-copy-text { display: inline-grid; vertical-align: middle; }
-    .install-copy-text > span { grid-area: 1/1; white-space: nowrap; transition: opacity 0.3s ease; }
-    .install-copy-text > span.copied-label { opacity: 0; }
-    .install-copy-btn.copied .install-copy-text > span.copy-label { opacity: 0; }
-    .install-copy-btn.copied .install-copy-text > span.copied-label { opacity: 1; }
+    .install-copy-text { display: inline-block; position: relative; overflow: hidden; }
+    .install-copy-text > span { display: block; white-space: nowrap; transition: transform 0.3s ease; }
+    .install-copy-text > span.copied-label { position: absolute; left: 0; top: 0; transform: translateY(100%); }
+    .install-copy-btn.copied .install-copy-text > span.copy-label { transform: translateY(-100%); }
+    .install-copy-btn.copied .install-copy-text > span.copied-label { transform: translateY(0); }
 
     /* Share button */
     .nav-share {
