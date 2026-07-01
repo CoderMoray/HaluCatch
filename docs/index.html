@@ -1247,8 +1247,8 @@ reports/HaluCatch-report-YYYY-MM-DD-行动版.md  <span class="comment"># AI 行
     body.offsetHeight; // force reflow
     body.style.maxHeight = '0px';
   } else {
-    // Opening: standard 180deg
-    arrow.style.transform = '';
+    // Opening: standard 180deg — reset both inline styles so CSS takes over
+    arrow.style.cssText = '';
     item.classList.add('open');
     var body = item.querySelector('.faq-a');
     body.style.maxHeight = body.scrollHeight + 'px';
