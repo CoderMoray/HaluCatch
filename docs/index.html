@@ -505,7 +505,7 @@
     .faq-item.open .faq-arrow { transform: rotate(180deg); color: var(--accent); }
     .faq-a {
       max-height: 0; overflow: hidden;
-      transition: max-height 0.4s ease, padding 0.4s ease;
+      transition: max-height 0.8s ease, padding 0.8s ease;
     }
     .faq-item.open .faq-a { max-height: 400px; }
     .faq-a p, .faq-a ol { padding: 0 18px 14px 18px; font-size: 0.85rem; color: var(--text2); line-height: 1.7; }
@@ -689,11 +689,11 @@
     }
 
     .brand-wrap { position: relative; display: inline-block; vertical-align: middle; }
-    .brand-full { white-space: nowrap; clip-path: inset(0 0 0 0); transition: clip-path 0.56s ease 0s; }
-    .brand-short { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transform: translateX(var(--brand-shift, 100px)); transition: opacity 0.3s ease 0.66s, transform 0.36s ease 0.24s; }
+    .brand-full { white-space: nowrap; clip-path: inset(0 0 0 0); transition: clip-path 0.96s ease 0s; }
+    .brand-short { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transform: translateX(var(--brand-shift, 100px)); transition: opacity 0.3s ease 0.66s, transform 0.54s ease 0s; }
 
     @media (max-width: 460px) {
-      .brand-full { clip-path: inset(0 100% 0 0); transition: clip-path 0.56s ease 0.3s; }
+      .brand-full { clip-path: inset(0 100% 0 0); transition: clip-path 0.54s ease 0.3s; }
       .brand-short { opacity: 1; transform: translateX(0); transition: opacity 0.3s ease 0s, transform 0.6s ease 0.36s; }
     }
   </style>
@@ -1060,42 +1060,42 @@ reports/HaluCatch-report-YYYY-MM-DD-行动版.md  <span class="comment"># AI 行
   <h2><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:8px;position:relative;top:-2px;"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>FAQ</h2>
   <div class="faq-list">
     <div class="faq-item glass">
-      <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
         <span>HaluCatch 需要联网吗？</span>
         <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
       </button>
       <div class="faq-a"><p>不需要。全程离线运行，仅扫描本地文件夹中的 SKILL.md 和 .py 文件，不会发起任何网络请求。</p></div>
     </div>
     <div class="faq-item glass">
-      <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
         <span>HaluCatch 怎么用？</span>
         <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
       </button>
       <div class="faq-a"><p>对 AI 说「请用 HaluCatch 审查 /path/to/skill」即可。AI 自动扫描、评估、生成三份报告到 <code>reports/</code> 目录：</p><ol><li>跑一次审查 → 看通俗版报告了解问题</li><li>打开 <code>-行动版.md</code> → 从第一条开始逐项修复</li><li>修复后重新跑 → 对比分数是否改善</li></ol></div>
     </div>
     <div class="faq-item glass">
-      <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
         <span>我的 Skill 没有 .py 文件，能用吗？</span>
         <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
       </button>
       <div class="faq-a"><p>可以。HaluCatch 会自动分类为「纯方法论型」并跳过地基/代码检查，只评估方法论结构和护栏完整度。</p></div>
     </div>
     <div class="faq-item glass">
-      <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
         <span>审查结果说「护栏薄弱」，怎么修？</span>
         <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
       </button>
       <div class="faq-a"><p>看同目录下的 <code>HaluCatch-report-日期-行动版.md</code>，它逐条列出了修复方案。按清单逐项改，改完后重新审查验证。</p></div>
     </div>
     <div class="faq-item glass">
-      <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
         <span>代码风险检查有哪些规则？</span>
         <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
       </button>
       <div class="faq-a"><p>当前 7 条通用规则：裸 except: pass / 浮点比较 (== 0.0) / 除零风险 / 硬编码阈值 / 路径拼接 / 静默覆盖 / 超时缺失。</p></div>
     </div>
     <div class="faq-item glass">
-      <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
         <span>能一次审查多个 Skill 吗？</span>
         <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
       </button>
@@ -1120,6 +1120,32 @@ reports/HaluCatch-report-YYYY-MM-DD-行动版.md  <span class="comment"># AI 行
 </footer>
 
 <script>
+// FAQ toggle with continuous rightward arrow rotation
+function toggleFaqItem(btn) {
+  var item = btn.parentElement;
+  var arrow = item.querySelector('.faq-arrow');
+  var isOpen = item.classList.contains('open');
+
+  if (isOpen) {
+    // Closing: rotate further to 360deg before resetting
+    arrow.style.transition = 'transform 0.3s ease';
+    arrow.style.transform = 'rotate(360deg)';
+    arrow.addEventListener('transitionend', function reset() {
+      arrow.removeEventListener('transitionend', reset);
+      arrow.style.transition = 'none';
+      arrow.style.transform = 'rotate(0deg)';
+      // Force reflow
+      arrow.offsetHeight;
+      arrow.style.transition = 'transform 0.3s ease';
+    });
+    item.classList.remove('open');
+  } else {
+    // Opening: standard 180deg
+    arrow.style.transform = '';
+    item.classList.add('open');
+  }
+}
+
 function switchTab(name) {
   document.querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.preview-body .report-content').forEach(c => c.classList.remove('active'));
