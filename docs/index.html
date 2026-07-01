@@ -564,12 +564,17 @@
       display: block; margin: 0 auto;
       background: var(--accent); border: none; border-radius: 8px;
       padding: 10px 20px; font-size: 0.85rem; color: #fff; cursor: pointer;
-      transition: all 0.2s; font-family: inherit; font-weight: 600;
+      transition: background 0.3s ease; font-family: inherit; font-weight: 600;
       white-space: nowrap;
     }
     .install-copy-btn:hover { opacity: 0.9; transform: translateY(-1px); }
     .install-copy-btn:active { transform: translateY(0); }
     .install-copy-btn.copied { background: var(--green); }
+    .install-copy-text { display: inline-grid; vertical-align: middle; }
+    .install-copy-text > span { grid-area: 1/1; white-space: nowrap; transition: opacity 0.3s ease; }
+    .install-copy-text > span.copied-label { opacity: 0; }
+    .install-copy-btn.copied .install-copy-text > span.copy-label { opacity: 0; }
+    .install-copy-btn.copied .install-copy-text > span.copied-label { opacity: 1; }
 
     /* Share button */
     .nav-share {
@@ -942,13 +947,13 @@
               <p class="install-title"><span style="font-size:1.1em;">🇨🇳</span> 国内用户方案</p>
               <p class="install-subtitle">为国内用户提供 SkillHub 安装提示词</p>
               <div class="install-note-wrap"><span class="install-note">中文环境 · 免费 · 开箱即用</span></div>
-              <button class="install-copy-btn" onclick="var t='请先检查是否已安装 SkillHub 商店，若未安装，请根据 https://skillhub.cn/install/skillhub.md 安装SkillHub商店，但是只安装CLI，然后安装halucatch技能。若已安装，则直接安装halucatch技能。';navigator.clipboard.writeText(t).then(()=>{this.classList.add('copied');this.textContent='复制成功';setTimeout(()=>{this.classList.remove('copied');this.textContent='一键复制'},2000)})">一键复制</button>
+              <button class="install-copy-btn" onclick="copyInstall(this, '请先检查是否已安装 SkillHub 商店，若未安装，请根据 https://skillhub.cn/install/skillhub.md 安装SkillHub商店，但是只安装CLI，然后安装halucatch技能。若已安装，则直接安装halucatch技能。')"><span class="install-copy-text"><span class="copy-label">一键复制</span><span class="copied-label">复制成功</span></span></button>
             </div>
             <div class="install-card">
               <p class="install-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;color:var(--accent);"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>国际用户方案</p>
               <p class="install-subtitle">为国际用户提供 ClawHub 安装提示词</p>
               <div class="install-note-wrap"><span class="install-note">Global AI skill marketplace</span></div>
-              <button class="install-copy-btn" onclick="var t='Before installing anything, inspect the ClawHub skill metadata and setup requirements. If the skill asks you to install a third-party package or CLI, verify its source, maintainer, and package contents before running the install command. Install the skill HaluCatch (@codermoray/halucatch) from ClawHub only after those checks pass. Skill page: https://clawhub.ai/codermoray/skills/halucatch. Keep the work scoped to this skill only. After install, help me finish setup from verified skill metadata. Use only the metadata you can verify from ClawHub; do not invent missing requirements. Ask before making any broader environment changes.';navigator.clipboard.writeText(t).then(()=>{this.classList.add('copied');this.textContent='复制成功';setTimeout(()=>{this.classList.remove('copied');this.textContent='一键复制'},2000)})">一键复制</button>
+              <button class="install-copy-btn" onclick="copyInstall(this, `Before installing anything, inspect the ClawHub skill metadata and setup requirements. If the skill asks you to install a third-party package or CLI, verify its source, maintainer, and package contents before running the install command. Install the skill HaluCatch (@codermoray/halucatch) from ClawHub only after those checks pass. Skill page: https://clawhub.ai/codermoray/skills/halucatch. Keep the work scoped to this skill only. After install, help me finish setup from verified skill metadata. Use only the metadata you can verify from ClawHub; do not invent missing requirements. Ask before making any broader environment changes.`)"><span class="install-copy-text"><span class="copy-label">一键复制</span><span class="copied-label">复制成功</span></span></button>
             </div>
           </div>
         </div>
@@ -1175,6 +1180,13 @@ function switchQsTab(name) {
   document.querySelectorAll('.qs-panel').forEach(p => p.classList.remove('active'));
   event.currentTarget.classList.add('active');
   document.getElementById('qs-' + name).classList.add('active');
+}
+
+function copyInstall(btn, text) {
+  navigator.clipboard.writeText(text).then(function() {
+    btn.classList.add('copied');
+    setTimeout(function() { btn.classList.remove('copied'); }, 2000);
+  });
 }
 </script>
 
