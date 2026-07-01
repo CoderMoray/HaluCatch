@@ -501,11 +501,11 @@
       font-family: inherit;
     }
     .faq-q:hover { color: var(--accent); }
-    .faq-arrow { flex-shrink: 0; transition: transform 0.3s ease; color: var(--text2); }
+    .faq-arrow { flex-shrink: 0; transition: transform 0.4s ease; color: var(--text2); }
     .faq-item.open .faq-arrow { transform: rotate(180deg); color: var(--accent); }
     .faq-a {
       max-height: 0; overflow: hidden;
-      transition: max-height 0.8s ease, padding 0.8s ease;
+      transition: max-height 0.4s ease, padding 0.4s ease;
     }
     .faq-item.open .faq-a { }
     .faq-a p, .faq-a ol { padding: 0 18px 14px 18px; font-size: 0.85rem; color: var(--text2); line-height: 1.7; }
@@ -1137,7 +1137,7 @@ reports/HaluCatch-report-YYYY-MM-DD-行动版.md  <span class="comment"># AI 行
 
   if (isOpen) {
     // Closing: rotate further to 360deg, then instantly snap to 0
-    arrow.style.transition = 'transform 0.3s ease';
+    arrow.style.transition = 'transform 0.4s ease';
     arrow.style.transform = 'rotate(360deg)';
     var done = false;
     arrow.addEventListener('transitionend', function reset() {
