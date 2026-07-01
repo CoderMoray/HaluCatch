@@ -507,7 +507,7 @@
       max-height: 0; overflow: hidden;
       transition: max-height 0.8s ease, padding 0.8s ease;
     }
-    .faq-item.open .faq-a { max-height: 400px; }
+    .faq-item.open .faq-a { }
     .faq-a p, .faq-a ol { padding: 0 18px 14px 18px; font-size: 0.85rem; color: var(--text2); line-height: 1.7; }
     .faq-a ol { padding-left: 40px; }
     .faq-a code { background: var(--surface2); padding: 1px 6px; border-radius: 4px; font-size: 0.8em; }
@@ -1120,8 +1120,17 @@ reports/HaluCatch-report-YYYY-MM-DD-行动版.md  <span class="comment"># AI 行
 </footer>
 
 <script>
-// FAQ toggle with continuous rightward arrow rotation
-function toggleFaqItem(btn) {
+  // FAQ toggle with continuous rightward arrow rotation
+  var faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(function(item) {
+    item.addEventListener('transitionend', function(e) {
+      if (e.target === item.querySelector('.faq-a') && !item.classList.contains('open')) {
+        // Remove max-height override after collapse so it resets for next time
+        item.querySelector('.faq-a').style.maxHeight = '';
+      }
+    });
+  });
+  function toggleFaqItem(btn) {
   var item = btn.parentElement;
   var arrow = item.querySelector('.faq-arrow');
   var isOpen = item.classList.contains('open');
@@ -1139,10 +1148,16 @@ function toggleFaqItem(btn) {
       arrow.style.transition = 'transform 0.3s ease';
     });
     item.classList.remove('open');
+    var body = item.querySelector('.faq-a');
+    body.style.maxHeight = body.scrollHeight + 'px';
+    body.offsetHeight; // force reflow
+    body.style.maxHeight = '0px';
   } else {
     // Opening: standard 180deg
     arrow.style.transform = '';
     item.classList.add('open');
+    var body = item.querySelector('.faq-a');
+    body.style.maxHeight = body.scrollHeight + 'px';
   }
 }
 
