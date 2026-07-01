@@ -373,12 +373,6 @@
     .preview-body .report-content .fail { color: var(--red); }
     .preview-body .report-content ul { padding-left: 20px; margin: 8px 0; }
     .preview-body .report-content li { margin: 4px 0; font-size: 0.9rem; }
-    .preview-body .report-content code {
-      background: var(--surface2);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.85rem;
-    }
     .preview-body .report-content hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
     .preview-body .report-content .tip-box {
       background: var(--surface2);
@@ -410,6 +404,10 @@
     .step-content { flex: 1; }
     .step-content h3 { margin-bottom: 8px; }
     .step-content p { color: var(--text2); font-size: 0.9rem; margin-bottom: 8px; }
+    code {
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      color: var(--accent); padding: 2px 8px; border-radius: 11px; font-size: 0.85em; font-weight: 600;
+    }
     pre {
       background: var(--surface2);
       border: 1px solid var(--border);
@@ -511,7 +509,6 @@
     .faq-item.open .faq-a { }
     .faq-a p, .faq-a ol { padding: 0 18px 14px 18px; font-size: 0.85rem; color: var(--text2); line-height: 1.7; }
     .faq-a ol { padding-left: 40px; }
-    .faq-a code { background: var(--surface2); padding: 1px 6px; border-radius: 4px; font-size: 0.8em; }
 
     /* Copy button */
     .copy-wrapper { position: relative; }
@@ -619,10 +616,6 @@
     .intro-msg.ai .intro-bubble {
       background: var(--surface2); color: var(--text);
       border: 1px solid var(--border); border-bottom-left-radius: 3px;
-    }
-    .intro-bubble code {
-      background: color-mix(in srgb, var(--accent) 12%, transparent);
-      color: var(--accent); padding: 2px 8px; border-radius: 11px; font-size: 0.85em; font-weight: 600;
     }
     @keyframes introFadeIn {
       from { opacity: 0; transform: translateY(6px); }
