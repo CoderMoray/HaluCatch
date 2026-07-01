@@ -29,32 +29,7 @@ HaluCatch 扫描一个 Skill 包，从地基/代码/规则/护栏四维度给出
 
 ## 执行流程
 
-```mermaid
-flowchart TD
-  A["用户调用 HaluCatch"] --> B{"目标路径存在?"}
-  B -->|否| C["报错退出"]
-  B -->|是| D{"执行模式?"}
-  D -->|validate| E["L1: --validate 脚本扫描"]
-  E --> F["文件清单 → 结束"]
-  D -->|标准审查| G["L1: 获取文件清单"]
-  G --> H{"Phase 0: 技能分类"}
-  H -->|代码工程型| I["L2: 四维评估<br/>(地基/代码/规则/护栏)"]
-  H -->|纯方法论型| J["L2: 方法论+护栏评估"]
-  H -->|不确定| K["询问用户"]
-  K --> H
-  I --> N["Phase 3: 三版报告 → 落盘"]
-  J --> N
-  N --> O{"Phase 4: 用户要修复?"}
-  O -->|修| P["生成修复方案"]
-  O -->|不修| Q["结束"]
-  P --> R{"用户选择?"}
-  R -->|执行| S["用户让 AI 应用修复"]
-  R -->|不执行| Q
-  R -->|建议| P
-  S -.->|重新审查| A
-```
-
-> 详细决策分支见 [在线流程图](https://codermoray.github.io/HaluCatch/decision-flowchart.html)。
+> 完整流程见 [在线流程图](https://codermoray.github.io/HaluCatch/decision-flowchart.html)。
 
 ---
 
