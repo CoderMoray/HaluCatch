@@ -77,7 +77,7 @@ MESSAGES = {
         'simple_report_title': 'HaluCatch 标准报告',
         'simple_summary': '一句话',
         'simple_findings': '发现的问题',
-        'simple_footer': '本报告是专业版的白话版本。如需技术细节，见同目录下的专业版报告。',
+        'simple_footer': '本报告是标准版本。如需技术细节，见同目录下的专业版报告。',
         'no_issues': '无发现问题。',
         # AI 行动版报告模板
         'action_report_title': 'HaluCatch AI 行动版',
