@@ -8,6 +8,7 @@ build/
 dist/
 reports/
 releases/
+outputs/
 .workbuddy/*
 skills*
 .clawhub/
