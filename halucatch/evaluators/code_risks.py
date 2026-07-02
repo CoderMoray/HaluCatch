@@ -57,4 +57,4 @@ def check_code_risks(info):
     else:
         rating = '🔴 高风险'
 
-    return {'rating': rating, 'issues': issues, 'score': f'{found_risks}/{total_checks}'}
+    return {'rating': rating, 'issues': issues, 'score': f'{total_checks - found_risks}/{total_checks}'}

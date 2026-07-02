@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """Build a standalone, single-file HaluCatch page for offline sharing.
 Dependencies: python3, node (with javascript-obfuscator installed)."""
-import re, urllib.request, subprocess, sys, os, tempfile
+import re, urllib.request, subprocess, sys, os, tempfile, shutil
 from pathlib import Path
 
 DOCS = Path(__file__).parent.parent / 'docs'
 COMPONENTS = DOCS / 'components' / 'ai-chat-demo'
 OUT = DOCS / 'dist' / 'index.html'
 
-NODE = '/Users/chrismoray/.workbuddy/binaries/node/versions/22.22.2/bin/node'
-NODE_PATH = '/Users/chrismoray/.workbuddy/binaries/node/workspace/node_modules'
+# 自动发现 node 路径（支持环境变量覆盖）
+NODE = os.environ.get('NODE_BIN') or shutil.which('node') or '/opt/homebrew/bin/node'
+NODE_PATH = os.environ.get('NODE_PATH') or str(Path(NODE).parent.parent / 'workspace' / 'node_modules')
 
 def read(p): return Path(p).read_text(encoding='utf-8')
 
