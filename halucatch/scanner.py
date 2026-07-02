@@ -7,6 +7,16 @@ import json
 from .config import MESSAGES
 
 
+def _is_test_file(fname, rel_path):
+    """判断文件是否为测试文件（测试目录或测试命名约定）。"""
+    return (
+        'tests/' in rel_path
+        or 'test/' in rel_path
+        or fname.startswith('test_')
+        or fname.endswith('_test.py')
+    )
+
+
 def _extract_version(files, path):
     """从 _meta.json / meta.json / 任意 .md frontmatter 提取版本号。"""
     # 1) _meta.json / meta.json（优先）
@@ -61,7 +71,8 @@ def scan_folder(path, msg):
             size = os.path.getsize(fpath)
             ext = os.path.splitext(fname)[1].lower()
             fpath_rel = os.path.relpath(fpath, path)
-            files.append({'name': fname, 'ext': ext, 'size': size, 'path': fpath, 'rel_path': fpath_rel})
+            is_test = _is_test_file(fname, fpath_rel)
+            files.append({'name': fname, 'ext': ext, 'size': size, 'path': fpath, 'rel_path': fpath_rel, 'is_test': is_test})
 
     # 尺寸保护：跳过超大文件避免 OOM
     SZ_LIMIT = 10 * 1024 * 1024  # 10MB
@@ -131,13 +142,32 @@ def scan_folder(path, msg):
         if f['ext'] == '.py':
             py_paths.append(f['path'])
             with open(f['path'], 'r', encoding='utf-8', errors='backslashreplace') as fh:
-                py_contents.append(fh.read())
+                content = fh.read()
+            f['_content'] = content  # 暂存内容，后续分离使用
+            py_contents.append(content)
+
+    # 分离核心代码和测试代码
+    core_py = []
+    core_py_paths = []
+    test_py = []
+    for f in files:
+        if f['name'] in oversized_set:
+            continue
+        if f['ext'] != '.py' or '_content' not in f:
+            continue
+        if f.get('is_test'):
+            test_py.append(f['_content'])
+        else:
+            core_py.append(f['_content'])
+            core_py_paths.append(f['path'])
+    test_py_count = len(test_py)
 
     has_data = any(f['ext'] in ['.xlsx', '.xls', '.csv'] for f in files)
 
-    py_content = '\n'.join(py_contents) if py_contents else None
-    py_path = py_paths[0] if py_paths else None
-    max_py_lines = max(len(c.splitlines()) for c in py_contents) if py_contents else 0
+    py_content = '\n'.join(core_py) if core_py else None
+    test_py_content = '\n'.join(test_py) if test_py else None
+    py_path = core_py_paths[0] if core_py_paths else (py_paths[0] if py_paths else None)
+    max_py_lines = max(len(c.splitlines()) for c in core_py) if core_py else 0
 
     # 提取版本号
     version = _extract_version(files, path)
@@ -147,8 +177,11 @@ def scan_folder(path, msg):
     if skill_md_content:
         print(msg['skill_md'].format(lines=len(skill_md_content.splitlines())))
     if py_paths:
-        total_py_lines = sum(len(c.splitlines()) for c in py_contents)
-        print(msg['py_files'].format(count=len(py_paths), lines=total_py_lines))
+        total_py_lines = sum(len(c.splitlines()) for c in core_py)
+        if test_py_count > 0:
+            print(msg['py_files'].format(count=len(core_py), lines=total_py_lines) + f' + {test_py_count} 个测试')
+        else:
+            print(msg['py_files'].format(count=len(core_py), lines=total_py_lines))
     if has_data:
         data_count = sum(1 for f in files if f['ext'] in ['.xlsx', '.xls', '.csv'])
         print(msg['data_files'].format(count=data_count))
@@ -161,8 +194,10 @@ def scan_folder(path, msg):
         'skill_md_path': skill_md_path,
         'skill_md_source': skill_md_source,
         'py': py_content,
+        'test_py': test_py_content,
         'py_path': py_path,
-        'py_count': len(py_paths),
+        'py_count': len(core_py),
+        'test_py_count': test_py_count,
         'max_py_lines': max_py_lines,
         'has_data': has_data,
         'version': version,

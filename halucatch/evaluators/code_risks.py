@@ -13,8 +13,13 @@ def check_code_risks(info):
     if not info['py']:
         return {'rating': '🟡 无嵌入式代码', 'issues': [('🟡 无 .py 文件，无法扫描代码风险', 'skip')], 'score': '-'}
 
+    # 合并核心代码和测试代码一起扫描（测试质量的代码风险也很重要）
+    all_py = info['py']
+    if info.get('test_py'):
+        all_py += '\n' + info['test_py']
+
     # 预处理：移除字符串字面量和注释，避免被误扫描为代码风险
-    py_code = re.sub(r"r'[^']*'", ' ', info['py'])
+    py_code = re.sub(r"r'[^']*'", ' ', all_py)
     py_code = re.sub(r'r"[^"]*"', ' ', py_code)
     py_code = re.sub(r"'''[\s\S]*?'''", ' ', py_code)
     py_code = re.sub(r'"""[\s\S]*?"""', ' ', py_code)
@@ -49,6 +54,11 @@ def check_code_risks(info):
             issues.append((f'🟡 嵌入代码 {py_count} 个 .py 文件，最大单文件 {lines} 行 — 文件较多，AI 复现时可能遗漏', 'warn'))
         else:
             issues.append((f'🟡 嵌入代码 {lines} 行 — 较长，AI 复现时可能遗漏或篡改', 'warn'))
+
+    # 测试文件正向信号
+    test_py_count = info.get('test_py_count', 0)
+    if test_py_count > 0:
+        issues.append((f'✅ 检测到 {test_py_count} 个测试文件（有测试代码，质量意识不错）', 'pass'))
 
     if found_risks == 0 and lines <= 200:
         rating = '🟢 低风险'
