@@ -1,4 +1,4 @@
-"""HaluCatch 报告生成器：生成专业版、通俗版、AI 行动版三份报告。"""
+"""HaluCatch 报告生成器：生成专业版、标准版、AI 行动版三份报告。"""
 
 import re
 import os
@@ -109,7 +109,7 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
 > {msg['report_footer']} {self_check_msg}
 """
 
-    # 通俗版 — 附带语境解释
+    # 标准版 — 附带语境解释
     context_map = {
         '硬编码路径': '脚本里写死了某个人的电脑路径，换台机器就跑不了',
         '裸 except': '异常被静默吞掉，出错时没有任何提示，很难排查',
@@ -175,7 +175,7 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
     simple_issues = []
     for iss in issues:
         if iss[1] == 'info':
-            continue  # 通俗版不展示 info 级提示
+            continue  # 标准版不展示 info 级提示
         text = iss[0].replace('🔴', '❌').replace('🟠', '⚠️').replace('🟡', '📌')
         hint = ''
         for key, val in context_map.items():
@@ -253,7 +253,7 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
         version = info.get('version')
         ver_tag = f'-v{version}' if version else ''
         base = os.path.join(output_dir, f'HaluCatch-report{ver_tag}-{today}')
-        for suffix, content in [('', report), ('-通俗版', simple_report), ('-行动版', action_report)]:
+        for suffix, content in [('', report), ('-标准版', simple_report), ('-行动版', action_report)]:
             path = f'{base}{suffix}.md'
             # 防覆盖：如果存在则加序号
             counter = 1
