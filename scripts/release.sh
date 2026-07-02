@@ -90,9 +90,10 @@ if [[ "$DRY_RUN" == "true" ]]; then
 elif [[ "$SKIP_CLAWHUB" == "false" ]]; then
   echo "[7/8] 发布到 ClawHub..."
   # 从 SkillHub 构建包解压发布，确保 ClawHub 与 SkillHub 内容一致
-  TMP_CLAWHUB=$(mktemp -d)
+  TMP_CLAWHUB="/tmp/halucatch-publish"
+  rm -rf "$TMP_CLAWHUB" && mkdir -p "$TMP_CLAWHUB"
   unzip -q "$ZIP_PATH" -d "$TMP_CLAWHUB"
-  (cd "$TMP_CLAWHUB" && clawhub publish . --slug halucatch --version "$VERSION") || echo "⚠️  ClawHub 发布失败（可手动重试）"
+  (cd "$TMP_CLAWHUB" && clawhub publish . --slug halucatch --name "HaluCatch / 捕幻" --version "$VERSION") || echo "⚠️  ClawHub 发布失败（可手动重试）"
   rm -rf "$TMP_CLAWHUB"
 else
   echo "[7/8] 跳过 ClawHub"
