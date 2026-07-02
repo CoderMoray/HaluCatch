@@ -277,7 +277,7 @@ python3 halucatch_core.py --skill-dir /path/to/skill
 
 #### 3. AI 行动版（供给修复阶段使用）
 
-由 `reporter.py` 自动生成，包含修复清单、验证检查点、feedback.md 模板、三选一步骤提示。
+由 `reporter.py` 自动生成，包含修复清单、验证检查点、三选一步骤提示。
 
 #### 报告检查声明
 
@@ -310,7 +310,7 @@ python3 halucatch_core.py --skill-dir /path/to/skill
 
 > 检测到 [N] 项风险。是否按建议方案修复？
 
-- **用户「修」** → 生成修复方案（含修复包 + feedback.md 模板），然后展示三选一：
+- **用户「修」** → 生成修复方案，然后展示三选一：
 
   > 修复方案已生成。请选择：
   > 1. **执行修复** — 将修复方案发给你的 AI，让它按方案修改目标 Skill
