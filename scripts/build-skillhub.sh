@@ -28,6 +28,7 @@ cp "$ROOT/halucatch_core.py" "$TMPDIR/"
 cp -r "$ROOT/halucatch" "$TMPDIR/"
 cp "$ROOT/README.md" "$TMPDIR/"
 [[ -f "$ROOT/docs/CHANGELOG.md" ]] && cp "$ROOT/docs/CHANGELOG.md" "$TMPDIR/CHANGELOG.md"
+[[ -f "$ROOT/docs/FAQ.md" ]] && cp "$ROOT/docs/FAQ.md" "$TMPDIR/FAQ.md"
 # SkillHub 不接受 LICENSE 文件
 
 # 清理包内不应存在的目录（如 halucatch/reports/ — HaluCatch 自我审查的产物）

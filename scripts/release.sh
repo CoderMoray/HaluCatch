@@ -89,7 +89,11 @@ if [[ "$DRY_RUN" == "true" ]]; then
   echo "[7/8] DRY-RUN: 将发布到 ClawHub (halucatch@$VERSION)"
 elif [[ "$SKIP_CLAWHUB" == "false" ]]; then
   echo "[7/8] 发布到 ClawHub..."
-  (cd "$ROOT" && clawhub publish . --version "$VERSION") || echo "⚠️  ClawHub 发布失败（可手动重试）"
+  # 从 SkillHub 构建包解压发布，确保 ClawHub 与 SkillHub 内容一致
+  TMP_CLAWHUB=$(mktemp -d)
+  unzip -q "$ZIP_PATH" -d "$TMP_CLAWHUB"
+  (cd "$TMP_CLAWHUB" && clawhub publish . --version "$VERSION") || echo "⚠️  ClawHub 发布失败（可手动重试）"
+  rm -rf "$TMP_CLAWHUB"
 else
   echo "[7/8] 跳过 ClawHub"
 fi

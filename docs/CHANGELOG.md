@@ -12,9 +12,9 @@
 ## [Unreleased]
 
 
-### Fixed
+### Changed
 
-- Faq arrow transition missing on second+ expand
+- Add outputs/ to .gitignore
 
 ---
 

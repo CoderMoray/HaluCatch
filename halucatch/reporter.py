@@ -106,7 +106,7 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
 
 ---
 
-> {msg['report_footer']}: {self_check_msg}
+> {msg['report_footer']} {self_check_msg}
 """
 
     # 通俗版 — 附带语境解释

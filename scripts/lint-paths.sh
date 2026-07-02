@@ -23,7 +23,7 @@ if [[ -f "$ROOT/manifest.json" ]]; then
   required=$(python3 -c "import json; print('\n'.join(json.load(open('$ROOT/manifest.json'))['required_files']))" 2>/dev/null || echo "")
   while IFS= read -r f; do
     [[ -z "$f" ]] && continue
-    if [[ -f "$ROOT/$f" ]]; then
+    if [[ -e "$ROOT/$f" ]]; then
       echo "  ✅ $f 存在"
     else
       echo "  ❌ $f 缺失"

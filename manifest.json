@@ -11,7 +11,8 @@
     "halucatch_core.py",
     "halucatch/",
     "README.md",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "FAQ.md"
   ],
   "version_sync": [
     "SKILL.md",
@@ -21,7 +22,9 @@
     "tests/",
     "docs/",
     "reports/",
+    "reports_zh/",
     "scripts/",
+    "outputs/",
     ".workbuddy/",
     ".github/",
     "__pycache__/",
