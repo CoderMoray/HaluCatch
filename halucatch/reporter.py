@@ -109,7 +109,7 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
 > {msg['report_footer']} {self_check_msg}
 """
 
-    # 标准版 — 附带语境解释
+    # 标准版 — 附带语境解释，优化为非技术用户的可读布局
     context_map = {
         '硬编码路径': '脚本里写死了某个人的电脑路径，换台机器就跑不了',
         '裸 except': '异常被静默吞掉，出错时没有任何提示，很难排查',
@@ -125,28 +125,30 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
         '未声明数据来源限制': '没说明数据从哪里来、覆盖什么范围，不同 AI 可能用不同数据源，结果不可比',
         '未要求置信度声明': '没要求 AI 标注对结论有多大把握，容易把不确定的事说得很肯定',
         '引用.*不存在的文件': '说明书写了要用某个文件，但文件夹里没有——大概率是文件名写错了或忘了放',
-        # === 代码风险通用 ===
         '除零风险': '代码里直接做了除法但没有检查分母会不会是零——万一分母为零程序就崩了',
         '路径拼接': '用加号拼接文件路径，换台电脑可能就找不到文件——建议用专业的路径拼接方法',
         '静默覆盖': '打开文件直接往里面写内容，会把原来的内容悄悄盖掉不留备份',
         '超时缺失': '发网络请求没设超时时间——万一网络卡了会一直等到天荒地老',
-        # === 信号输出 ===
         '条件分支信号': '说明书写了不同情况下该怎么处理，考虑得比较周全',
         '禁止/护栏声明': '说明书写了 AI 不能做什么事，有一定的安全底线',
-        # === skip 项 ===
         '检查跳过': '这项检查跟这个 Skill 不沾边，跳过不影响评分',
         '置信度检查跳过': '不涉及数据分析和统计推断，不需要考虑置信度',
         '数据来源检查跳过': '不处理外部数据，不需要声明数据来源',
         '时效性检查跳过': '不依赖时变数据，不需要声明数据时效性',
+        '有固化': '有独立的程序来跑核心任务，不是全靠 AI 即兴发挥',
+        '多单位混用': '说明里同时用了不同的计量单位，容易让 AI 混淆',
+        '嵌入代码': '程序文件数量偏多，AI 要看很多文件才可能复现',
+        '检测到.*测试': '有测试代码，说明作者管得住代码质量',
+        '未检测到常见篡改点': '代码里没有除零、裸异常等常见坑',
     }
     
     # 英文版语境解释
     context_map_en = {
-        '硬编码路径': 'The script has hardcoded file paths from someone\'s computer. It won\'t run on another machine.',
+        '硬编码路径': "The script has hardcoded file paths from someone's computer. It won't run on another machine.",
         '裸 except': 'Exceptions are silently swallowed. No error messages when something goes wrong, making debugging difficult.',
         'skiprows': 'When data format differs from expected, forcibly skipping rows causes data misalignment.',
         '自动发现': 'No mechanism to auto-discover files. Must manually specify files each time.',
-        '未检测到异常分支': 'When encountering unexpected situations, the AI doesn\'t know what to do and may give wrong results.',
+        '未检测到异常分支': "When encountering unexpected situations, the AI doesn't know what to do and may give wrong results.",
         '缺少输出': 'No specification of what the output should look like. Different AIs may give completely different formats.',
         '缺少结构化步骤': 'Instructions are like a running account. AI may skip key steps or mix up order.',
         '缺少示例': 'No examples. AI can only guess and is prone to misunderstanding.',
@@ -155,7 +157,7 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
         '未定义错误回退': 'No fallback plan when execution fails. AI will get stuck.',
         '未声明数据来源限制': 'Does not state where data comes from or what it covers. Different AIs may use different data sources, results not comparable.',
         '未要求置信度声明': 'Does not require AI to indicate confidence level. Easy to state uncertain things as certain.',
-        '引用.*不存在的文件': 'The documentation mentions a file to use, but it\'s not in the folder — likely a typo or forgot to include.',
+        '引用.*不存在的文件': "The documentation mentions a file to use, but it's not in the folder — likely a typo or forgot to include.",
         '除零风险': 'Code does division without checking if denominator is zero — program crashes if denominator is zero.',
         '路径拼接': 'Using string concatenation for file paths. May not find files on another computer — use proper path joining methods.',
         '静默覆盖': 'Opening a file and writing directly overwrites original content without backup.',
@@ -166,36 +168,58 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
         '置信度检查跳过': 'Does not involve data analysis and statistical inference. No need to consider confidence.',
         '数据来源检查跳过': 'Does not process external data. No need to declare data source.',
         '时效性检查跳过': 'Does not depend on time-varying data. No need to declare data timeliness.',
+        '有固化': 'Has standalone scripts to run core tasks, not relying solely on AI improvisation.',
+        '多单位混用': 'Multiple unit types in the documentation, which can confuse AI.',
+        '嵌入代码': 'Many program files — AI needs to read many files at once to reproduce.',
+        '检测到.*测试': 'Has test code, indicating good quality control.',
+        '未检测到常见篡改点': 'No common code pitfalls like division by zero or bare exceptions.',
     }
-    
-    # 根据语言选择 context_map
+
     if lang == 'en':
         context_map = context_map_en
 
-    simple_issues = []
-    for iss in issues:
-        if iss[1] == 'info':
-            continue  # 标准版不展示 info 级提示
-        text = iss[0].replace('🔴', '❌').replace('🟠', '⚠️').replace('🟡', '📌')
-        hint = ''
-        for key, val in context_map.items():
-            if key in text:
-                hint = f'（{val}）' if lang == 'zh-CN' else f' ({val})'
-                break
-        simple_issues.append(f'- {text}{hint}')
+    # 提取 pass 和 warn/fail 项
+    standard_good = []
+    standard_attention = []
+    for iss in all_items:
+        text, status = iss[0], iss[1]
+        if status in ['info', 'skip']:
+            continue
+        if status == 'pass':
+            clean = text.replace('✅ ', '').replace('🟢 ', '')
+            standard_good.append(f'- {clean}')
+        elif status in ['warn', 'fail']:
+            sev = {'fail': '❌', 'warn': '⚠️'}.get(status, '')
+            clean = re.sub(r'^[🔴🟠🟡]\s*', '', text)
+            # 查找语境解释
+            hint = ''
+            for key, val in context_map.items():
+                if re.search(key, clean):
+                    hint = f'（{val}）' if lang == 'zh-CN' else f' ({val})'
+                    break
+            standard_attention.append(f'> {sev} **{clean}**{hint}')
 
-    simple_body = '\n'.join(simple_issues) if simple_issues else '✅ ' + msg['no_issues']
+    standard_good_block = '\n'.join(standard_good) if standard_good else '- 暂无显著亮点'
+    standard_attention_block = '\n'.join(standard_attention) if standard_attention else f'> ✅ {msg["no_issues"]}'
 
     simple_report = f"""# {msg['simple_report_title']} — {skill_name}
 
 **{msg['date']}**: {today}
 
+## {msg['simple_result']}
 
-## {msg['simple_summary']}
+| 🏗️ {msg['foundation']} | 🤖 {msg['code']} | 📝 {msg['rules']} | 🛡️ {msg['guardrails']} |
+|--------|--------|--------|--------|
+| {f_rating} {f_score} | {c_rating} {c_score} | {r_rating} {r_score} | {g_rating} {g_score} |
+
+### {msg['simple_good']}
+{standard_good_block}
+
+### {msg['simple_attention']}
+{standard_attention_block}
+
+### {msg['simple_summary']}
 {summary}
-
-## {msg['simple_findings']}
-{simple_body}
 
 ---
 
@@ -230,13 +254,6 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
 - [ ] {msg['check_columns']}
 - [ ] {msg['check_hardcoded']}
 - [ ] {msg['check_run']}
-- [ ] {msg['check_feedback']}
-
-## {msg['feedback_template']}
-
-```markdown
-{msg['feedback_template_content']}
-```
 
 ---
 
