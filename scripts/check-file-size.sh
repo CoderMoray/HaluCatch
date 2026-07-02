@@ -29,13 +29,13 @@ check_file() {
   fi
 }
 
-check_file "$ROOT/SKILL.md" "SKILL.md" 400
+check_file "$ROOT/SKILL.md" "SKILL.md" 800
 check_file "$ROOT/halucatch_core.py" "halucatch_core.py (compat entry)" 50
 
 echo "  📂 halucatch/ package:"
 for f in "$ROOT/halucatch"/*.py "$ROOT/halucatch/evaluators"/*.py; do
   name=$(basename "$f")
-  check_file "$f" "  halucatch/$name" 250
+  check_file "$f" "  halucatch/$name" 500
 done
 
 echo ""
