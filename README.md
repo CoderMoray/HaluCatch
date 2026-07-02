@@ -53,14 +53,14 @@ HaluCatch 扫描一个 Skill 包，从地基/代码/规则/护栏四维度给出
 reports/
 ├── HaluCatch-report-2026-06-17.md           ← 专业版（工程人员）
 ├── HaluCatch-report-2026-06-17-标准版.md      ← 标准版（业务方）
-└── HaluCatch-report-2026-06-17-行动版.md      ← 修复指引（含反馈模板）
+└── HaluCatch-report-2026-06-17-行动版.md      ← 修复指引
 ```
 
 | 版本 | 目标读者 | 内容 |
 |------|---------|------|
 | 专业版 | 工程人员 | 逐项检查结果 + 分数 + 修复建议 |
 | 标准版 | 业务方 | 白话 paraphrase，无术语 |
-| 行动版 | 下次执行的 AI | 修复指引 + feedback 模板 |
+| 行动版 | 下次执行的 AI | 修复指引 + 验证检查点 |
 
 **示例 — 审查一个代码工程型 Skill：**
 
@@ -102,7 +102,12 @@ HaluCatch/
 │   │   └── methodology.py    ← 方法论评估（步骤/分支/错误处理）
 │   ├── reporter.py           ← 三版报告生成器
 │   └── cli.py                ← 命令行入口 + 流程协调
-├── README.md                 ← 项目说明（含 Mermaid 流程图）
+├── README.md                 ← 项目说明
+├── scripts/                  ← 发布/构建脚本
+│   ├── release.sh            ← 一键发布（8 步自动流程）
+│   ├── build-skillhub.sh     ← SkillHub 包构建
+│   ├── generate-changelog.sh ← 自动生成 CHANGELOG
+│   └── bump-version.sh       ← 版本号升级
 ├── docs/
 │   ├── CHANGELOG.md
 │   ├── FAQ.md
@@ -111,6 +116,7 @@ HaluCatch/
 ├── tests/
 │   ├── __init__.py
 │   └── test_halucatch.py     ← 24 个单元测试
+├── cliff.toml                ← git-cliff Changelog 配置
 └── .gitignore
 ```
 
@@ -165,13 +171,13 @@ Skill 审查赛道目前仅四个工具，各自切不同的角度：
 | 评估方式 | 脚本基线 + AI 语义 | 纯 AI 按协议逐项检查 | AI + 规则引擎 | 纯 AI 按 checklist 打分 |
 | 输出 | 三版报告 + 修复方案 + 闭环 | SAFE/CAUTION/REJECT 判定 | 风险报告 + 自动修复 | 优化建议报告 |
 | 通用性 | ✅ 中/英/日/表格均适用 | ✅ 英文为主 | ✅ 中英文 | 🟡 依赖 AI 理解能力 |
-| 闭环 | ✅ 行动版含修复指引 + feedback | ❌ | ✅ 含自动修复 | ❌ |
+| 闭环 | ✅ 行动版含修复指引 + 验证检查点 | ❌ | ✅ 含自动修复 | ❌ |
 | skills.sh | — | **19.6K** | ❌ 未上榜 | ❌ 未上榜 |
 | 平台评分 | — | ★3.690 (clawhub) | v4.2.0 (skillhub) | ★3.607 (clawhub) |
 
 **HaluCatch 的独特优势**：
 1. **唯一有骨架脚本的工具** — `halucatch_core.py` 提供可复现的基线检查，不依赖 AI 主观判断
-2. **唯一含修复闭环** — 三版报告 + Phase 4 修复决策 + feedback.md 模板，形成「发现→修复→验证」完整链路
+2. **唯一含修复闭环** — 三版报告 + Phase 4 修复决策 + 验证检查点，形成「发现→修复→验证」完整链路
 3. **唯一跨语言** — 结构信号（清单/图标/表格/否定词密度）替代语义关键词，不绑定特定语言
 4. **唯一分层护栏** — 按 Skill 类型（分析型/工具库型/方法论）自动调整检查范围，避免误报
 5. **赛道蓝海** — skills.sh 前 287 名中，Skill 审查工具仅 skill-vetter 上榜（19.6K），执行可靠性方向尚无竞品
@@ -223,7 +229,7 @@ python3 tests/test_halucatch.py
 | skill-sharpener (ClawHub) | 分析型 | 🟡 缺项 5/8 |
 | neodata-financial-search | 分析型 | 🟢 到位 7/8 |
 | data-validation | 嵌入式 Python | 🟡 缺项 5/8 |
-| HaluCatch (自审查) | 代码工程 | 🟡 缺项 5/8 |
+| HaluCatch (自审查) | 代码工程 | 🟢 到位 8/8 |
 
 ---
 
@@ -236,7 +242,7 @@ A: 不需要。全程离线运行，仅扫描本地文件夹中的 SKILL.md 和 
 A: 可以。HaluCatch 会自动分类为「纯方法论型」并跳过地基/代码检查，只评估方法论和护栏。
 
 **Q: 审查结果说「护栏薄弱」，怎么修？**
-A: 看同目录下的 `-行动版.md` 报告，它包含具体修复方案和 feedback.md 模板。
+A: 看同目录下的 `-行动版.md` 报告，它包含具体修复方案和验证检查点。
 
 **Q: 为什么工具库型 Skill 的护栏分数比分析型低？**
 A: 护栏检查按类型分层——工具库型只查 5 项核心项（跳过不必要的数据来源/时效性检查），分母不同，分数不可直接比较。

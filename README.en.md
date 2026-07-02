@@ -83,7 +83,7 @@ reports/
 |---------|----------|---------|
 | Technical | Engineers | Per-item findings + scores + fix suggestions |
 | Plain language | Business | Jargon-free paraphrasing |
-| Action | Next AI session | Fix instructions + feedback template |
+| Action | Next AI session | Fix instructions + validation checklist |
 
 **Example — auditing a Code-Engineered Skill:**
 
@@ -197,13 +197,13 @@ Only four tools exist in the Skill auditing space, each with a different angle:
 | Method | Script baseline + AI semantics | Pure AI per-protocol check | AI + rule engine | Pure AI per-checklist scoring |
 | Output | 3 reports + fix plan + loop | SAFE/CAUTION/REJECT verdict | Risk report + auto-fix | Optimization suggestions |
 | Language | ✅ CN/EN/JP/spreadsheets | ✅ EN primarily | ✅ CN + EN | 🟡 AI-dependent |
-| Fix loop | ✅ Action report + feedback template | ❌ | ✅ Auto-fix included | ❌ |
+| Fix loop | ✅ Action report + validation checklist | ❌ | ✅ Auto-fix included | ❌ |
 | skills.sh | — | **19.6K** | ❌ Not listed | ❌ Not listed |
 | Ratings | — | ★3.690 (clawhub) | v4.2.0 (skillhub) | ★3.607 (clawhub) |
 
 **What makes HaluCatch unique**:
 1. **Only tool with a skeleton script** — `halucatch_core.py` provides reproducible baseline checks, independent of AI subjectivity
-2. **Only tool with a fix loop** — three report versions + Phase 4 fix decisions + feedback templates, forming a complete "find → fix → verify" pipeline
+2. **Only tool with a fix loop** — three report versions + Phase 4 fix decisions + validation checklist, forming a complete "find → fix → verify" pipeline
 3. **Only language-agnostic tool** — structural signals (checklists, icons, tables, negation density) replace language-specific keyword matching
 4. **Only tiered guardrails** — automatically adjusts check scope by Skill type (analysis / tool / methodology), preventing false alarms
 5. **Blue ocean** — among skills.sh top 287, skill-vetter is the only Skill auditing tool listed (19.6K). The execution reliability niche has no competition.
@@ -255,7 +255,7 @@ Battle-tested on 10 Skills of different types:
 | skill-sharpener (ClawHub) | Analysis | 🟡 Gaps 5/8 |
 | neodata-financial-search | Analysis | 🟢 Solid 7/8 |
 | data-validation | Embedded Python | 🟡 Gaps 5/8 |
-| HaluCatch (self-audit) | Code-Engineered | 🟡 Gaps 5/8 |
+| HaluCatch (self-audit) | Code-Engineered | 🟢 Solid 8/8 |
 
 ---
 
@@ -268,7 +268,7 @@ A: No. Fully offline — it only scans local SKILL.md and .py files.
 A: Yes. HaluCatch automatically classifies it as "Methodology" and skips Foundation/Code checks, evaluating only Methodology and Guardrails.
 
 **Q: The report says "Guardrails Weak" — how do I fix it?**
-A: Check the `-action.md` report in the same directory — it contains specific fix instructions and a feedback.md template.
+A: Check the `-action.md` report in the same directory — it contains specific fix instructions and a validation checklist.
 
 **Q: Why do Tool-type Skills score lower on Guardrails than Analysis-type?**
 A: Guardrail checks are tiered — Tool-type Skills only check 5 core items (skipping irrelevant data source/timeliness checks). Different denominators mean scores can't be compared directly.
