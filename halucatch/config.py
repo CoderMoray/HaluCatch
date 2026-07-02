@@ -7,10 +7,10 @@ import locale
 MESSAGES = {
     'zh-CN': {
         # 错误
-        'path_not_exist': '❌ 路径不存在: {path}',
-        'file_too_large': '  ⚠️ 超大文件 ({files}) 超过 10MB，跳过内容读取',
-        'no_md_files': '  ❌ 目标目录无 Markdown 文件 ({path})，这不是标准的 Skill 目录。',
-        'skill_md_substitute': '  ⚠️ 未找到标准 SKILL.md，使用 "{found}" 作为替代。建议重命名为 {expected}。',
+        'path_not_exist': '❌ 路径不存在: {path}。请确认目录存在——试试 ls {path} 看看。',
+        'file_too_large': '  ⚠️ 超大文件 ({files}) 超过 10MB，跳过内容读取。如需审查，请将大文件移到别处后重新运行。',
+        'no_md_files': '  ❌ 目标目录无 Markdown 文件 ({path})，这不是标准的 Skill 目录。请在目录下创建一个 SKILL.md 文件（哪怕只有一行标题也可以开始）。',
+        'skill_md_substitute': '  ⚠️ 未找到标准 SKILL.md，使用 "{found}" 作为替代。建议将文件重命名为 {expected}，这样 HaluCatch 能直接识别。',
         'version_detected': '  📌 版本号: {version}',
         # 扫描
         'scanning': '  📁 扫描: {path}',
@@ -106,10 +106,10 @@ MESSAGES = {
     },
     'en': {
         # Errors
-        'path_not_exist': '❌ Path does not exist: {path}',
-        'file_too_large': '  ⚠️ Oversized files ({files}) exceed 10MB, skipping content read',
-        'no_md_files': '  ❌ No Markdown files in target directory ({path}), not a standard Skill directory.',
-        'skill_md_substitute': '  ⚠️ Standard SKILL.md not found, using "{found}" as substitute. Consider renaming to {expected}.',
+        'path_not_exist': '❌ Path does not exist: {path}. Check that the directory exists — try ls {path}.',
+        'file_too_large': '  ⚠️ Oversized files ({files}) exceed 10MB, skipping content read. Move large files elsewhere if you need them reviewed.',
+        'no_md_files': '  ❌ No Markdown files in target directory ({path}), not a standard Skill directory. Create a SKILL.md file (even just a title line will do).',
+        'skill_md_substitute': '  ⚠️ Standard SKILL.md not found, using "{found}" as substitute. Consider renaming the file to {expected} so HaluCatch can recognize it directly.',
         'version_detected': '  📌 Version: {version}',
         # Scanning
         'scanning': '  📁 Scanning: {path}',
