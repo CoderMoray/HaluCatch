@@ -12,9 +12,24 @@
 ## [Unreleased]
 
 
+### Added
+
+- Add AI semantic supplement checklist for L3 review
+- Detect and separate test files; report test coverage as positive signal
+
 ### Changed
 
-- Add outputs/ to .gitignore
+- L3 report generation delegated to reporter.py, AI reads instead of writes
+- Rename 通俗版 to 标准版 (consistent with docs/index.html)
+- Redesign standard report layout + remove feedback.md from action report
+- Update READMEs — remove feedback.md references, update self-review score, add scripts/cliff.toml to file tree
+- Remove remaining feedback.md references from FAQ.md, SKILL.md
+
+### Fixed
+
+- Clawhub publish needs --slug halucatch when publishing from temp dir
+- Code risk score semantics (higher=better) + parameterize hardcoded node paths
+- Update standard report footer text after rename
 
 ---
 
