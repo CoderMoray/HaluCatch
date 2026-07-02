@@ -41,53 +41,61 @@ run() {
 }
 
 # ── Step 1: Bump Version ────────────────────────────────────────────
-echo "[1/7] 升级版本号..."
+echo "[1/8] 升级版本号..."
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "  [DRY-RUN] 将执行: bump-version.sh $VERSION"
 else
   bash "$SCRIPTS/bump-version.sh" "$VERSION"
 fi
 
-# ── Step 2: Lint ────────────────────────────────────────────────────
-echo "[2/7] 发布前自检..."
+# ── Step 2: Generate Changelog ──────────────────────────────────────
+echo "[2/8] 自动生成 CHANGELOG..."
+if [[ "$DRY_RUN" == "true" ]]; then
+  echo "  [DRY-RUN] 将执行: generate-changelog.sh --write"
+else
+  bash "$SCRIPTS/generate-changelog.sh" --write
+fi
+
+# ── Step 3: Lint ────────────────────────────────────────────────────
+echo "[3/8] 发布前自检..."
 bash "$SCRIPTS/lint-paths.sh"
 
-# ── Step 3: Build SkillHub Package ──────────────────────────────────
-echo "[3/7] 构建 SkillHub 包..."
+# ── Step 4: Build SkillHub Package ──────────────────────────────────
+echo "[4/8] 构建 SkillHub 包..."
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "  [DRY-RUN] 将执行: build-skillhub.sh"
 else
   bash "$SCRIPTS/build-skillhub.sh"
 fi
 
-# ── Step 4: Check File Size ─────────────────────────────────────────
-echo "[4/7] 文件尺寸检查..."
+# ── Step 5: Check File Size ─────────────────────────────────────────
+echo "[5/8] 文件尺寸检查..."
 bash "$SCRIPTS/check-file-size.sh"
 
 ZIP_PATH="$ROOT/releases/HaluCatch-${VERSION}-skillhub.zip"
 
-# ── Step 5: Publish to SkillHub ─────────────────────────────────────
+# ── Step 6: Publish to SkillHub ─────────────────────────────────────
 if [[ "$DRY_RUN" == "true" ]]; then
-  echo "[5/7] DRY-RUN: 将发布到 SkillHub ($ZIP_PATH)"
+  echo "[6/8] DRY-RUN: 将发布到 SkillHub ($ZIP_PATH)"
 elif [[ "$SKIP_SKILLHUB" == "false" ]]; then
-  echo "[5/7] 发布到 SkillHub..."
+  echo "[6/8] 发布到 SkillHub..."
   skillhub publish "$ZIP_PATH" || echo "⚠️  SkillHub 发布失败（可手动重试）"
 else
-  echo "[5/7] 跳过 SkillHub"
+  echo "[6/8] 跳过 SkillHub"
 fi
 
-# ── Step 6: Publish to ClawHub ──────────────────────────────────────
+# ── Step 7: Publish to ClawHub ──────────────────────────────────────
 if [[ "$DRY_RUN" == "true" ]]; then
-  echo "[6/7] DRY-RUN: 将发布到 ClawHub (halucatch@$VERSION)"
+  echo "[7/8] DRY-RUN: 将发布到 ClawHub (halucatch@$VERSION)"
 elif [[ "$SKIP_CLAWHUB" == "false" ]]; then
-  echo "[6/7] 发布到 ClawHub..."
+  echo "[7/8] 发布到 ClawHub..."
   (cd "$ROOT" && clawhub publish . --version "$VERSION") || echo "⚠️  ClawHub 发布失败（可手动重试）"
 else
-  echo "[6/7] 跳过 ClawHub"
+  echo "[7/8] 跳过 ClawHub"
 fi
 
-# ── Step 7: Git Commit + Tag + Push ──────────────────────────────────
-echo "[7/7] Git 提交 + Tag + Push..."
+# ── Step 8: Git Commit + Tag + Push ──────────────────────────────────
+echo "[8/8] Git 提交 + Tag + Push..."
 
 # 检查 tag 是否已存在
 TAG_EXISTS=false

@@ -31,8 +31,8 @@ with open('$ROOT/_meta.json', 'w') as f:
 " && echo "✅ _meta.json → $VERSION"
 fi
 
-# 3) 提醒手动更新
+# 3) Changelog 由 generate-changelog.sh 自动处理（release.sh Step 2）
 echo ""
-echo "⚠️  请手动更新以下文件的版本号:"
-echo "   - docs/CHANGELOG.md (建议追加 V$VERSION 条目)"
+echo "✅ 版本号已更新。CHANGELOG 将在 release.sh 中自动生成。"
+echo "⚠️  请手动检查:"
 echo "   - README.md (如有版本引用)"

@@ -1,0 +1,54 @@
+# HaluCatch git-cliff configuration
+# Docs: https://git-cliff.org/docs/configuration
+
+[changelog]
+header = """
+# Changelog
+
+本文档记录 HaluCatch 项目的所有 notable changes。
+
+版本号规则：
+- **中间版本号** (1.x.0)：新功能或架构级变更
+- **小版本号** (1.0.x)：修复、增强、chore 等小更新
+- **每个 commit 对应一个版本更新**
+
+---
+"""
+body = """
+{% if version %}\
+## [V{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}\
+## [Unreleased]
+{% endif %}\
+{%- for group, commits in commits | group_by(attribute="group") %}
+
+### {{ group }}
+{% for commit in commits %}
+- {{ commit.message | trim | upper_first }}
+{%- endfor %}
+{%- endfor %}
+
+"""
+footer = """
+{% if version %}---{% endif %}
+"""
+trim = true
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+commit_parsers = [
+  # ── skip release commits ──
+  { message = "^release", skip = true },
+  # ── feat → Added ──
+  { message = "^feat", group = "Added", default_scope = "新功能" },
+  # ── fix → Fixed ──
+  { message = "^fix", group = "Fixed", default_scope = "修复" },
+  # ── everything else → Changed (docs, refactor, chore, perf...) ──
+  { message = ".*", group = "Changed", default_scope = "其他变更" },
+]
+filter_commits = true
+skip_tags = ""
+
+[git.parse]
+extra_headers = []
