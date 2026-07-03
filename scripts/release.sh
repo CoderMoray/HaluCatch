@@ -93,6 +93,7 @@ elif [[ "$SKIP_CLAWHUB" == "false" ]]; then
   TMP_CLAWHUB="/tmp/halucatch-publish"
   rm -rf "$TMP_CLAWHUB" && mkdir -p "$TMP_CLAWHUB"
   unzip -q "$ZIP_PATH" -d "$TMP_CLAWHUB"
+  cp "$ROOT/.gitignore" "$TMP_CLAWHUB/" 2>/dev/null || true
   (cd "$TMP_CLAWHUB" && clawhub publish . --slug halucatch --name "HaluCatch / 捕幻" --version "$VERSION") || echo "⚠️  ClawHub 发布失败（可手动重试）"
   rm -rf "$TMP_CLAWHUB"
 else
