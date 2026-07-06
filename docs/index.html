@@ -260,7 +260,7 @@
     [data-theme="dark"] .risk-tag.security { background: #2a0e0e; border-color: #ff6b6b; color: #ff8787; }
     [data-theme="dark"] .risk-tag.logic { background: #1a1a3e; border-color: #339af0; color: #5cb8ff; }
     [data-theme="dark"] .risk-tag.reuse { background: #2a1a3e; border-color: #b39ddb; color: #ce93d8; }
-    [data-theme="dark"] .risk-tag.unthorough { background: #2a2a20; border-color: #a09080; color: #c0b0a0; }
+    [data-theme="dark"] .risk-tag.noprogress { background: #2a2a20; border-color: #a09080; color: #c0b0a0; }
     [data-theme="dark"] .risk-tag.nocheck { background: #2a2a4e; border-color: #8888bb; color: #bbbbdd; }
     [data-theme="dark"] .risk-tag.dependency { background: #0e2a0e; border-color: #69db7c; color: #69db7c; }
     .theme-pill-btn {
@@ -408,7 +408,7 @@
     .risk-tag.security { background: #ffe8e8; border-color: #ff6b6b; color: #c92a2a; }
     .risk-tag.logic { background: #e8f4fd; border-color: #339af0; color: #1976d2; }
     .risk-tag.reuse { background: #f3e8ff; border-color: #b39ddb; color: #7b1fa2; }
-    .risk-tag.unthorough { background: #f5f0ec; border-color: #d0c8c0; color: #8c7a68; }
+    .risk-tag.noprogress { background: #f5f0ec; border-color: #d0c8c0; color: #8c7a68; }
     .risk-tag.nocheck { background: #dcdce6; border-color: #aaaabb; color: #666; }
     .risk-tag.dependency { background: #e8f8e8; border-color: #69db7c; color: #2b8a3e; }
 
@@ -946,7 +946,6 @@
       <p>即使是同一个模型、用同个 Skill，每次执行输出的格式、内容、质量都不同，没法放心用</p>
       <div class="problem-tags">
         <span class="risk-tag unstable">输出不稳</span>
-        <span class="risk-tag unthorough">考虑不周</span>
       </div>
     </div>
     <div class="problem-card">
@@ -965,7 +964,6 @@
       <p>Skill 说能分析数据，但换个格式它就傻眼了，根本不处理</p>
       <div class="problem-tags">
         <span class="risk-tag logic">逻辑漏洞</span>
-        <span class="risk-tag unthorough">考虑不周</span>
       </div>
     </div>
     <div class="problem-card">
@@ -974,7 +972,7 @@
       <p>执行过程中遇到状况，AI 悄悄跳过不报错，你完全不知道</p>
       <div class="problem-tags">
         <span class="risk-tag security">安全漏洞</span>
-        <span class="risk-tag unthorough">考虑不周</span>
+        <span class="risk-tag noprogress">进度失控</span>
         <span class="risk-tag nocheck">缺乏检查</span>
       </div>
     </div>
@@ -983,7 +981,7 @@
       <h3>不敢中断</h3>
       <p>跑了一个东西不知道要等多久，想中断又怕搞坏了，只能干着急</p>
       <div class="problem-tags">
-        <span class="risk-tag unthorough">考虑不周</span>
+        <span class="risk-tag noprogress">进度失控</span>
       </div>
     </div>
     <div class="problem-card">
