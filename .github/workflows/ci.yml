@@ -14,6 +14,6 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.12"
-      - run: uv pip install --system pytest ruff
-      - run: python -m pytest tests/ -v
-      - run: ruff check halucatch/ tests/
+      - run: uv pip install pytest ruff
+      - run: uv run pytest tests/ -v
+      - run: uvx ruff check halucatch/ tests/
