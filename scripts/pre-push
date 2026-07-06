@@ -2,7 +2,8 @@
 # pre-push — push 前本地跑测试 + lint，不通过则拦截
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(git rev-parse --show-toplevel)"
+test -n "$ROOT" || { echo "❌ 不在 git 仓库内"; exit 1; }
 cd "$ROOT"
 
 echo "🔍 pre-push: pytest..."
