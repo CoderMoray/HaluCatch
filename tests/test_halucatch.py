@@ -278,7 +278,7 @@ def test_scan_deep_nested_py():
 
 
 def test_scan_skips_subdirectories():
-    """验证 scan_folder 不递归子目录，避免误读其他 Skill。"""
+    """验证 scan_folder 递归扫描子目录中的 .py 文件。"""
     with tempfile.TemporaryDirectory() as td:
         nested = os.path.join(td, 'a', 'b', 'c')
         os.makedirs(nested)
@@ -291,6 +291,6 @@ def test_scan_skips_subdirectories():
             f.write('name: Test')
         result = scan_folder(td, MESSAGES['zh-CN'])
         assert result is not None
-        assert result['py'] is None  # 深层文件不扫描
+        assert result['py'] is not None  # 子目录 .py 文件会被扫描
         assert result['skill_md'] is not None
-        assert len(result['files']) == 1
+        assert len(result['files']) == 2  # SKILL.md + deep.py
