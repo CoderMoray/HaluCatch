@@ -31,7 +31,16 @@ with open('$ROOT/_meta.json', 'w') as f:
 " && echo "✅ _meta.json → $VERSION"
 fi
 
-# 3) Changelog 由 generate-changelog.sh 自动处理（release.sh Step 2）
+# 3) docs/index.html 版本号变量（唯一源头）
+INDEX_HTML="$ROOT/docs/index.html"
+# 完整版本 HC_VER
+sed -i '' "s/var HC_VER = '[0-9.]*'/var HC_VER = '$VERSION'/" "$INDEX_HTML"
+# 简短版本 HC_VER_SHORT（取前两段）
+SHORT=$(echo "$VERSION" | sed 's/\.[0-9]*$//')
+sed -i '' "s/var HC_VER_SHORT = '[0-9.]*'/var HC_VER_SHORT = '$SHORT'/" "$INDEX_HTML"
+echo "✅ docs/index.html → $VERSION (short: $SHORT)"
+
+# 4) Changelog 由 generate-changelog.sh 自动处理（release.sh Step 2）
 echo ""
 echo "✅ 版本号已更新。CHANGELOG 将在 release.sh 中自动生成。"
 echo "⚠️  请手动检查:"

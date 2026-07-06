@@ -18,27 +18,29 @@
   <meta name="twitter:image" content="https://codermoray.github.io/HaluCatch/og-image.png">
   <link rel="canonical" href="https://codermoray.github.io/HaluCatch/">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "HaluCatch",
-    "applicationCategory": "DeveloperApplication",
-    "operatingSystem": "macOS, Windows, Linux",
-    "description": "AI 为你创建的 Skill 执行起来靠谱吗？HaluCatch 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——四维排查，帮你把问题修掉再执行。",
-    "version": "1.7.1",
-    "license": "https://github.com/CoderMoray/HaluCatch/blob/main/LICENSE",
-    "url": "https://codermoray.github.io/HaluCatch/",
-    "inLanguage": "zh-CN",
-    "author": { "@type": "Person", "name": "CoderMoray" },
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "CNY"
+  <script>
+    function buildJSONLD() {
+      return {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "HaluCatch",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "macOS, Windows, Linux",
+        "description": "AI 为你创建的 Skill 执行起来靠谱吗？HaluCatch 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——四维排查，帮你把问题修掉再执行。",
+        "version": HC_VER,
+        "license": "https://github.com/CoderMoray/HaluCatch/blob/main/LICENSE",
+        "url": "https://codermoray.github.io/HaluCatch/",
+        "inLanguage": "zh-CN",
+        "author": { "@type": "Person", "name": "CoderMoray" },
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" }
+      };
     }
-  }
   </script>
   <script>
+    // ── 版本号（唯一源头） ──
+    var HC_VER = '1.7.1';      // full: X.Y.Z
+    var HC_VER_SHORT = '1.7';  // short: X.Y
+
     var _t = (function(){ try { return localStorage.getItem('halucatch-theme'); } catch(e){} return null; })() || 'system';
     if (_t === 'system') _t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', _t);
@@ -849,7 +851,7 @@
   <h1 class="anim-item" data-anim="600"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;position:relative;top:-4px;"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/><path d="m16 16-1.9-1.9"/></svg>HaluCatch 捕幻</h1>
   <p class="subtitle anim-item" data-anim="900">AI 为你创建的 Skill 执行起来靠谱吗？<br>自动排查幻觉风险 · 输出不稳定风险 · 安全漏洞 · 逻辑漏洞</p>
   <div class="badges anim-item" data-anim="1200">
-    <span class="badge">v1.7.1</span>
+    <span class="badge" id="badge-version">v1.7.1</span>
     <span class="badge">🐍 Python</span>
     <span class="badge">📋 3 份报告</span>
     <span class="badge">🌏 中英文</span>
@@ -1327,7 +1329,7 @@ function copyInstall(btn, text) {
 // Initialize AI Chat Demo
 window.halucatchDemo = new AIChatDemo({
   container: '#ai-chat-demo-container',
-  modelName: 'HaluCatch 1.7',
+  modelName: 'HaluCatch ' + HC_VER_SHORT,
   avatar: '🔮',
   thinkingEnabled: true,
   thinkingLabel: '深度思考',
@@ -1650,5 +1652,21 @@ window.halucatchDemo = new AIChatDemo({
   });
 })();
 </script>
+
+<!-- ═══ 版本号自动注入 ═══ -->
+<script>
+(function() {
+  // 更新 hero badge
+  var badge = document.getElementById('badge-version');
+  if (badge) badge.textContent = 'v' + HC_VER;
+
+  // 注入 JSON-LD（从 buildJSONLD 函数获取最新版本）
+  var ld = document.createElement('script');
+  ld.type = 'application/ld+json';
+  ld.textContent = JSON.stringify(buildJSONLD());
+  document.head.appendChild(ld);
+})();
+</script>
+
 </body>
 </html>
