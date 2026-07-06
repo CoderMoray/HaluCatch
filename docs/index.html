@@ -334,7 +334,7 @@
     }
     .hero .badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 32px; }
     .badge {
-      background: color-mix(in srgb, var(--surface2) 75%, transparent);
+      background: color-mix(in srgb, var(--surface2) 60%, transparent);
       -webkit-backdrop-filter: blur(12px);
       backdrop-filter: blur(12px);
       border: 1px solid var(--border);
@@ -344,14 +344,15 @@
       color: var(--text2);
     }
     .safety-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 5px 14px; border-radius: 20px;
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 5px 6px; border-radius: 20px;
       border: 1px solid var(--border);
-      background: color-mix(in srgb, var(--surface) 75%, transparent);
+      background: color-mix(in srgb, var(--surface) 60%, transparent);
       -webkit-backdrop-filter: blur(12px);
       backdrop-filter: blur(12px);
       color: var(--text2);
       font-size: 0.8rem;
+      line-height: 1;
       text-decoration: none;
       transition: border-color 0.2s;
     }
@@ -359,12 +360,13 @@
     .safety-badge img { width: 16px; height: 16px; border-radius: 2px; flex-shrink: 0; }
     .safety-badge .status {
       display: inline-block; font-weight: 600; font-size: 0.72rem;
-      padding: 1px 8px; border-radius: 6px;
+      padding: 3px 8px; border-radius: 20px;
+      transform: translateY(0.5px);
     }
-    .safety-badge .status.pass { background: #e8f5e9; color: #2e7d32; }
-    .safety-badge .status.warn { background: #fff3e0; color: #e65100; }
-    [data-theme="dark"] .safety-badge .status.pass { background: #1b3a1b; color: #81c784; }
-    [data-theme="dark"] .safety-badge .status.warn { background: #3a2a0e; color: #ffb74d; }
+.safety-badge .status.pass { background: color-mix(in srgb, #c8e6c9 75%, transparent); color: #2e7d32; }
+.safety-badge .status.warn { background: color-mix(in srgb, #ffe0b2 75%, transparent); color: #e65100; }
+[data-theme="dark"] .safety-badge .status.pass { background: color-mix(in srgb, #234d38 75%, transparent); color: #66bb8a; }
+[data-theme="dark"] .safety-badge .status.warn { background: color-mix(in srgb, #4d3a1a 75%, transparent); color: #ffb74d; }
     .cta-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
     .btn {
       display: inline-flex;
@@ -956,7 +958,7 @@
     <a href="https://www.virustotal.com/gui/file/b962bf2f18e49fdec66b89e55ddf48c58a1f633e41369ee49cf45f065175d525" target="_blank" class="safety-badge">
       <img src="https://www.virustotal.com/gui/images/favicon.svg" alt="VirusTotal" loading="lazy">
       VirusTotal
-      <span class="status pass">65引擎全通过</span>
+      <span class="status pass">65 个安全引擎全通过</span>
     </a>
   </div>
 </section>
