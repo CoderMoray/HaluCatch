@@ -70,7 +70,12 @@ class AIChatDemo {
             <!-- Input row -->
             <div class="chat-input-row" id="input-row">
               <textarea class="chat-input" rows="1" placeholder="输入消息..." disabled></textarea>
-              <button class="chat-send-btn" disabled>↑</button>
+              <button class="chat-send-btn" disabled aria-label="发送">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(-90deg); display: block;">
+                  <path d="M3.714 3.048a.498.498 0 0 0-.683.627l2.843 7.627a2 2 0 0 1 0 1.396l-2.842 7.627a.498.498 0 0 0 .682.627l18-8.5a.5.5 0 0 0 0-.904z"/>
+                  <path d="M6 12h16"/>
+                </svg>
+              </button>
             </div>
             <!-- Options area (replaces input row) -->
             <div class="chat-options-area" id="options-area"></div>
