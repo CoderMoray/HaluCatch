@@ -12,16 +12,14 @@ fi
 SKIP_GITHUB=false
 SKIP_CLAWHUB=false
 SKIP_SKILLHUB=false
-SKIP_MCPMARKET=false
 DRY_RUN=false
 
 for arg in "${@:2}"; do
   case "$arg" in
-    --skip-github)    SKIP_GITHUB=true ;;
-    --skip-clawhub)   SKIP_CLAWHUB=true ;;
-    --skip-skillhub)  SKIP_SKILLHUB=true ;;
-    --skip-mcpmarket) SKIP_MCPMARKET=true ;;
-    --dry-run)        DRY_RUN=true ;;
+    --skip-github)   SKIP_GITHUB=true ;;
+    --skip-clawhub)  SKIP_CLAWHUB=true ;;
+    --skip-skillhub) SKIP_SKILLHUB=true ;;
+    --dry-run)       DRY_RUN=true ;;
     *) echo "未知参数: $arg"; exit 1 ;;
   esac
 done
@@ -83,16 +81,16 @@ echo "[6/9] 文件尺寸检查..."
 bash "$SCRIPTS/check-file-size.sh"
 
 ZIP_PATH="$ROOT/releases/HaluCatch-${VERSION}-skillhub.zip"
-MCPMARKET_ZIP="$ROOT/releases/HaluCatch-${VERSION}-mcpmarket.zip"
+CLAWHUB_ZIP="$ROOT/releases/HaluCatch-${VERSION}-clawhub.zip"
 
-# ── Step 7: Build & Push to mcpmarket ───────────────────────────────
+# ── Step 7: Build ClawHub Package ─────────────────────────────────────
 if [[ "$DRY_RUN" == "true" ]]; then
-  echo "[7/10] DRY-RUN: 将构建 mcpmarket 分支"
-elif [[ "$SKIP_MCPMARKET" == "false" ]]; then
-  echo "[7/10] 构建并推送 mcpmarket 分支..."
-  bash "$SCRIPTS/build-mcpmarket.sh"
+  echo "[7/10] DRY-RUN: 将构建 ClawHub 包"
+elif [[ "$SKIP_CLAWHUB" == "false" ]]; then
+  echo "[7/10] 构建 ClawHub 发布包..."
+  bash "$SCRIPTS/build-clawhub.sh"
 else
-  echo "[7/10] 跳过 mcpmarket"
+  echo "[7/10] 跳过 ClawHub 构建"
 fi
 
 # ── Step 8: Publish to SkillHub ─────────────────────────────────────
@@ -112,7 +110,7 @@ elif [[ "$SKIP_CLAWHUB" == "false" ]]; then
   echo "[9/10] 发布到 ClawHub..."
   TMP_CLAWHUB="/tmp/halucatch-publish"
   rm -rf "$TMP_CLAWHUB" && mkdir -p "$TMP_CLAWHUB"
-  unzip -q "$MCPMARKET_ZIP" -d "$TMP_CLAWHUB"
+  unzip -q "$CLAWHUB_ZIP" -d "$TMP_CLAWHUB"
   (cd "$TMP_CLAWHUB" && clawhub publish . --slug halucatch --name "HaluCatch / 捕幻" --version "$VERSION") || echo "⚠️  ClawHub 发布失败（可手动重试）"
   rm -rf "$TMP_CLAWHUB"
 else
@@ -186,20 +184,17 @@ fi
 echo ""
 echo "✅ HaluCatch v$VERSION 发布完成"
 
-# ── AI 提醒：mcpmarket 需手动上传 ─────────────────────────────────
-if [[ "$SKIP_MCPMARKET" == "false" ]] && [[ "$DRY_RUN" != "true" ]]; then
+# ── AI 提醒：mcpmarket / agentskills 用同一个分支 ───────────────────
+if [[ "$DRY_RUN" != "true" ]]; then
   echo ""
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo "🤖 AI ACTION REQUIRED — 告诉用户:"
   echo ""
-  echo "   mcpmarket 构建完成！"
-  echo "   ZIP 包路径: releases/HaluCatch-${VERSION}-mcpmarket.zip"
+  echo "   发布完成！手动操作："
+  echo "   1. mcpmarket → https://app.mcpmarket.com/<用户名>/skills"
+  echo "   2. agentskills.sh → https://agentskill.sh/submit"
   echo ""
-  echo "   请提醒用户手动完成以下步骤:"
-  echo "   1. 打开 https://app.mcpmarket.com/<用户名>/skills"
-  echo "   2. 导入 releases/HaluCatch-${VERSION}-mcpmarket.zip"
-  echo ""
-  echo "   GitHub 分支: release/mcpmarket"
-  echo "   提交入口: https://mcpmarket.com/submit"
+  echo "   两个平台都填:"
+  echo "   https://github.com/CoderMoray/HaluCatch/tree/release/agentskills"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 fi

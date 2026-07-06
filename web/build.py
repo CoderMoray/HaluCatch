@@ -133,7 +133,7 @@ def merge_config(config, locale):
         items_html = ""
         for item in audits["items"]:
             items_html += f"""<a href="{item['url']}" target="_blank" class="safety-badge">
-      <img src="{item['icon']}" alt="" loading="lazy">
+      <img src="{item['icon']}" alt="{item.get('alt', item['name'])}" loading="lazy">
       {item['name']}
       <span class="status {item['status']}">{item['status_text']}</span>
     </a>\n"""
@@ -220,10 +220,23 @@ window.halucatchDemo = new AIChatDemo({{
         for i, tab in enumerate(rp["tabs"]):
             active = " active" if i == 0 else ""
             tabs_html += f'<div class="preview-tab{active}" onclick="switchTab(\'{tab["id"]}\')">{tab["label"]}</div>\n'
-        # 使用嵌入内容或占位
-        content_standard = rp.get("content_standard", "<p>{{ report_placeholder }}</p>")
-        content_pro = rp.get("content_pro", "<p>{{ report_placeholder }}</p>")
-        content_action = rp.get("content_action", "<p>{{ report_placeholder }}</p>")
+
+        # 报告内容：支持内联 HTML 字符串或引用文件路径
+        def load_content(key, tab_id):
+            val = rp.get(key, "")
+            if not val:
+                return ""
+            # 如果是文件路径（不含 <），读取文件内容
+            if "<" not in str(val):
+                content_path = ROOT.parent / val
+                if content_path.exists():
+                    return open(content_path, encoding="utf-8").read()
+            return str(val)
+
+        content_standard = load_content("content_standard", rp['tabs'][0]['id'])
+        content_pro = load_content("content_pro", rp['tabs'][1]['id'])
+        content_action = load_content("content_action", rp['tabs'][2]['id'])
+
         data["report_preview_section"] = f"""<section id="report-preview" class="anim-item scroll-anim">
   <h2>{rp_i18n["title"]}</h2>
   <p style="text-align:center;color:var(--text2);margin-bottom:24px;">{rp_i18n["subtitle"]}</p>
@@ -501,7 +514,7 @@ def render_template(template_path, context, output_path):
         path = m.group(1)
         return resolve(path)
 
-    html = re.sub(r"\{\{ ([a-z_.]+) \}\}", replacer, html)
+    html = re.sub(r"\{\{ ([a-z0-9_.]+) \}\}", replacer, html)
 
     # 也保留扁平键名兼容（无点号）
     for key, value in context.items():

@@ -65,7 +65,7 @@ problem:
 # ── 报告预览 ──
 report_preview:
   title: 审计报告预览
-  subtitle: 同一份 Skill，三份视角
+  subtitle: 同一份 Skill，三份视角 — 以下是 HaluCatch 审计自身的真实报告
 
 # ── 快速开始 ──
 quickstart:
