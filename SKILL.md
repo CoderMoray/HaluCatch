@@ -1,38 +1,33 @@
 ---
 name: halucatch
-
 description: |
   Evaluates the reliability of AI Skill execution. Assesses whether a Skill's output is trustworthy, reproducible, and withstands business scrutiny when executed by an AI agent. Covers four dimensions: data pipeline integrity, code risk, business logic ambiguity, and interpretation guardrails. Use when auditing an AI Skill, checking for hallucinations or unreliable outputs, verifying execution reproducibility, or reviewing a Skill's safety before deployment or sharing.
-
 summary: AI Skill 执行可靠性审查工具。评估一个 Skill 被 AI 执行时，结果是否可信、是否可复现、是否经得起业务推敲。覆盖四维度：地基（数据管线）、代码、规则（业务口径）、护栏（解读指南）。
-
 license: MIT
 allowed-tools:
   - Read
   - Write
   - Bash
 compatibility: Requires Python 3.8+, fully offline
-
 author: CoderMoray
-version: "1.7.8"
+version: 1.7.8
 metadata:
   hermes:
     tags:
-      - skill-audit
-      - reliability
-      - engineering-assurance
-      - Skill审查
-      - 工程质量
-      - 可靠性
+    - skill-audit
+    - reliability
+    - engineering-assurance
+    - Skill审查
+    - 工程质量
+    - 可靠性
   openclaw:
     requires:
       bins:
-        - python3
-    emoji: "\U0001F50D"
+      - python3
+    emoji: 🔍
     homepage: https://github.com/CoderMoray/HaluCatch
-
 slug: halucatch
-displayName: "HaluCatch / 捕幻"
+displayName: HaluCatch / 捕幻
 tags:
   - skill-audit
   - reliability
