@@ -195,6 +195,6 @@ if [[ "$DRY_RUN" != "true" ]]; then
   echo "   2. agentskills.sh → https://agentskill.sh/submit"
   echo ""
   echo "   两个平台都填:"
-  echo "   https://github.com/CoderMoray/HaluCatch/tree/release/agentskills"
+  echo "   https://github.com/CoderMoray/HaluCatch/tree/agentskills"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 fi

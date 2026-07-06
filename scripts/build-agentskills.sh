@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# build-agentskills.sh — 构建并推送 release/agentskills 分支
+# build-agentskills.sh — 构建并推送 agentskills 分支
 #   分支内容是纯 skill 文件，不包含 docs/ tests/ scripts/ 等开发资源
 set -euo pipefail
 
@@ -11,7 +11,7 @@ if [[ -z "$VERSION" ]]; then
   exit 1
 fi
 
-BRANCH="release/agentskills"
+BRANCH="agentskills"
 DRY_RUN="${1:-}"
 
 echo "📦 构建 $BRANCH v$VERSION..."
@@ -50,7 +50,7 @@ if [[ -d "$TMP/halucatch/reports" ]]; then
   rm -rf "$TMP/halucatch/reports"
 fi
 
-# 2) 推送到 release/agentskills 分支
+# 2) 推送到 agentskills 分支
 if [[ "$DRY_RUN" == "--dry-run" ]]; then
   echo "  [DRY-RUN] 将推送到 $BRANCH"
   echo "  [DRY-RUN] 文件列表:"
@@ -73,7 +73,7 @@ reports/
 EOF
 
 git add -A
-git commit -m "release/agentskills v$VERSION" -q
+git commit -m "agentskills v$VERSION" -q
 
 REMOTE_URL=$(cd "$ROOT" && git remote get-url origin)
 

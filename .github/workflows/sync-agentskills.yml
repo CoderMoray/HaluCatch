@@ -1,4 +1,4 @@
-name: Sync release/agentskills
+name: Sync agentskills
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
       - name: Install skills-ref
         run: pip install skills-ref
 
-      - name: Build & Push release/agentskills
+      - name: Build & Push agentskills
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash scripts/build-agentskills.sh
