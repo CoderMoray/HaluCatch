@@ -64,6 +64,16 @@
       --glow: #1a1a3e;
       --h1-from: #6c63ff;
       --h1-to: #00d4aa;
+      --spring-stiffness: 1.36;
+      --spring-duration: 0.5s;
+      --c-border: var(--border);
+      --c-bg: var(--bg);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      :root {
+        --spring-stiffness: 1;
+        --spring-duration: 0.2s;
+      }
     }
     [data-theme="light"] {
       --bg: #f7f7fb;
@@ -217,11 +227,15 @@
     .nav { transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, transform 0.4s ease-out; }
     .theme-pill {
       display: inline-flex;
-      background: var(--surface2);
+      background: rgba(59,130,246,.04);
+      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--c-border);
       border-radius: 22px;
       padding: 2px;
       gap: 0;
       flex-shrink: 0;
+      transition: background-color .5s ease, color .5s ease, border-color .5s ease;
     }
     .theme-pill-indicator {
       position: absolute;
@@ -230,9 +244,15 @@
       background: var(--surface);
       border-radius: 20px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-      transition: left 0.3s ease, width 0.3s ease;
+      transition: left var(--spring-duration) cubic-bezier(0.34, var(--spring-stiffness), 0.64, 1), width var(--spring-duration) cubic-bezier(0.34, var(--spring-stiffness), 0.64, 1);
       z-index: 0;
       pointer-events: none;
+    }
+    [data-theme="light"] .theme-pill-indicator {
+      background: color-mix(in srgb, var(--c-bg) 50%, transparent);
+    }
+    [data-theme="dark"] .theme-pill-indicator {
+      background: color-mix(in srgb, rgba(200,215,255,.35), transparent);
     }
     .theme-pill-btn {
       position: relative;
@@ -247,7 +267,7 @@
       color: var(--text2);
       cursor: pointer;
       font-size: 0.75rem;
-      transition: color 0.3s ease;
+      transition: color var(--spring-duration) cubic-bezier(0.34, var(--spring-stiffness), 0.64, 1);
       font-family: inherit;
     }
     .theme-pill-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
