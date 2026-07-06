@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# pre-push — push 前本地跑测试 + lint，不通过则拦截
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+echo "🔍 pre-push: pytest..."
+python3 -m pytest tests/ -q
+
+echo "🔍 pre-push: ruff..."
+ruff check halucatch/ tests/
+
+echo "✅ pre-push 通过"
