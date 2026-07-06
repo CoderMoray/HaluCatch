@@ -76,6 +76,13 @@ git add -A
 git commit -m "release/agentskills v$VERSION" -q
 
 REMOTE_URL=$(cd "$ROOT" && git remote get-url origin)
+
+# CI 环境用 GITHUB_TOKEN 认证；本地用 SSH
+if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+  REPO_PATH=$(echo "$REMOTE_URL" | sed 's|https://github.com/||')
+  REMOTE_URL="https://x-access-token:${GITHUB_TOKEN}@github.com/${REPO_PATH}"
+fi
+
 git remote add origin "$REMOTE_URL"
 git push origin main:"$BRANCH" --force -q
 
