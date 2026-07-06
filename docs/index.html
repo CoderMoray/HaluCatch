@@ -359,10 +359,12 @@
     .safety-badge img { width: 16px; height: 16px; border-radius: 2px; flex-shrink: 0; }
     .safety-badge .status {
       display: inline-block; font-weight: 600; font-size: 0.72rem;
-      padding: 1px 8px; border-radius: 4px;
+      padding: 1px 8px; border-radius: 6px;
     }
     .safety-badge .status.pass { background: #e8f5e9; color: #2e7d32; }
     .safety-badge .status.warn { background: #fff3e0; color: #e65100; }
+    [data-theme="dark"] .safety-badge .status.pass { background: #1b3a1b; color: #81c784; }
+    [data-theme="dark"] .safety-badge .status.warn { background: #3a2a0e; color: #ffb74d; }
     .cta-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
     .btn {
       display: inline-flex;
@@ -947,11 +949,12 @@
       <span class="status pass">100</span>
     </a>
     <a href="https://clawhub.ai/codermoray/skills/halucatch/security-audit" target="_blank" class="safety-badge">
-      <img src="https://clawhub.ai/favicon.ico" alt="ClawHub" loading="lazy">
+      <img src="https://openclaw.ai/favicon.svg" alt="ClawHub" loading="lazy">
       ClawScan
       <span class="status pass">Pass</span>
     </a>
     <a href="https://www.virustotal.com/gui/file/b962bf2f18e49fdec66b89e55ddf48c58a1f633e41369ee49cf45f065175d525" target="_blank" class="safety-badge">
+      <img src="https://www.virustotal.com/gui/images/favicon.svg" alt="VirusTotal" loading="lazy">
       VirusTotal
       <span class="status pass">65引擎全通过</span>
     </a>
