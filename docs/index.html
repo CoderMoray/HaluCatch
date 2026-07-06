@@ -226,6 +226,7 @@
     }
     .nav { transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, transform 0.4s ease-out; }
     .theme-pill {
+      position: relative;
       display: inline-flex;
       background: rgba(59,130,246,.04);
       -webkit-backdrop-filter: blur(16px);
@@ -249,10 +250,10 @@
       pointer-events: none;
     }
     [data-theme="light"] .theme-pill-indicator {
-      background: color-mix(in srgb, var(--c-bg) 50%, transparent);
+      background: color-mix(in srgb, var(--c-bg) 75%, transparent);
     }
     [data-theme="dark"] .theme-pill-indicator {
-      background: color-mix(in srgb, rgba(200,215,255,.35), transparent);
+      background: color-mix(in srgb, rgba(200,215,255,.5), transparent);
     }
     .theme-pill-btn {
       position: relative;
@@ -772,6 +773,7 @@
     /* ≤1080px: pill & share icons only */
     @media (max-width: 1080px) {
       .pill-label, .share-label { opacity: 0; max-width: 0; padding: 0; }
+      .theme-pill-btn { gap: 0; }
       .nav-share-btn { padding: 4px 8px; }
     }
 
