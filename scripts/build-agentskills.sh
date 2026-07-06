@@ -29,32 +29,35 @@ else
   echo "⚠️  skills-ref 未安装，跳过校验 (pip install skills-ref)"
 fi
 
-# 1) 创建临时目录，复制核心文件
+# 1) 创建临时目录，复制核心文件到 halucatch/ 子目录
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 
-cp "$ROOT/SKILL.md"          "$TMP/"
-cp "$ROOT/halucatch_core.py" "$TMP/"
-cp -r "$ROOT/halucatch"       "$TMP/"
-cp "$ROOT/README.md"          "$TMP/"
-cp "$ROOT/config.yaml"        "$TMP/"
-cp "$ROOT/manifest.json"      "$TMP/"
-cp "$ROOT/LICENSE"            "$TMP/" 2>/dev/null || true
+SKILL_DIR="$TMP/halucatch"
+mkdir -p "$SKILL_DIR"
+
+cp "$ROOT/SKILL.md"          "$SKILL_DIR/"
+cp "$ROOT/halucatch_core.py" "$SKILL_DIR/"
+cp -r "$ROOT/halucatch"       "$SKILL_DIR/"
+cp "$ROOT/README.md"          "$SKILL_DIR/"
+cp "$ROOT/config.yaml"        "$SKILL_DIR/"
+cp "$ROOT/manifest.json"      "$SKILL_DIR/"
+cp "$ROOT/LICENSE"            "$SKILL_DIR/" 2>/dev/null || true
 
 # docs 下只保留 FAQ 和 CHANGELOG
-[[ -f "$ROOT/docs/CHANGELOG.md" ]] && cp "$ROOT/docs/CHANGELOG.md" "$TMP/CHANGELOG.md"
-[[ -f "$ROOT/docs/FAQ.md" ]]      && cp "$ROOT/docs/FAQ.md"      "$TMP/FAQ.md"
+[[ -f "$ROOT/docs/CHANGELOG.md" ]] && cp "$ROOT/docs/CHANGELOG.md" "$SKILL_DIR/CHANGELOG.md"
+[[ -f "$ROOT/docs/FAQ.md" ]]      && cp "$ROOT/docs/FAQ.md"      "$SKILL_DIR/FAQ.md"
 
 # 清理 halucatch/reports
-if [[ -d "$TMP/halucatch/reports" ]]; then
-  rm -rf "$TMP/halucatch/reports"
+if [[ -d "$SKILL_DIR/halucatch/reports" ]]; then
+  rm -rf "$SKILL_DIR/halucatch/reports"
 fi
 
 # 2) 推送到 agentskills 分支
 if [[ "$DRY_RUN" == "--dry-run" ]]; then
   echo "  [DRY-RUN] 将推送到 $BRANCH"
   echo "  [DRY-RUN] 文件列表:"
-  ls -la "$TMP"
+  ls -la "$SKILL_DIR"
   exit 0
 fi
 
