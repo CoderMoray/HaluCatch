@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ seo.title }}</title>
+  <meta name="description" content="{{ seo.description }}">
+  <meta property="og:title" content="{{ seo.title }}">
+  <meta property="og:description" content="{{ seo.description }}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ pages_url }}">
+  <meta property="og:image" content="{{ pages_url }}/{{ og_image }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ seo.title }}">
+  <meta name="twitter:description" content="{{ seo.description }}">
+  <meta name="twitter:image" content="{{ pages_url }}/{{ og_image }}">
+  <link rel="canonical" href="{{ pages_url }}/">
+  <link rel="icon" type="image/svg+xml" href="{{ favicon }}">
+  <script>
+    function buildJSONLD() {
+      return {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "{{ name }}",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "macOS, Windows, Linux",
+        "description": "{{ seo.description }}",
+        "version": HC_VER,
+        "license": "{{ license_url }}",
+        "url": "{{ pages_url }}/",
+        "inLanguage": "{{ lang }}",
+        "author": { "@type": "Person", "name": "{{ author }}" },
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" }
+      };
+    }
+  </script>
+  <script>
+    var HC_VER = '{{ version }}';
+    var HC_VER_SHORT = '{{ version_short }}';
+
+    var _t = (function(){ try { return localStorage.getItem('{{ theme_storage_key }}'); } catch(e){} return null; })() || 'system';
+    if (_t === 'system') _t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', _t);
+    document.write('<style>html,body{background:' + (_t === 'dark' ? '#0a0a0f' : '#f7f7fb') + '}</style>');
+  </script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/ai-chat-demo/ai-chat-demo.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked@3.0.8/marked.min.js"></script>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">{{ a11y.skip_to_content }}</a>
+
+<nav class="nav entering">
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">
+      {{ brand_svg }}
+      <span class="brand-wrap"><span class="brand-full">{{ nav.brand_full }}</span><span class="brand-short">{{ nav.brand_short }}</span></span>
+    </a>
+    <div class="nav-links" id="nav-links">
+      {{ nav_links }}
+    </div>
+    <div class="nav-tools">
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="{{ nav.hamburger }}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="theme-pill" id="theme-pill">
+      <button class="theme-pill-btn" data-theme="light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg><span class="pill-label">{{ nav.theme_light }}</span></button>
+      <button class="theme-pill-btn" data-theme="dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="pill-label">{{ nav.theme_dark }}</span></button>
+      <button class="theme-pill-btn" data-theme="system"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span class="pill-label">{{ nav.theme_auto }}</span></button>
+    </div>
+    <div class="nav-share" id="nav-share">
+      <button class="nav-share-btn" aria-label="{{ nav.share_label }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+        <span class="share-label">{{ nav.share_label }}</span>
+      </button>
+      <div class="nav-share-menu">
+        <button class="nav-share-item" data-platform="url">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          {{ nav.share_copy_link }}
+        </button>
+        <button class="nav-share-item" data-platform="feishu">
+          <img src="https://www.feishu.cn/favicon.ico" width="16" height="16" alt="" style="flex-shrink:0;border-radius:2px;">
+          {{ nav.share_to_feishu }}
+        </button>
+        <button class="nav-share-item" data-platform="twitter">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          {{ nav.share_to_x }}
+        </button>
+      </div>
+    </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="main-content">
+  <h1 class="anim-item" data-anim="600">{{ hero_svg }} {{ hero.title }}</h1>
+  <p class="subtitle anim-item" data-anim="900">{{ hero.subtitle }}</p>
+  <div class="badges anim-item" data-anim="1200">
+    <span class="badge" id="badge-version">v{{ version }}</span>
+    {{ hero_badges }}
+  </div>
+  <div class="cta-group anim-item" data-anim="1500" style="margin-top: 32px;">
+    <a href="{{ github_url }}" class="btn btn-outline">{{ hero.cta_github }}</a>
+    {{ hero_cta_extra }}
+  </div>
+</section>
+
+<!-- Security Audit -->
+{{ security_audit_section }}
+
+<!-- Interactive Demo -->
+{{ demo_section }}
+
+<!-- Problem Cards -->
+{{ problem_section }}
+
+<!-- Report Preview -->
+{{ report_preview_section }}
+
+<!-- Quick Start -->
+{{ quickstart_section }}
+
+<!-- Blog -->
+{{ blog_section }}
+
+<!-- FAQ -->
+{{ faq_section }}
+
+<!-- Footer -->
+<footer class="anim-item scroll-anim">
+  <p>
+    <a href="{{ github_url }}">GitHub</a>
+    <a href="{{ github_url }}/releases">Releases</a>
+    {{ footer_links }}
+  </p>
+  <p style="margin-top:12px;">{{ footer.copyright }}</p>
+</footer>
+
+<script src="assets/js/theme.js"></script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/faq.js"></script>
+<script src="assets/js/tabs.js"></script>
+{{ share_script }}
+<script src="assets/js/install.js"></script>
+<script src="assets/js/entrance.js"></script>
+<script src="assets/ai-chat-demo/reports-data.js"></script>
+<script src="assets/ai-chat-demo/ai-chat-demo.js"></script>
+{{ demo_init_script }}
+<script src="assets/js/version.js"></script>
+
+</body>
+</html>

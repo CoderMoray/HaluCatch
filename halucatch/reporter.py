@@ -1,10 +1,11 @@
 """HaluCatch 报告生成器：生成专业版、标准版、AI 行动版三份报告。"""
 
-import re
 import os
+import re
 from datetime import date
-from .config import MESSAGES
+
 from .classifier import classify_skill
+from .config import MESSAGES
 
 
 def generate_report(info, results, output_dir=None, lang='zh-CN'):
@@ -43,7 +44,7 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
     # 议题文本
     def fmt_issues(iss):
         lines = []
-        for text, status in iss:
+        for text, _status in iss:
             lines.append(f'- {text}')
         return '\n'.join(lines) if lines else '- ' + msg['none']
 
@@ -141,7 +142,7 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
         '检测到.*测试': '有测试代码，说明作者管得住代码质量',
         '未检测到常见篡改点': '代码里没有除零、裸异常等常见坑',
     }
-    
+
     # 英文版语境解释
     context_map_en = {
         '硬编码路径': "The script has hardcoded file paths from someone's computer. It won't run on another machine.",

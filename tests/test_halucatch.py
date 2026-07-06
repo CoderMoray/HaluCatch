@@ -2,15 +2,22 @@
 HaluCatch 单元测试 — 覆盖 6 个检查函数的核心分支
 """
 
-import sys
 import os
+import sys
+import tempfile
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from halucatch.config import MESSAGES
-from halucatch.scanner import scan_folder
 from halucatch.classifier import classify_skill
-from halucatch.evaluators import check_foundation, check_code_risks, check_methodology, check_rules, check_guardrails
-
+from halucatch.config import MESSAGES
+from halucatch.evaluators import (
+    check_code_risks,
+    check_foundation,
+    check_guardrails,
+    check_methodology,
+    check_rules,
+)
+from halucatch.scanner import scan_folder
 
 # ---- helpers ----
 
@@ -53,7 +60,7 @@ def test_foundation_no_py():
     # item 1 fail, items 2-5 skip, item 6 checks md
     assert result['rating'] in ('🔴 无地基', '🟡 有隐患')
     # 验证无 .py → skip 而非 warn
-    issues = dict(result['issues'])
+    _issues = dict(result['issues'])
     assert 'skip' in str(result['issues'])
 
 
@@ -204,7 +211,6 @@ def test_guardrails_tool_type():
 
 # ---- 边界用例 — 输入不完整时行为正确 ----
 
-import tempfile
 
 def test_scan_empty_folder():
     """空目录无 .md 文件 → 不是标准 Skill 目录，返回 None。"""

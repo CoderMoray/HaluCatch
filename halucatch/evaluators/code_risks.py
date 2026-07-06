@@ -1,7 +1,6 @@
 """代码风险扫描：常见 AI 复现篡改点（裸 except、除零、硬编码等）。"""
 
 import re
-from ..config import MESSAGES
 
 
 def check_code_risks(info):

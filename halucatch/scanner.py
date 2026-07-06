@@ -1,10 +1,8 @@
 """HaluCatch 文件扫描器：扫描 Skill 目录、提取文件内容和版本号。"""
 
-import os
-import sys
-import re
 import json
-from .config import MESSAGES
+import os
+import re
 
 
 def _is_test_file(fname, rel_path):
@@ -75,10 +73,10 @@ def scan_folder(path, msg):
             files.append({'name': fname, 'ext': ext, 'size': size, 'path': fpath, 'rel_path': fpath_rel, 'is_test': is_test})
 
     # 尺寸保护：跳过超大文件避免 OOM
-    SZ_LIMIT = 10 * 1024 * 1024  # 10MB
+    sz_limit = 10 * 1024 * 1024  # 10MB
     oversized = []
     for f in files:
-        if f['size'] > SZ_LIMIT:
+        if f['size'] > sz_limit:
             oversized.append(f['name'])
     if oversized:
         print(msg['file_too_large'].format(files="', '".join(oversized)))

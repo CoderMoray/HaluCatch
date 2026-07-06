@@ -1,7 +1,7 @@
 """护栏评估：检查安全边界、禁止声明、误用风险等。"""
 
 import re
-from ..config import MESSAGES
+
 from .rules import _is_tool_skill
 
 

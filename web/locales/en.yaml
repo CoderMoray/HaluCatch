@@ -1,0 +1,141 @@
+# ============================================================
+# HaluCatch English Translation
+# ============================================================
+
+# ── SEO / Meta ──
+seo:
+  title: "{name} — AI Skill Execution Reliability Audit"
+  description: "Can you trust the Skill your AI created? {name} automatically audits your instruction files before execution, catching hallucination risks, output instability, security flaws, and logic holes — fixing them before it's too late."
+
+# ── Accessibility ──
+a11y:
+  skip_to_content: Skip to main content
+
+# ── Navigation ──
+nav:
+  sections:
+    - id: demo
+      label: Live Demo
+    - id: report-preview
+      label: Report Preview
+    - id: quickstart
+      label: Quick Start
+    - id: blog
+      label: Blogs
+    - id: faq
+      label: FAQ
+  theme:
+    light: Light
+    dark: Night
+    auto: Auto
+  share:
+    label: Share
+    copy_link: Copy Link
+    share_to_feishu: Share to Lark
+    share_to_x: Share to X
+    toast_copied: Link copied, paste it to {platform}
+    toast_failed: Copy failed, please copy the link manually
+  hamburger: Menu
+
+# ── Hero ──
+hero:
+  subtitle: |
+    Can you trust the Skill your AI created?
+    Auto-detect hallucination risks · output instability · security flaws · logic holes
+  cta_github: ⭐ GitHub
+  cta_skillhub: 📦 SkillHub
+  cta_clawhub: 🦞 ClawHub
+
+# ── Security Audit ──
+security:
+  title: Industry-Grade Security & Privacy Audit Reports
+
+# ── Live Demo ──
+demo:
+  title: Try {name} Online
+  thinking_label: Deep Thinking
+  end_message: This is a demo environment. Copy the install prompt above and continue using {name} on your own AI platform.
+
+# ── Pain Points ──
+problem:
+  title: Ever hit these pitfalls with AI Skills?
+  footer: Other pitfalls?
+  footer_link: Report on GitHub ↗
+
+# ── Report Preview ──
+report_preview:
+  title: Audit Report Preview
+  subtitle: One Skill, three perspectives
+
+# ── Quick Start ──
+quickstart:
+  title: Quick Start
+  tab_user: 👤 User
+  tab_dev: 👨‍💻 Developer
+
+  install:
+    step1_title: Install
+    step1_desc: Copy the prompt below and send it to your AI to install {name}
+    step2_title: Audit a Skill
+    step2_desc: Tell your AI which Skill or directory to audit
+    step3_title: Read Reports & Decide
+    step3_desc: Three reports for different roles — pick the one that fits
+
+  audit_chat:
+    user_msg: Please use {name} to audit /my-skill
+    ai_scan_msg: |
+      📁 Scanning directory...
+      📝 Found SKILL.md (120 lines)
+      🐍 Found core.py (45 lines)
+      📊 Running four-dimensional assessment...
+    ai_done_msg: |
+      Audit complete. Reports saved in reports/ directory:
+      📗 Standard Report — plain language explanation
+      📊 Professional Report — structured checklist
+      🤖 Action Report — fix instructions for AI
+
+  audit_flow:
+    desc: "What the AI will do next:"
+    steps:
+      - label: Scan Directory
+      - label: 4D Assessment
+      - label: Generate Reports
+      - label: Precise Fixes
+
+  report_cards:
+    standard:
+      title: Standard
+      audience: For Product / Business
+      desc: Explains what each issue is, why it matters, and how to fix it — in plain language
+    pro:
+      title: Professional
+      audience: For Engineers / Developers
+      desc: Structured checklist with per-dimension scoring, precise to file and line number
+    action:
+      title: AI Action
+      audience: For AI (just tell your AI to read it)
+      desc: Fix checklist + verification checkpoints — AI executes step by step
+    repair_tip: 💡 Ready to fix? Tell your AI to read the Action Report and execute — it will fix items one by one. Re-audit after to confirm all issues are resolved.
+
+  dev:
+    step1_title: Clone Repository
+    step2_title: Run Audit
+    step3_title: View Reports
+
+# ── FAQ ──
+faq:
+  title: FAQ
+  view_all: View Full FAQ →
+
+# ── Common UI ──
+copy_label: Copy
+copied_label: Copied!
+
+# ── Footer ──
+footer:
+  copyright: "{name} © 2026 · {license} License"
+  links:
+    - label: GitHub
+    - label: Releases
+    - label: Decision Flowchart
+    - label: Full FAQ

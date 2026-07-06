@@ -1,0 +1,355 @@
+# ============================================================
+# HaluCatch 官网 (docs/index.html) 生成配置
+# 所有标记 (可选) 的字段/区块：不填或留空数组则不渲染
+# ============================================================
+
+# ── 基础信息 ──
+name: HaluCatch
+name_zh: 捕幻
+version: 1.7.8
+version_short: 1.7
+description: AI 为你创建的 Skill 执行起来靠谱吗？HaluCatch 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——四维排查，帮你把问题修掉再执行。
+author: CoderMoray
+lang: zh-CN
+
+# ── 链接 ──
+github_url: https://github.com/CoderMoray/HaluCatch
+pages_url: https://codermoray.github.io/HaluCatch
+license: MIT
+license_url: https://github.com/CoderMoray/HaluCatch/blob/main/LICENSE
+
+# ── 资源路径 ──
+favicon: favicon.svg
+og_image: og-image.png
+
+# ── 主题存储 key（用于 localStorage，建议用 {name}-theme 格式） ──
+theme_storage_key: halucatch-theme
+
+# ============================================================
+# 导航
+# ============================================================
+nav:
+  brand_full: HaluCatch / 捕幻        # 宽屏品牌名
+  brand_short: 捕幻                   # 窄屏品牌名
+  sections:                           # 导航锚点
+    - id: demo
+      label: 在线体验
+    - id: report-preview
+      label: 报告预览
+    - id: quickstart
+      label: 快速开始
+    - id: blog
+      label: Blogs
+    - id: faq
+      label: FAQ
+
+# ============================================================
+# Hero 区域
+# ============================================================
+hero:
+  title: HaluCatch 捕幻
+  subtitle: |
+    AI 为你创建的 Skill 执行起来靠谱吗？
+    自动排查幻觉风险 · 输出不稳定风险 · 安全漏洞 · 逻辑漏洞
+  badges:
+    - "🐍 Python"
+    - "📋 3 份报告"
+    - "🌏 中英文"
+    - "📦 零依赖"
+    - "MIT 开源"
+    # 版本号 badge 由模板自动从 version 字段注入，无需手动写
+
+# ── CTA 按钮（GitHub 始终渲染，其余可选：不填不渲染） ──
+cta:
+  github:
+    label: ⭐ GitHub 开源
+  skillhub:                           # (可选)
+    label: 📦 SkillHub
+    url: https://skillhub.cn/skills/halucatch
+  clawhub:                            # (可选)
+    label: 🦞 ClawHub
+    url: https://clawhub.ai/codermoray/skills/halucatch
+
+# ============================================================
+# 行业安全审计报告（可选，整块不填则跳过）
+# ============================================================
+security_audits:
+  title: 行业级安全隐私审计报告
+  items:
+    - icon: https://tix.qq.com/favicon.ico
+      name: 腾讯安全｜威胁情报中心
+      status: pass                   # pass | warn
+      status_text: 安全
+      url: https://tix.qq.com/search/skill?keyword=f2d20a95388fc9735cca337481a45a12
+    - icon: https://cloud.tencent.com/favicon.ico
+      name: 腾讯安全云鼎实验室
+      status: pass
+      status_text: 100
+      url: https://static.cloudsec.tencent.com/html-report-v2/2026/07/03/604962_27e56356b76c849bf884e1a11f4c3cdd.html
+    - icon: https://www.virustotal.com/gui/images/favicon.svg
+      name: VirusTotal
+      status: pass
+      status_text: 65 个安全引擎全通过
+      url: https://www.virustotal.com/gui/file/b962bf2f18e49fdec66b89e55ddf48c58a1f633e41369ee49cf45f065175d525
+
+# ============================================================
+# 在线体验 Demo（可选，不填则跳过整个区块）
+# stages 为对话流程配置，每个阶段包含 ai_message 和 options
+# thinking 为可选的思考动画文案列表
+# ============================================================
+demo:
+  title: 在线体验 HaluCatch
+  model_name: HaluCatch 1.7
+  avatar: 🔮
+  stages:
+    init:
+      ai_message: HaluCatch 已就绪。我可以帮你审查任何 Skill 目录，找出幻觉风险、输出不稳定风险、安全漏洞和逻辑漏洞。你可以使用以下选项快速开始：
+      options:
+        - text: 好的，请用 HaluCatch 审查这个项目本身
+          next: audit
+        - text: 这是什么工具？
+          next: explain
+        - text: 我需要准备什么？
+          next: prepare
+    explain:
+      thinking:
+        - 🤔 用户想了解工具功能...
+        - 📋 从 HaluCatch 的 SKILL.md 中提取核心能力描述...
+        - ✅ 确认：四维度评估（地基/代码/规则/护栏）
+      ai_message: HaluCatch 自动审查你的 Skill 指令文件，找出幻觉风险、输出不稳定风险、安全漏洞和逻辑漏洞——帮你在 AI 执行前把问题修掉。
+      options:
+        - text: 明白了，请审查这个项目
+          next: audit
+    prepare:
+      thinking:
+        - 🤔 用户询问准备工作...
+        - 📂 分析 Skill 目录的标准结构要求...
+        - ✅ 确认：需要 SKILL.md + 可选 .py / 数据文件
+      ai_message: 你需要准备一个 Skill 目录，里面至少包含 SKILL.md（指令文件）。Skill 目录中如果有 .py 脚本或数据文件，审查会更全面。
+      options:
+        - text: 好的，开始审查
+          next: audit
+    audit:
+      thinking:
+        - 📁 扫描目录结构...
+        - 🔍 读取 SKILL.md (340 行, 11 个模块)...
+        - 🐍 扫描 Python 模块 (1100+ 行代码)...
+        - 🏗️ 评估地基：路径参数化 ✓ / 输入验证 ✗ / 文件发现 ✗
+        - 🤖 扫描代码风险：0 个篡改点 ✓
+        - 📝 检查规则/方法论：模糊词 0 / 边界定义 ✓ / 异常处理 ✓
+        - 🛡️ 检查护栏：输出格式 ✓ / 禁止声明 ✓ / 数据时效性 ✓ / 前提假设 ✓
+        - 📊 生成三份报告 (专业版 / 标准版 / 行动版)...
+      ai_message: 让我们从审查 HaluCatch 这个 Skill 本身来快速开始。审查完成！已生成三份报告。你可以在右侧查看。整体评级：地基 🟡 / 代码 🟢 / 规则 🟢 / 护栏 🟢
+      show_reports: true
+
+# ============================================================
+# 痛点卡片
+# ============================================================
+problem_cards:
+  title: 用 AI Skill 时，这些坑你遇到过吗？
+  footer_text: 还有别的坑？
+  footer_link_label: 来 GitHub 提 Issue ↗
+  cards:
+    - icon: 🤷
+      title: 换个电脑就用不了
+      desc: AI 帮你做的 Skill 只认你这台电脑，换台机器就废了——它把你电脑上的地址记进去了
+      tags:
+        - label: 逻辑漏洞
+          class: logic
+        - label: 复用失败
+          class: reuse
+    - icon: 🤨
+      title: 结果不敢信
+      desc: AI 给的结果，你分不清哪些是来自你的数据、哪些是它自己编的
+      tags:
+        - label: 幻觉风险
+          class: hallucination
+        - label: 输出不稳
+          class: unstable
+    - icon: 😵‍💫
+      title: 每回跑结果不一样
+      desc: 即使是同一个模型、用同个 Skill，每次执行输出的格式、内容、质量都不同，没法放心用
+      tags:
+        - label: 输出不稳
+          class: unstable
+    - icon: 😱
+      title: AI 擅自做主
+      desc: 让它分析文件，它顺手把文件改了，你都不知道
+      tags:
+        - label: 安全漏洞
+          class: security
+        - label: 靠天吃饭
+          class: dependency
+        - label: 缺乏检查
+          class: nocheck
+    - icon: 😵
+      title: 贪多嚼不烂
+      desc: 塞太多功能，AI 能不能调对全靠运气——每次都得额外解释，心累
+      tags:
+        - label: 复用失败
+          class: reuse
+        - label: 靠天吃饭
+          class: dependency
+    - icon: 😰
+      title: 有问题它不说
+      desc: 执行过程中遇到状况，AI 悄悄跳过不报错，你完全不知道
+      tags:
+        - label: 安全漏洞
+          class: security
+        - label: 进度失控
+          class: noprogress
+        - label: 缺乏检查
+          class: nocheck
+    - icon: 😩
+      title: 不敢中断
+      desc: 跑了一个东西不知道要等多久，想中断又怕搞坏了，只能干着急
+      tags:
+        - label: 进度失控
+          class: noprogress
+    - icon: 💀
+      title: 前功尽弃
+      desc: 跑了好久突然断了，让 AI 继续做，结果它从头开始全跑偏了，之前的全白费
+      tags:
+        - label: 进度失控
+          class: noprogress
+        - label: 靠天吃饭
+          class: dependency
+
+# ============================================================
+# 报告预览（可选，不填则跳过）
+# ============================================================
+report_preview:
+  title: 审计报告预览
+  subtitle: 同一份 Skill，三份视角 — 以下是 HaluCatch 审计自身的真实报告
+  tabs:
+    - id: standard
+      label: 📗 标准版
+    - id: pro
+      label: 📊 专业版
+    - id: action
+      label: 🤖 AI 行动版
+  # content 可内嵌 HTML 或引用外部文件路径
+  content_standard: reports/standard.html    # (可选) 标准版内容
+  content_pro: reports/pro.html              # (可选) 专业版内容
+  content_action: reports/action.html        # (可选) AI行动版内容
+
+# ============================================================
+# 快速开始
+# ============================================================
+quickstart:
+  title: 快速开始
+  user_tab_label: 👤 普通用户
+  dev_tab_label: 👨‍💻 开发者
+  # 安装提示词
+  user:
+    skillhub:                               # (可选) 填了才渲染国内方案卡片
+      title: 🇨🇳 国内用户方案
+      subtitle: 为国内用户提供 SkillHub 安装提示词
+      note: 中文环境 · 免费 · 开箱即用
+      prompt: |
+        请先检查是否已安装 SkillHub 商店，若未安装，请根据 https://skillhub.cn/install/skillhub.md 安装SkillHub商店，但是只安装CLI，然后安装halucatch技能。若已安装，则直接安装halucatch技能。
+    clawhub:                                # (可选) 填了才渲染国际方案卡片
+      title: 🌐 国际用户方案
+      subtitle: 为国际用户提供 ClawHub 安装提示词
+      note: Global AI skill marketplace
+      prompt: |
+        Before installing anything, inspect the ClawHub skill metadata and setup requirements. If the skill asks you to install a third-party package or CLI, verify its source, maintainer, and package contents before running the install command. Install the skill HaluCatch (@codermoray/halucatch) from ClawHub only after those checks pass. Skill page: https://clawhub.ai/codermoray/skills/halucatch. Keep the work scoped to this skill only. After install, help me finish setup from verified skill metadata. Use only the metadata you can verify from ClawHub; do not invent missing requirements. Ask before making any broader environment changes.
+    # 审查流程演示（对话示例）
+    audit_chat:
+      user_msg: 请用 HaluCatch 审查 /my-skill
+      ai_scan_msg: |
+        📁 扫描目录...
+        📝 发现 SKILL.md (120 行)
+        🐍 发现 core.py (45 行)
+        📊 开始四维评估...
+      ai_done_msg: |
+        审查完成。报告已保存在 reports/ 目录：
+        📗 标准版 — 用人话解释哪里有问题
+        📊 专业版 — 结构化检查清单
+        🤖 行动版 — 给 AI 的修复指令
+    # 审查流程步骤
+    audit_flow:
+      - icon: folder
+        label: 扫描目录
+      - icon: search
+        label: 四维评估
+      - icon: file
+        label: 生成报告
+      - icon: edit
+        label: 精准修复
+    # 报告卡片
+    report_cards:
+      repair_tip: 💡 如果决定修复：告知 AI 读取行动版报告并执行，它会按清单逐项修复。修复后重新审查，确认问题清零。
+  # 开发者
+  dev:
+    clone_cmd: |
+      git clone https://github.com/CoderMoray/HaluCatch.git
+      cd HaluCatch
+    run_cmds:
+      - comment: 自动检测语言（中文/英文）
+        cmd: python3 halucatch_core.py --skill-dir /path/to/your-skill
+      - comment: 或强制英文输出
+        cmd: python3 halucatch_core.py --skill-dir /path/to/your-skill --lang en
+      - comment: 或使用包方式
+        cmd: python3 -m halucatch --skill-dir /path/to/your-skill
+    report_output: |
+      # 三份报告自动生成在 reports/ 目录
+      reports/HaluCatch-report-YYYY-MM-DD.md        # 专业版
+      reports/HaluCatch-report-YYYY-MM-DD-标准版.md  # 标准版
+      reports/HaluCatch-report-YYYY-MM-DD-行动版.md  # AI 行动版
+
+# ============================================================
+# Blog 文章（可选，空数组则跳过整个区块）
+# ============================================================
+blog_posts:
+  title: Blogs
+  items:
+    - platform: 掘金
+      title: AI Skill 也会"说胡话"？我做了一个执行可靠性审查工具
+      desc: 介绍 HaluCatch 的设计思路、四维评估框架和实战案例
+      url: https://juejin.cn/post/7656841584964599842
+    - platform: CSDN
+      title: 如何检查你的 AI Skill 是否可靠？HaluCatch 使用指南
+      desc: 从安装到实战的完整教程，零基础也能上手
+      url: https://blog.csdn.net/weixin_41767324/article/details/162432750
+
+# ============================================================
+# FAQ（可选，空数组则跳过整个区块）
+# ============================================================
+faq:
+  title: FAQ
+  full_link_label: 查看完整 FAQ →
+  full_link_url: FAQ.md
+  items:
+    - q: HaluCatch 需要联网吗？
+      a: 不需要。全程离线运行，仅扫描本地文件夹中的 SKILL.md 和 .py 文件，不会发起任何网络请求。
+    - q: HaluCatch 怎么用？
+      a: |
+        对 AI 说「请用 HaluCatch 审查 /path/to/skill」即可。AI 自动扫描、评估、生成三份报告到 reports/ 目录：
+        1. 跑一次审查 → 看通俗版报告了解问题
+        2. 打开 -行动版.md → 从第一条开始逐项修复
+        3. 修复后重新跑 → 对比分数是否改善
+    - q: 我的 Skill 没有 .py 文件，能用吗？
+      a: 可以。HaluCatch 会自动分类为「纯方法论型」并跳过地基/代码检查，只评估方法论结构和护栏完整度。
+    - q: 审查结果说「护栏薄弱」，怎么修？
+      a: 看同目录下的 HaluCatch-report-日期-行动版.md，它逐条列出了修复方案。按清单逐项改，改完后重新审查验证。
+    - q: 代码风险检查有哪些规则？
+      a: "当前 7 条通用规则：裸 except: pass / 浮点比较 (== 0.0) / 除零风险 / 硬编码阈值 / 路径拼接 / 静默覆盖 / 超时缺失。"
+    - q: 能一次审查多个 Skill 吗？
+      a: 当前版本暂不支持批量模式。你可以逐个运行。批量功能已在 roadmap 中。
+
+# ============================================================
+# Footer
+# ============================================================
+footer:
+  copyright: HaluCatch © 2026 · MIT License
+  links:
+    - label: GitHub
+      url: https://github.com/CoderMoray/HaluCatch
+    - label: Releases
+      url: https://github.com/CoderMoray/HaluCatch/releases
+    - label: 决策流程图
+      url: decision-flowchart.html
+    # skillhub/clawhub 链接从上方 cta / skillhub / clawhub 配置自动生成
+    - label: FAQ 完整版
+      url: FAQ.md

@@ -1,7 +1,6 @@
 """规则评估：检查口径定义、边界条件、模糊词汇、自洽性等。"""
 
 import re
-from ..config import MESSAGES
 
 
 def check_rules(info):

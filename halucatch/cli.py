@@ -1,13 +1,19 @@
 """HaluCatch 命令行接口：解析参数并协调整个审计流程。"""
 
-import os
-import sys
 import argparse
-from .config import MESSAGES, detect_system_locale
-from .scanner import scan_folder
+import os
+
 from .classifier import classify_skill
-from .evaluators import check_foundation, check_code_risks, check_rules, check_guardrails, check_methodology
+from .config import MESSAGES, detect_system_locale
+from .evaluators import (
+    check_code_risks,
+    check_foundation,
+    check_guardrails,
+    check_methodology,
+    check_rules,
+)
 from .reporter import generate_report
+from .scanner import scan_folder
 
 
 def main():
@@ -19,14 +25,11 @@ def main():
                         help='输出语言 (默认: auto 自动检测)')
     parser.add_argument('--validate', action='store_true', help='仅扫描文件清单，不执行评估')
     args = parser.parse_args()
-    
+
     # 语言检测
-    if args.lang == 'auto':
-        lang = detect_system_locale()
-    else:
-        lang = args.lang
+    lang = detect_system_locale() if args.lang == 'auto' else args.lang
     msg = MESSAGES[lang]
-    
+
     print("=" * 60)
     print(f"  {msg['title']}")
     print("=" * 60)
@@ -77,7 +80,7 @@ def main():
     # Phase 3: 报告（缺省输出到项目根目录 reports/，避免污染目标 Skill 目录）
     print("\n📊 生成报告...")
     default_out = args.output_dir or os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'reports')
-    reports = generate_report(info, results, default_out, lang)
+    _reports = generate_report(info, results, default_out, lang)
 
     # 自检
     dims = ['foundation', 'code', 'rules', 'guardrails']

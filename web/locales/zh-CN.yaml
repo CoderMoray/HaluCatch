@@ -1,0 +1,146 @@
+# ============================================================
+# HaluCatch 中文翻译
+# ============================================================
+
+# ── SEO / Meta ──
+seo:
+  title: "{name} — AI Skill 执行可靠性审计"
+  description: "AI 为你创建的 Skill 执行起来靠谱吗？{name} 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——四维排查，帮你把问题修掉再执行。"
+
+# ── 辅助功能 ──
+a11y:
+  skip_to_content: 跳转到主要内容
+
+# ── 导航 ──
+nav:
+  sections:
+    - id: demo
+      label: 在线体验
+    - id: report-preview
+      label: 报告预览
+    - id: quickstart
+      label: 快速开始
+    - id: blog
+      label: Blogs
+    - id: faq
+      label: FAQ
+  theme:
+    light: Light
+    dark: Night
+    auto: Auto
+  share:
+    label: Share
+    copy_link: 复制链接
+    share_to_feishu: 分享到飞书
+    share_to_x: 分享到 X
+    toast_copied: 链接已复制，到 {platform} 粘贴即可
+    toast_failed: 复制失败，请手动复制链接
+  hamburger: 菜单
+
+# ── Hero ──
+hero:
+  subtitle: |
+    AI 为你创建的 Skill 执行起来靠谱吗？
+    自动排查幻觉风险 · 输出不稳定风险 · 安全漏洞 · 逻辑漏洞
+  cta_github: ⭐ GitHub 开源
+  cta_skillhub: 📦 SkillHub        # 仅当有 skillhub 配置时使用
+  cta_clawhub: 🦞 ClawHub           # 仅当有 clawhub 配置时使用
+
+# ── 安全审计 ──
+security:
+  title: 行业级安全隐私审计报告
+
+# ── 在线体验 ──
+demo:
+  title: 在线体验 {name}
+  thinking_label: 深度思考
+  end_message: 这是演示环境。请复制上方安装提示词，在你自己的 AI 平台中继续使用 {name}。
+
+# ── 痛点 ──
+problem:
+  title: 用 AI Skill 时，这些坑你遇到过吗？
+  footer: 还有别的坑？
+  footer_link: 来 GitHub 提 Issue ↗
+
+# ── 报告预览 ──
+report_preview:
+  title: 审计报告预览
+  subtitle: 同一份 Skill，三份视角
+
+# ── 快速开始 ──
+quickstart:
+  title: 快速开始
+  tab_user: 👤 普通用户
+  tab_dev: 👨‍💻 开发者
+
+  # 安装
+  install:
+    step1_title: 安装
+    step1_desc: 复制下方提示词发给 AI，即可安装 {name}
+    step2_title: 审查目标 Skill
+    step2_desc: 告诉 AI 你要审查哪个 Skill 或者你的 Skill 所在的文件夹路径
+    step3_title: 阅读报告，决定下一步
+    step3_desc: 三份报告分别面向不同角色，选择适合你的阅读
+
+  # 审查对话
+  audit_chat:
+    user_msg: 请用 {name} 审查 /my-skill
+    ai_scan_msg: |
+      📁 扫描目录...
+      📝 发现 SKILL.md (120 行)
+      🐍 发现 core.py (45 行)
+      📊 开始四维评估...
+    ai_done_msg: |
+      审查完成。报告已保存在 reports/ 目录：
+      📗 标准版 — 用人话解释哪里有问题
+      📊 专业版 — 结构化检查清单
+      🤖 行动版 — 给 AI 的修复指令
+
+  # 流程
+  audit_flow:
+    desc: 接下来 AI 会做：
+    steps:
+      - label: 扫描目录
+      - label: 四维评估
+      - label: 生成报告
+      - label: 精准修复
+
+  # 报告卡片
+  report_cards:
+    standard:
+      title: 标准版
+      audience: 给业务 / 产品经理
+      desc: 用人话解释每个问题是什么、为什么重要、怎么改
+    pro:
+      title: 专业版
+      audience: 给工程师 / 开发者
+      desc: 结构化检查清单，每个维度打分，精确到文件和行号
+    action:
+      title: AI 行动版
+      audience: 给 AI（告知 AI 读取即可）
+      desc: 修复清单 + 验证检查点，AI 按步骤执行即可
+    repair_tip: 💡 如果决定修复：告知 AI 读取行动版报告并执行，它会按清单逐项修复。修复后重新审查，确认问题清零。
+
+  # 开发者
+  dev:
+    step1_title: 克隆仓库
+    step2_title: 运行审查
+    step3_title: 查看报告
+
+# ── FAQ ──
+faq:
+  title: FAQ
+  view_all: 查看完整 FAQ →
+
+# ── 通用 UI ──
+copy_label: 一键复制
+copied_label: 复制成功
+
+# ── Footer ──
+footer:
+  copyright: "{name} © 2026 · {license} License"
+  links:
+    - label: GitHub
+    - label: Releases
+    - label: 决策流程图
+    - label: FAQ 完整版
