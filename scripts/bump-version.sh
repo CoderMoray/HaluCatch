@@ -5,7 +5,7 @@ set -euo pipefail
 VERSION="${1:-}"
 if [[ -z "$VERSION" ]]; then
   echo "用法: $0 X.Y.Z"
-  echo "  批量更新 SKILL.md、_meta.json 的版本号"
+  echo "  批量更新 SKILL.md、_meta.json、docs/index.html 的版本号"
   exit 1
 fi
 
