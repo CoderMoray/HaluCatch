@@ -53,6 +53,8 @@ fi
 cd "$TMP"
 git init -q
 git checkout -b main
+git config user.email "release-bot@halucatch.dev"
+git config user.name "HaluCatch Release Bot"
 
 # 添加 .gitignore（精简版，只排除运行时产物）
 cat > .gitignore << 'EOF'
