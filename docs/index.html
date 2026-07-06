@@ -343,6 +343,26 @@
       font-size: 0.85rem;
       color: var(--text2);
     }
+    .safety-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 14px; border-radius: 20px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--surface) 75%, transparent);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      color: var(--text2);
+      font-size: 0.8rem;
+      text-decoration: none;
+      transition: border-color 0.2s;
+    }
+    .safety-badge:hover { border-color: var(--accent); }
+    .safety-badge img { width: 16px; height: 16px; border-radius: 2px; flex-shrink: 0; }
+    .safety-badge .status {
+      display: inline-block; font-weight: 600; font-size: 0.72rem;
+      padding: 1px 8px; border-radius: 4px;
+    }
+    .safety-badge .status.pass { background: #e8f5e9; color: #2e7d32; }
+    .safety-badge .status.warn { background: #fff3e0; color: #e65100; }
     .cta-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
     .btn {
       display: inline-flex;
@@ -909,6 +929,32 @@
     <a href="https://github.com/CoderMoray/HaluCatch" class="btn btn-outline">⭐ GitHub 开源</a>
     <a href="https://skillhub.cn/skills/halucatch" class="btn btn-outline" target="_blank">📦 SkillHub</a>
     <a href="https://clawhub.ai/codermoray/skills/halucatch" class="btn btn-outline" target="_blank">🦞 ClawHub</a>
+  </div>
+</section>
+
+<!-- Security Audit -->
+<section class="anim-item" data-anim="1800" style="text-align:center;padding:0 20px 40px;">
+  <h3 style="font-size:1.2rem;margin-bottom:14px;text-align:center;font-weight:600;color:var(--text2);">行业级安全隐私审计报告</h3>
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+    <a href="https://tix.qq.com/search/skill?keyword=f2d20a95388fc9735cca337481a45a12" target="_blank" class="safety-badge">
+      <img src="https://tix.qq.com/favicon.ico" alt="TIX" loading="lazy">
+      腾讯安全｜威胁情报中心
+      <span class="status pass">安全</span>
+    </a>
+    <a href="https://static.cloudsec.tencent.com/html-report-v2/2026/07/03/604962_27e56356b76c849bf884e1a11f4c3cdd.html?q-sign-algorithm=sha1&q-ak=AKID8JMG1bzBC1dz96qNhssfFftujT1NCoFi&q-sign-time=1783319698%3B1814855698&q-key-time=1783319698%3B1814855698&q-header-list=host&q-url-param-list=&q-signature=4c2847954a2c18ec62192b7b8d28297a921bd75c" target="_blank" class="safety-badge">
+      <img src="https://cloud.tencent.com/favicon.ico" alt="腾讯云" loading="lazy">
+      腾讯安全云鼎实验室
+      <span class="status pass">100</span>
+    </a>
+    <a href="https://clawhub.ai/codermoray/skills/halucatch/security-audit" target="_blank" class="safety-badge">
+      <img src="https://clawhub.ai/favicon.ico" alt="ClawHub" loading="lazy">
+      ClawScan
+      <span class="status pass">Pass</span>
+    </a>
+    <a href="https://www.virustotal.com/gui/file/b962bf2f18e49fdec66b89e55ddf48c58a1f633e41369ee49cf45f065175d525" target="_blank" class="safety-badge">
+      VirusTotal
+      <span class="status pass">65引擎全通过</span>
+    </a>
   </div>
 </section>
 
