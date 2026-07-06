@@ -41,7 +41,7 @@ run() {
 }
 
 # ── Step 1: Bump Version ────────────────────────────────────────────
-echo "[1/9] 升级版本号..."
+echo "[1/10] 升级版本号..."
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "  [DRY-RUN] 将执行: bump-version.sh $VERSION"
 else
@@ -49,7 +49,7 @@ else
 fi
 
 # ── Step 2: Inject Frontmatter ──────────────────────────────────────
-echo "[2/9] 注入 frontmatter 到 SKILL.md..."
+echo "[2/10] 注入 frontmatter 到 SKILL.md..."
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "  [DRY-RUN] 将执行: inject-frontmatter.sh"
 else
@@ -57,7 +57,7 @@ else
 fi
 
 # ── Step 3: Generate Changelog ──────────────────────────────────────
-echo "[3/9] 自动生成 CHANGELOG..."
+echo "[3/10] 自动生成 CHANGELOG..."
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "  [DRY-RUN] 将执行: generate-changelog.sh --write"
 else
@@ -65,11 +65,11 @@ else
 fi
 
 # ── Step 4: Lint ────────────────────────────────────────────────────
-echo "[4/9] 发布前自检..."
+echo "[4/10] 发布前自检..."
 bash "$SCRIPTS/lint-paths.sh"
 
 # ── Step 5: Build SkillHub Package ──────────────────────────────────
-echo "[5/9] 构建 SkillHub 包..."
+echo "[5/10] 构建 SkillHub 包..."
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "  [DRY-RUN] 将执行: build-skillhub.sh"
 else
@@ -77,7 +77,7 @@ else
 fi
 
 # ── Step 6: Check File Size ─────────────────────────────────────────
-echo "[6/9] 文件尺寸检查..."
+echo "[6/10] 文件尺寸检查..."
 bash "$SCRIPTS/check-file-size.sh"
 
 ZIP_PATH="$ROOT/releases/HaluCatch-${VERSION}-skillhub.zip"
