@@ -32,8 +32,21 @@ if [[ -f "$ROOT/manifest.json" ]]; then
   done <<< "$required"
 fi
 
-# 3) 版本号一致性
-meta_ver=$(python3 -c "import json; print(json.load(open('$ROOT/_meta.json'))['version'])" 2>/dev/null || echo "?")
+# 3) agentskills.sh 官方格式校验（skills-ref）
+if command -v skills-ref &>/dev/null; then
+  if skills-ref validate "$ROOT" &>/dev/null; then
+    echo "  ✅ skills-ref validate 通过"
+  else
+    echo "  ❌ skills-ref validate 失败"
+    echo "     运行 skills-ref validate $ROOT 查看详情"
+    errors=$((errors + 1))
+  fi
+else
+  echo "  ⚠️  skills-ref 未安装，跳过校验 (pip install skills-ref)"
+fi
+
+# 4) 版本号一致性
+config_ver=$(grep '^version:' "$ROOT/config.yaml" | sed 's/^version: *"//;s/"$//' 2>/dev/null || echo "?")
 skill_ver=$(python3 -c "
 import re
 with open('$ROOT/SKILL.md') as f:
@@ -41,22 +54,22 @@ with open('$ROOT/SKILL.md') as f:
     print(m.group(1) if m else '?')
 " 2>/dev/null || echo "?")
 
-echo "  📦 _meta.json:     $meta_ver"
+echo "  ⚙️  config.yaml:    $config_ver"
 echo "  📄 SKILL.md:       $skill_ver"
 
-if [[ "$meta_ver" == "$skill_ver" ]] && [[ "$meta_ver" != "?" ]]; then
+if [[ "$config_ver" == "$skill_ver" ]] && [[ "$config_ver" != "?" ]]; then
   echo "  ✅ 版本号一致"
 else
   echo "  ❌ 版本号不一致!"
   errors=$((errors + 1))
 fi
 
-# 4) CHANGELOG 最新版本匹配
+# 5) CHANGELOG 最新版本匹配
 if [[ -f "$ROOT/docs/CHANGELOG.md" ]]; then
   changelog_ver=$(grep -oE 'V[0-9]+\.[0-9]+\.[0-9]+' "$ROOT/docs/CHANGELOG.md" | head -1 | sed 's/^V//')
   echo "  📋 CHANGELOG 最新: $changelog_ver"
-  if [[ "$meta_ver" != "$changelog_ver" ]]; then
-    echo "  ⚠️  CHANGELOG 版本 ($changelog_ver) 与 _meta.json ($meta_ver) 不一致"
+  if [[ "$config_ver" != "$changelog_ver" ]]; then
+    echo "  ⚠️  CHANGELOG 版本 ($changelog_ver) 与 config.yaml ($config_ver) 不一致"
   fi
 else
   echo "  ⚠️  CHANGELOG.md 不存在"

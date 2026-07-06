@@ -6,9 +6,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 # 读取版本号
-VERSION=$(python3 -c "import json; print(json.load(open('$ROOT/_meta.json'))['version'])" 2>/dev/null || echo "")
+VERSION=$(grep '^version:' "$ROOT/config.yaml" | sed 's/^version: *"//;s/"$//')
 if [[ -z "$VERSION" ]]; then
-  echo "❌ 无法从 _meta.json 读取版本号"
+  echo "❌ 无法从 config.yaml 读取版本号"
   exit 1
 fi
 

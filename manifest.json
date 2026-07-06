@@ -16,7 +16,8 @@
   ],
   "version_sync": [
     "SKILL.md",
-    "_meta.json"
+    "config.yaml",
+    "docs/index.html"
   ],
   "clawhub_exclude": [
     "tests/",

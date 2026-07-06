@@ -1,22 +1,46 @@
 ---
+name: halucatch
+
+description: |
+  Evaluates the reliability of AI Skill execution. Assesses whether a Skill's output is trustworthy, reproducible, and withstands business scrutiny when executed by an AI agent. Covers four dimensions: data pipeline integrity, code risk, business logic ambiguity, and interpretation guardrails. Use when auditing an AI Skill, checking for hallucinations or unreliable outputs, verifying execution reproducibility, or reviewing a Skill's safety before deployment or sharing.
+
+summary: AI Skill 执行可靠性审查工具。评估一个 Skill 被 AI 执行时，结果是否可信、是否可复现、是否经得起业务推敲。覆盖四维度：地基（数据管线）、代码、规则（业务口径）、护栏（解读指南）。
+
+license: MIT
+allowed-tools:
+  - Read
+  - Write
+  - Bash
+compatibility: Requires Python 3.8+, fully offline
+
+author: CoderMoray
+version: "1.7.7"
+metadata:
+  hermes:
+    tags:
+      - skill-audit
+      - reliability
+      - engineering-assurance
+      - Skill审查
+      - 工程质量
+      - 可靠性
+  openclaw:
+    requires:
+      bins:
+        - python3
+    emoji: "\U0001F50D"
+    homepage: https://github.com/CoderMoray/HaluCatch
+
 slug: halucatch
 displayName: "HaluCatch / 捕幻"
-name: halucatch
-description: |
-  AI Skill 执行可靠性审查工具。评估一个 Skill 被 AI 执行时，结果是否可信、是否可复现、是否经得起业务推敲。
-  覆盖四维度：地基（数据管线）、代码、规则（业务口径）、护栏（解读指南）。
-author: Engineering Assurance Team
-version: "1.7.7"
 tags:
-  - "工程质量"
-  - "engineering-assurance"
-  - "Skill审查"
-  - "skill-audit"
-  - "可靠性"
-  - "reliability"
-category: "engineering"
+  - skill-audit
+  - reliability
+  - engineering-assurance
+  - Skill审查
+  - 工程质量
+  - 可靠性
 ---
-
 # HaluCatch / 捕幻 — AI Skill 执行可靠性审查
 
 评估一个 Skill 包在 AI 执行时的可靠性，产出评估报告和修复建议。
@@ -57,6 +81,18 @@ category: "engineering"
 
 > **核心原则**：`halucatch_core.py` 涵盖全流程——L1 扫描、L2 评估、L3 报告生成一次性完成。你只需读取脚本生成的报告并展示给用户。不再由 AI 独立编写报告正文。
 
+## 权限与安全边界
+
+HaluCatch 仅需要以下权限即可运行：
+
+| 操作 | 需要 | 说明 |
+|------|------|------|
+| 读取目标 Skill 目录 | Read | 递归读取全部文件 |
+| 写入报告文件 | Write | 仅写入 `reports/` 目录，不修改目标 Skill |
+| 执行 Python 脚本 | Bash | 仅执行 `halucatch_core.py`，不发起网络请求 |
+
+**安全约束**：HaluCatch 不会访问目标目录以外的任何路径，不会发起网络连接，不会修改被审查的 Skill 文件。审查前必须由用户显式指定目标路径。
+
 ---
 
 ## 输入
@@ -66,7 +102,7 @@ category: "engineering"
 | 文件类型 | 是否必需 | 说明 |
 |---------|---------|------|
 | `SKILL.md` | ✅ | Skill 的主指令文件 |
-| `_meta.json` 或 `meta.json` | ❌ | Skill 元数据（含版本号等） |
+| `manifest.json` 或 `config.yaml` | ❌ | Skill 配置文件（含版本号等） |
 | `*.py` | ❌ | 数据管线的固化脚本（如有） |
 | `*.xlsx / *.csv` 等 | ❌ | 数据文件（如有，用于验证对账） |
 
@@ -250,6 +286,8 @@ python3 halucatch_core.py --skill-dir /path/to/skill
 **评级**：🟢 可靠 / 🟡 有改进空间 / 🔴 不可靠
 
 ---
+
+> ⚠️ **执行前确认**：在开始扫描文件、运行 `halucatch_core.py`、或生成报告之前，必须先向用户确认目标路径无误，并告知即将执行的操作（读取目标目录文件、运行本地脚本、生成报告到 reports/ 目录）。未明确确认前不得执行任何读写操作。
 
 ### Phase 3：三版输出
 
