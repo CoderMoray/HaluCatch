@@ -14,7 +14,7 @@ allowed-tools:
 compatibility: Requires Python 3.8+, fully offline
 
 author: CoderMoray
-version: "1.7.7"
+version: "1.7.8"
 metadata:
   hermes:
     tags:

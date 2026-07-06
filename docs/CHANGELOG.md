@@ -12,10 +12,38 @@
 ## [Unreleased]
 
 
+### Added
+
+- 问题卡片新增风险标签（8 种配色，亮暗双模）
+- 新增 4 个问题卡片，共 8 个场景覆盖
+- 卡片5改为「功能太多反而不行」
+- 问题卡片底部增加 GitHub Issue 投稿入口
+- 安全审计区域更新为4 badge + 标签样式化
+
+### Changed
+
+- 添加 JSON-LD 结构化数据，统一页面描述文案
+- 版本号统一从 HC_VER 变量管理，JS 自动注入各处
+- 更新 bump-version.sh 描述，纳入 docs/index.html 版本号管理
+- 移除 bump-version.sh 冗余手动检查提醒（README.md 无版本硬编码）
+- 主题药丸添加 jelly 弹性动画和毛玻璃设计
+- 问题卡片内容和图标重写为普通用户视角
+- 统一 badge 背景透明度为 60%，优化安全标签层次
+- Unified SKILL.md frontmatter via config.yaml, multi-platform build pipeline
+
 ### Fixed
 
-- Add actionable fix guidance to all error messages
-- Raise file size thresholds to reasonable levels (.py 500, .md 800)
+- Copy .gitignore into ClawHub publish temp dir
+- 替换 AI Demo 发送按钮 ↑ 为 Lucide send-horizontal 图标（旋转 90°），添加 aria-label
+- 添加 Skip-to-content 无障碍跳转链接
+- 窄屏时 pill 指示器偏右问题
+- 新卡片标签重贴 + 所有标签底部对齐
+- 考虑不周 → 进度失控，精简贴签
+- 前功尽弃 逻辑漏洞→进度失控
+- 卡片5 叫东它给西 — 标题和描述更贴近真实场景
+- 卡片1描述改为普通用户能理解的表述
+- 卡片5 贪多嚼不烂 — 标题成语化，描述极简
+- ClawHub 和 VirusTotal 图标路径修正 + 暗色模式配色
 
 ---
 
