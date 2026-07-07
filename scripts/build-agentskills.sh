@@ -17,17 +17,8 @@ DRY_RUN="${1:-}"
 echo "📦 构建 $BRANCH v$VERSION..."
 
 # 0) 确保 SKILL.md frontmatter 已同步
-if [[ "$DRY_RUN" != "--dry-run" ]]; then
-  bash "$ROOT/scripts/inject-frontmatter.sh"
-fi
-
-# 0.1) agentskills.sh 官方格式校验
-if command -v skills-ref &>/dev/null; then
-  echo "🔍 skills-ref validate..."
-  skills-ref validate "$ROOT" || echo "⚠️  skills-ref validation failed (non-blocking)"
-else
-  echo "⚠️  skills-ref 未安装，跳过校验 (pip install skills-ref)"
-fi
+# 注意：不在 ROOT 上运行，而是先复制文件再在临时目录中注入 strict 模式
+echo "📋 跳过 ROOT 注入（将在临时目录中注入 strict 模式）"
 
 # 1) 创建临时目录，复制核心文件到 halucatch/ 子目录
 TMP=$(mktemp -d)
@@ -36,9 +27,9 @@ trap 'rm -rf "$TMP"' EXIT
 SKILL_DIR="$TMP/halucatch"
 mkdir -p "$SKILL_DIR"
 
-cp "$ROOT/SKILL.md"          "$SKILL_DIR/"
-cp "$ROOT/halucatch_core.py" "$SKILL_DIR/"
-cp -r "$ROOT/halucatch"       "$SKILL_DIR/"
+cp "$ROOT/skill/SKILL.md"       "$SKILL_DIR/"
+cp "$ROOT/skill/halucatch_core.py" "$SKILL_DIR/"
+cp -r "$ROOT/skill/halucatch"      "$SKILL_DIR/"
 cp "$ROOT/README.md"          "$SKILL_DIR/"
 cp "$ROOT/config.yaml"        "$SKILL_DIR/"
 cp "$ROOT/manifest.json"      "$SKILL_DIR/"
@@ -46,11 +37,26 @@ cp "$ROOT/LICENSE"            "$SKILL_DIR/" 2>/dev/null || true
 
 # docs 下只保留 FAQ 和 CHANGELOG
 [[ -f "$ROOT/docs/CHANGELOG.md" ]] && cp "$ROOT/docs/CHANGELOG.md" "$SKILL_DIR/CHANGELOG.md"
-[[ -f "$ROOT/docs/FAQ.md" ]]      && cp "$ROOT/docs/FAQ.md"      "$SKILL_DIR/FAQ.md"
+[[ -f "$ROOT/skill/FAQ.md" ]]      && cp "$ROOT/skill/FAQ.md"      "$SKILL_DIR/FAQ.md"
 
 # 清理 halucatch/reports
 if [[ -d "$SKILL_DIR/halucatch/reports" ]]; then
   rm -rf "$SKILL_DIR/halucatch/reports"
+fi
+
+# 1.5) 在临时目录中注入 strict 模式 frontmatter（仅用于 agentskill.sh）
+  bash "$ROOT/scripts/inject-frontmatter.sh" --minimal --output "$SKILL_DIR/SKILL.md" --config "$ROOT/config.yaml"
+  echo "🔒 minimal frontmatter (name+description only) 已注入到临时副本"
+
+# 1.6) agentskill.sh 官方格式校验（对临时副本）
+if command -v agentskills &>/dev/null; then
+  echo "🔍 agentskills validate..."
+  agentskills validate "$SKILL_DIR"
+elif command -v skills-ref &>/dev/null; then
+  echo "🔍 skills-ref validate..."
+  skills-ref validate "$SKILL_DIR"
+else
+  echo "⚠️  agentskills 未安装，跳过校验"
 fi
 
 # 2) 推送到 agentskills 分支

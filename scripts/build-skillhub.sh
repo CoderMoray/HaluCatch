@@ -23,12 +23,12 @@ mkdir -p "$ROOT/releases"
 
 # 复制 SkillHub 清单文件
 echo "  复制文件..."
-cp "$ROOT/SKILL.md" "$TMPDIR/"
-cp "$ROOT/halucatch_core.py" "$TMPDIR/"
-cp -r "$ROOT/halucatch" "$TMPDIR/"
+cp "$ROOT/skill/SKILL.md" "$TMPDIR/"
+cp "$ROOT/skill/halucatch_core.py" "$TMPDIR/"
+cp -r "$ROOT/skill/halucatch" "$TMPDIR/"
 cp "$ROOT/README.md" "$TMPDIR/"
 [[ -f "$ROOT/docs/CHANGELOG.md" ]] && cp "$ROOT/docs/CHANGELOG.md" "$TMPDIR/CHANGELOG.md"
-[[ -f "$ROOT/docs/FAQ.md" ]] && cp "$ROOT/docs/FAQ.md" "$TMPDIR/FAQ.md"
+[[ -f "$ROOT/skill/FAQ.md" ]] && cp "$ROOT/skill/FAQ.md" "$TMPDIR/FAQ.md"
 # SkillHub 不接受 LICENSE 文件
 
 # 清理包内不应存在的目录（如 halucatch/reports/ — HaluCatch 自我审查的产物）

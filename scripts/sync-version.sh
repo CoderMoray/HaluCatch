@@ -25,7 +25,7 @@ echo ""
 
 # 1. halucatch/__init__.py
 echo "  🔄 halucatch/__init__.py"
-sed -i.bak "s/__version__ = '[^']*'/__version__ = '$VERSION'/" "$ROOT/halucatch/__init__.py" && rm "$ROOT/halucatch/__init__.py.bak"
+sed -i.bak "s/__version__ = '[^']*'/__version__ = '$VERSION'/" "$ROOT/skill/halucatch/__init__.py" && rm "$ROOT/skill/halucatch/__init__.py.bak"
 
 # 2. manifest.json
 echo "  🔄 manifest.json"

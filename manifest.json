@@ -2,20 +2,20 @@
   "name": "HaluCatch",
   "version": "1.7.1",
   "required_files": [
-    "SKILL.md",
-    "halucatch_core.py",
-    "halucatch/"
+    "skill/SKILL.md",
+    "skill/halucatch_core.py",
+    "skill/halucatch/"
   ],
   "skillhub_files": [
-    "SKILL.md",
-    "halucatch_core.py",
-    "halucatch/",
-    "README.md",
-    "CHANGELOG.md",
-    "FAQ.md"
+    "skill/SKILL.md",
+    "skill/halucatch_core.py",
+    "skill/halucatch/",
+    "skill/README.md",
+    "docs/CHANGELOG.md",
+    "skill/FAQ.md"
   ],
   "version_sync": [
-    "SKILL.md",
+    "skill/SKILL.md",
     "config.yaml",
     "docs/index.html"
   ],
