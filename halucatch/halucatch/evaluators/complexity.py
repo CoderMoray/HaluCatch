@@ -604,15 +604,15 @@ def check_complexity(info, skill_type='code-engineered'):
             'heading_depth': 0.05,
             'heading_complexity': 0.05,
             'doc_ref_depth': 0.10,
-            'doc_ref_breadth': 0.05,
-            'script_ref_depth': 0.04,
-            'script_ref_breadth': 0.04,
+            'doc_ref_breadth': 0.10,
+            'script_ref_depth': 0.03,
+            'script_ref_breadth': 0.02,
 
             'redundancy': 0.05,
             'table': 0.10,
             'coverage': 0.10,
             'code_doc_ratio': 0.15,
-            'density': 0.27,
+            'density': 0.25,
         }
     else:
         density = _instruction_density(md)
@@ -624,15 +624,15 @@ def check_complexity(info, skill_type='code-engineered'):
         }
 
         weights = {
-            'heading_depth': 0.08,
+            'heading_depth': 0.10,
             'heading_complexity': 0.07,
-            'doc_ref_depth': 0.12,
-            'doc_ref_breadth': 0.08,
-            'script_ref_depth': 0.04,
-            'script_ref_breadth': 0.03,
+            'doc_ref_depth': 0.15,
+            'doc_ref_breadth': 0.10,
+            'script_ref_depth': 0.03,
+            'script_ref_breadth': 0.02,
             'redundancy': 0.15,
-            'table': 0.10,
-            'density': 0.20,
+            'table': 0.13,
+            'density': 0.25,
         }
 
     # 计算加权平均分
