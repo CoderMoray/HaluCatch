@@ -283,9 +283,5 @@ def check_code_risks(info):
     else:
         rating = '🔴 高风险'
 
-    score_display = f'{total_checks - found_risks}/{total_checks}' if total_checks > 0 else '-'
-    if total_files > 0 and files_with_issues > 0:
-        score_display += f'（{total_files - files_with_issues}/{total_files} 文件无问题）'
-    elif total_files > 0:
-        score_display += f'（{total_files} 文件全过）'
+    score_display = f'{total_files - files_with_issues}/{total_files}' if total_files > 0 else '-'
     return {'rating': rating, 'issues': issues, 'score': score_display}
