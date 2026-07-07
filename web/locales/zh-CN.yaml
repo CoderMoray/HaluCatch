@@ -5,7 +5,7 @@
 # ── SEO / Meta ──
 seo:
   title: "{name} — AI Skill 执行可靠性审计"
-  description: "AI 为你创建的 Skill 执行起来靠谱吗？{name} 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——四维排查，帮你把问题修掉再执行。"
+  description: "AI 为你创建的 Skill 执行起来靠谱吗？{name} 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——五维排查，帮你把问题修掉再执行。"
 
 # ── 辅助功能 ──
 a11y:
@@ -89,7 +89,7 @@ quickstart:
       📁 扫描目录...
       📝 发现 SKILL.md (120 行)
       🐍 发现 core.py (45 行)
-      📊 开始四维评估...
+      📊 开始五维评估...
     ai_done_msg: |
       审查完成。报告已保存在 reports/ 目录：
       📗 标准版 — 用人话解释哪里有问题
@@ -101,7 +101,7 @@ quickstart:
     desc: 接下来 AI 会做：
     steps:
       - label: 扫描目录
-      - label: 四维评估
+      - label: 五维评估
       - label: 生成报告
       - label: 精准修复
 

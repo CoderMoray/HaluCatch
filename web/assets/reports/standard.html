@@ -1,0 +1,34 @@
+<h3>📗 标准版 — 用人话告诉你哪里有问题</h3>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（五维评估）</p>
+<hr>
+
+<h4>一句话总结</h4>
+<p>🔴 2 严重 · ⚠️ 4 注意 · 💡 3 可优化</p>
+
+<h4 style="margin-top:16px;">🎯 五维评分</h4>
+<table>
+<tr><th>维度</th><th>评级</th><th>分数</th></tr>
+<tr><td>🏗️ 地基</td><td class="pass">🟢 稳固</td><td>6/6</td></tr>
+<tr><td>🤖 代码</td><td class="pass">🟢 低风险</td><td>15/15</td></tr>
+<tr><td>📝 规则</td><td class="pass">🟢 明确</td><td>5/6</td></tr>
+<tr><td>🛡️ 护栏</td><td class="pass">🟢 到位</td><td>8/8</td></tr>
+<tr><td>📐 复杂度</td><td class="warn">🟡 注意</td><td>3.0/10</td></tr>
+</table>
+
+<h4>✅ 做得好的方面</h4>
+<ul>
+  <li class="pass">✅ 地基稳固：6/6 全过（脚本、参数化、验证模式、输入校验）</li>
+  <li class="pass">✅ 代码全绿：15 个 Python 文件，0 个问题</li>
+  <li class="pass">✅ 护栏到位：8/8 全过（输出格式、自检、错误处理）</li>
+  <li class="pass">✅ 文档无引用链、无重复冗余</li>
+</ul>
+
+<h4>⚠️ 需要关注的</h4>
+<ul>
+  <li class="warn">🔴 章节复杂度拉满 — 标题层级多，建议合并同级 section</li>
+  <li class="warn">🔴 指令密度高 — 含大量条件分支，建议拆分子章节</li>
+  <li class="warn">🟠 脚本覆盖薄弱 — 17 步中仅 2 步有脚本兜底</li>
+  <li class="warn">🟡 存在模糊表述："通常"</li>
+</ul>
+
+<div class="tip-box"><strong>💡 怎么改：</strong>最高优先级是合并一些 ## 子章节降低复杂度，以及为核心步骤补齐脚本覆盖。</div>

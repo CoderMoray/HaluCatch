@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HaluCatch — AI Skill 执行可靠性审计</title>
-  <meta name="description" content="AI 为你创建的 Skill 执行起来靠谱吗？HaluCatch 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——四维排查，帮你把问题修掉再执行。">
+  <meta name="description" content="AI 为你创建的 Skill 执行起来靠谱吗？HaluCatch 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——五维排查，帮你把问题修掉再执行。">
   <meta property="og:title" content="HaluCatch — AI Skill 执行可靠性审计">
-  <meta property="og:description" content="AI 为你创建的 Skill 执行起来靠谱吗？HaluCatch 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——四维排查，帮你把问题修掉再执行。">
+  <meta property="og:description" content="AI 为你创建的 Skill 执行起来靠谱吗？HaluCatch 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——五维排查，帮你把问题修掉再执行。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://codermoray.github.io/HaluCatch/">
   <meta property="og:image" content="https://codermoray.github.io/HaluCatch/og-image.png">
@@ -14,7 +14,7 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="HaluCatch — AI Skill 执行可靠性审计">
-  <meta name="twitter:description" content="AI 为你创建的 Skill 执行起来靠谱吗？HaluCatch 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——四维排查，帮你把问题修掉再执行。">
+  <meta name="twitter:description" content="AI 为你创建的 Skill 执行起来靠谱吗？HaluCatch 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——五维排查，帮你把问题修掉再执行。">
   <meta name="twitter:image" content="https://codermoray.github.io/HaluCatch/og-image.png">
   <link rel="canonical" href="https://codermoray.github.io/HaluCatch/">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -26,7 +26,7 @@
         "name": "HaluCatch",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "macOS, Windows, Linux",
-        "description": "AI 为你创建的 Skill 执行起来靠谱吗？HaluCatch 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——四维排查，帮你把问题修掉再执行。",
+        "description": "AI 为你创建的 Skill 执行起来靠谱吗？HaluCatch 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——五维排查，帮你把问题修掉再执行。",
         "version": HC_VER,
         "license": "https://github.com/CoderMoray/HaluCatch/blob/main/LICENSE",
         "url": "https://codermoray.github.io/HaluCatch//",
@@ -251,120 +251,58 @@
     </div>
     <div class="preview-body">
       <div class="report-content active" id="tab-standard"><h3>📗 标准版 — 用人话告诉你哪里有问题</h3>
-<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（审计根目录 SKILL.md）</p>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（五维评估）</p>
 <hr>
-<h4>🔍 规则/方法论 — 用人话解释</h4>
-<p><strong>这项检查在干什么？</strong><br>检查 SKILL.md 的步骤是否清晰、是否有"如果出错了怎么办"的分支、输出格式是否明确、有没有给 AI 看示例。</p>
-<p style="margin-top:8px;"><strong>结果：</strong><span class="pass">✅ 明确</span></p>
-<ul>
-  <li>✅ 未检测到模糊词汇（"大概"、"酌情"等）</li>
-  <li>✅ 有异常分支处理</li>
-  <li>✅ 声明了默认值/回退策略</li>
-  <li class="warn">🟡 未检测到明确的数值边界约束 — 建议加上"误差小于 X"等具体边界</li>
-</ul>
-<div class="tip-box"><strong>💡 怎么改：</strong>在 SKILL.md 的"规则"章节，补充数值边界，比如"差异超过 5% 时标记为异常"。</div>
 
-<hr>
-<h4>🛡️ 护栏 — 用人话解释</h4>
-<p><strong>这项检查在干什么？</strong><br>检查 Skill 有没有写"禁止做 X"，以及 AI 执行完后有没有验证输出的步骤。</p>
-<p style="margin-top:8px;"><strong>结果：</strong><span class="pass">🟢 到位</span></p>
-<ul>
-  <li>✅ 明确了输出格式</li>
-  <li>✅ 包含验证/自检步骤</li>
-  <li>✅ 定义了错误处理/回退策略</li>
-  <li>✅ 已声明数据时效性约束</li>
-  <li>✅ 已声明前提假设</li>
-</ul>
-<div class="tip-box"><strong>💡 状态：</strong>所有已知问题已修复，护栏完整。</div>
-      </div>
+<h4>一句话总结</h4>
+<p>🔴 2 严重 · ⚠️ 4 注意 · 💡 3 可优化</p>
 
-      <!-- 专业版 -->
-      <div class="report-content" id="tab-pro">
-<h3>📊 专业版 — 结构化评估结果</h3>
-<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（审计根目录 SKILL.md）</p>
-<hr>
-<h3>📌 核心结论</h3>
-<p>✅ 自检全部通过，无阻塞项。所有已知高/中优先级问题已修复。</p>
-
-<h3>🎯 核心结论卡片</h3>
+<h4 style="margin-top:16px;">🎯 五维评分</h4>
 <table>
 <tr><th>维度</th><th>评级</th><th>分数</th></tr>
 <tr><td>🏗️ 地基</td><td class="pass">🟢 稳固</td><td>6/6</td></tr>
-<tr><td>🤖 代码</td><td class="pass">🟢 低风险</td><td>0/7</td></tr>
-<tr><td>📝 规则/方法论</td><td class="pass">🟢 明确</td><td>5/6</td></tr>
+<tr><td>🤖 代码</td><td class="pass">🟢 低风险</td><td>15/15</td></tr>
+<tr><td>📝 规则</td><td class="pass">🟢 明确</td><td>5/6</td></tr>
 <tr><td>🛡️ 护栏</td><td class="pass">🟢 到位</td><td>8/8</td></tr>
+<tr><td>📐 复杂度</td><td class="warn">🟡 注意</td><td>3.0/10</td></tr>
 </table>
 
-<h3>🔍 审查发现</h3>
-<h4>🏗️ 地基</h4>
+<h4>✅ 做得好的方面</h4>
 <ul>
-  <li class="pass">✅ 有固化 .py 脚本</li>
-  <li class="pass">✅ 路径已参数化，无硬编码</li>
-  <li class="pass">✅ 有 --validate 验证模式</li>
-  <li class="pass">✅ 有输入验证/列名校验</li>
-</ul>
-<h4>🤖 代码</h4>
-<ul>
-  <li class="pass">✅ [异常处理] 已修复：裸 except: pass → except Exception</li>
-  <li class="pass">✅ [除零风险] 已修复：除法前添加 max(total, 1) 保护</li>
-  <li class="pass">✅ [静默覆盖] 已修复：报告文件名含版本号/时间戳，冲突时自动加序号</li>
-  <li class="pass">✅ [模块拆分] 已修复：1191 行单文件拆分为 11 个模块，单文件 ≤270 行</li>
-</ul>
-<h4>🛡️ 护栏</h4>
-<ul>
-  <li class="pass">✅ 明确了输出格式</li>
-  <li class="pass">✅ 包含验证/自检步骤</li>
-  <li class="pass">✅ 定义了错误处理/回退策略</li>
-  <li class="pass">✅ 已声明数据时效性约束</li>
-  <li class="pass">✅ 已声明前提假设</li>
-</ul>
-<p style="margin-top:16px;font-size:0.85rem;color:var(--text2);">本报告由 HaluCatch 生成。自检: ✅ 全部通过</p>
-      </div>
-
-      <!-- AI 行动版 -->
-      <div class="report-content" id="tab-action">
-<h3>🤖 AI 行动版 — 直接给 AI 的修复指令</h3>
-<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（审计根目录 SKILL.md）</p>
-<hr>
-<h4>🛠️ 建议修复清单（按优先级排序）</h4>
-<table>
-<tr><th>优先级</th><th>文件</th><th>修改建议</th><th>状态</th></tr>
-<tr><td>~~🔴 高~~</td><td>~~halucatch_core.py~~</td><td>~~裸 except: pass → 改为 <code>except Exception as e:</code> 并打印日志~~</td><td>✅ 已修复</td></tr>
-<tr><td>~~🔴 高~~</td><td>~~halucatch_core.py~~</td><td>~~[除零风险] 除法前检查分母是否为 0~~</td><td>✅ 已修复</td></tr>
-<tr><td>~~🟠 中~~</td><td>~~halucatch_core.py~~</td><td>~~[静默覆盖] 写文件前检查是否存在，或用追加模式~~</td><td>✅ 已修复（版本号+防覆盖）</td></tr>
-<tr><td>~~🟠 中~~</td><td>~~SKILL.md~~</td><td>~~声明数据时效性约束（如"数据不超过 7 天"）~~</td><td>✅ 已修复</td></tr>
-<tr><td>~~🟠 中~~</td><td>~~SKILL.md~~</td><td>~~声明前提假设（如"输入数据已去重"）~~</td><td>✅ 已修复</td></tr>
-</table>
-
-<hr>
-<h4>✅ 验证检查点（修复后自检）</h4>
-<ul>
-  <li>☑ 所有异常处理都打印了日志，没有裸 except: pass</li>
-  <li>☑ 所有除法操作前有分母为零的检查</li>
-  <li>☑ 报告文件名含版本号或时间戳，冲突时自动加序号</li>
-  <li>☑ SKILL.md 有"数据要求"章节（时效性 + 前提假设）</li>
-  <li>☑ 未找到标准 SKILL.md 时，自动启发式匹配替代文件并报告规范性问题</li>
+  <li class="pass">✅ 地基稳固：6/6 全过（脚本、参数化、验证模式、输入校验）</li>
+  <li class="pass">✅ 代码全绿：15 个 Python 文件，0 个问题</li>
+  <li class="pass">✅ 护栏到位：8/8 全过（输出格式、自检、错误处理）</li>
+  <li class="pass">✅ 文档无引用链、无重复冗余</li>
 </ul>
 
-<hr>
-<h4>📋 直接可用的提示词（发给 AI 执行修复）</h4>
-<pre style="margin-top:12px;">当前 HaluCatch 自审未发现高/中优先级问题。如有新需求，请描述具体场景。</pre></div>
+<h4>⚠️ 需要关注的</h4>
+<ul>
+  <li class="warn">🔴 章节复杂度拉满 — 标题层级多，建议合并同级 section</li>
+  <li class="warn">🔴 指令密度高 — 含大量条件分支，建议拆分子章节</li>
+  <li class="warn">🟠 脚本覆盖薄弱 — 17 步中仅 2 步有脚本兜底</li>
+  <li class="warn">🟡 存在模糊表述："通常"</li>
+</ul>
+
+<div class="tip-box"><strong>💡 怎么改：</strong>最高优先级是合并一些 ## 子章节降低复杂度，以及为核心步骤补齐脚本覆盖。</div></div>
       <div class="report-content" id="tab-pro"><h3>📊 专业版 — 结构化评估结果</h3>
-<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（审计根目录 SKILL.md）</p>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（五维评估）</p>
 <hr>
-<h3>📌 核心结论</h3>
-<p>✅ 自检全部通过，无阻塞项。所有已知高/中优先级问题已修复。</p>
+
+<h3>📌 一句话总结</h3>
+<p>🔴 2 严重 · ⚠️ 4 注意 · 💡 3 可优化</p>
 
 <h3>🎯 核心结论卡片</h3>
 <table>
 <tr><th>维度</th><th>评级</th><th>分数</th></tr>
 <tr><td>🏗️ 地基</td><td class="pass">🟢 稳固</td><td>6/6</td></tr>
-<tr><td>🤖 代码</td><td class="pass">🟢 低风险</td><td>0/7</td></tr>
+<tr><td>🤖 代码</td><td class="pass">🟢 低风险</td><td>15/15</td></tr>
 <tr><td>📝 规则/方法论</td><td class="pass">🟢 明确</td><td>5/6</td></tr>
 <tr><td>🛡️ 护栏</td><td class="pass">🟢 到位</td><td>8/8</td></tr>
+<tr><td>📐 复杂度</td><td class="warn">🟡 注意</td><td>3.0/10</td></tr>
 </table>
 
 <h3>🔍 审查发现</h3>
+
 <h4>🏗️ 地基</h4>
 <ul>
   <li class="pass">✅ 有固化 .py 脚本</li>
@@ -372,78 +310,64 @@
   <li class="pass">✅ 有 --validate 验证模式</li>
   <li class="pass">✅ 有输入验证/列名校验</li>
 </ul>
+
 <h4>🤖 代码</h4>
-<ul>
-  <li class="pass">✅ [异常处理] 已修复：裸 except: pass → except Exception</li>
-  <li class="pass">✅ [除零风险] 已修复：除法前添加 max(total, 1) 保护</li>
-  <li class="pass">✅ [静默覆盖] 已修复：报告文件名含版本号/时间戳，冲突时自动加序号</li>
-  <li class="pass">✅ [模块拆分] 已修复：1191 行单文件拆分为 11 个模块，单文件 ≤270 行</li>
-</ul>
-<h4>🛡️ 护栏</h4>
-<ul>
-  <li class="pass">✅ 明确了输出格式</li>
-  <li class="pass">✅ 包含验证/自检步骤</li>
-  <li class="pass">✅ 定义了错误处理/回退策略</li>
-  <li class="pass">✅ 已声明数据时效性约束</li>
-  <li class="pass">✅ 已声明前提假设</li>
-</ul>
-<p style="margin-top:16px;font-size:0.85rem;color:var(--text2);">本报告由 HaluCatch 生成。自检: ✅ 全部通过</p>
-      </div>
-
-      <!-- AI 行动版 -->
-      <div class="report-content" id="tab-action">
-<h3>🤖 AI 行动版 — 直接给 AI 的修复指令</h3>
-<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（审计根目录 SKILL.md）</p>
-<hr>
-<h4>🛠️ 建议修复清单（按优先级排序）</h4>
 <table>
-<tr><th>优先级</th><th>文件</th><th>修改建议</th><th>状态</th></tr>
-<tr><td>~~🔴 高~~</td><td>~~halucatch_core.py~~</td><td>~~裸 except: pass → 改为 <code>except Exception as e:</code> 并打印日志~~</td><td>✅ 已修复</td></tr>
-<tr><td>~~🔴 高~~</td><td>~~halucatch_core.py~~</td><td>~~[除零风险] 除法前检查分母是否为 0~~</td><td>✅ 已修复</td></tr>
-<tr><td>~~🟠 中~~</td><td>~~halucatch_core.py~~</td><td>~~[静默覆盖] 写文件前检查是否存在，或用追加模式~~</td><td>✅ 已修复（版本号+防覆盖）</td></tr>
-<tr><td>~~🟠 中~~</td><td>~~SKILL.md~~</td><td>~~声明数据时效性约束（如"数据不超过 7 天"）~~</td><td>✅ 已修复</td></tr>
-<tr><td>~~🟠 中~~</td><td>~~SKILL.md~~</td><td>~~声明前提假设（如"输入数据已去重"）~~</td><td>✅ 已修复</td></tr>
+<tr><th>代码文件类型</th><th>审查规则数量</th><th>全通过</th><th>部分问题</th><th>全不通过</th></tr>
+<tr><td>Python</td><td>9</td><td class="pass">15</td><td>0</td><td>0</td></tr>
 </table>
-
-<hr>
-<h4>✅ 验证检查点（修复后自检）</h4>
 <ul>
-  <li>☑ 所有异常处理都打印了日志，没有裸 except: pass</li>
-  <li>☑ 所有除法操作前有分母为零的检查</li>
-  <li>☑ 报告文件名含版本号或时间戳，冲突时自动加序号</li>
-  <li>☑ SKILL.md 有"数据要求"章节（时效性 + 前提假设）</li>
-  <li>☑ 未找到标准 SKILL.md 时，自动启发式匹配替代文件并报告规范性问题</li>
+  <li class="pass">✅ 全部文件通过检查</li>
 </ul>
 
-<hr>
-<h4>📋 直接可用的提示词（发给 AI 执行修复）</h4>
-<pre style="margin-top:12px;">当前 HaluCatch 自审未发现高/中优先级问题。如有新需求，请描述具体场景。</pre></div>
+<h4>📐 复杂度</h4>
+<table>
+<tr><th>指标</th><th>权重</th><th>得分</th><th>详情</th></tr>
+<tr><td>章节复杂度</td><td>5%</td><td class="warn">🔴 10.0</td><td>大量多级标题</td></tr>
+<tr><td>指令密度</td><td>25%</td><td class="warn">🔴 7.4</td><td>含条件分支</td></tr>
+<tr><td>脚本覆盖比</td><td>10%</td><td class="warn">🟠 6.0</td><td>2/17 步有脚本</td></tr>
+<tr><td>章节深度</td><td>5%</td><td class="warn">🟡 5.0</td><td>最深 h4</td></tr>
+<tr><td>文档引用链深度</td><td>10%</td><td class="pass">🟢 0.0</td><td>0 层</td></tr>
+<tr><td>文档引用链广度</td><td>10%</td><td class="pass">🟢 0.0</td><td>0 个</td></tr>
+<tr><td>脚本引用链深度</td><td>3%</td><td class="warn">🟡 5.0</td><td>1 层</td></tr>
+<tr><td>脚本引用链广度</td><td>2%</td><td class="pass">🟢 3.0</td><td>6 个</td></tr>
+<tr><td>重复冗余</td><td>5%</td><td class="pass">🟢 0.9</td><td>无 copy-paste</td></tr>
+<tr><td>表格复杂度</td><td>10%</td><td class="pass">🟢 3.0</td><td>6 张表</td></tr>
+<tr><td>代码/文档比</td><td>15%</td><td class="pass">🟢 代码充裕</td><td>文档 20%</td></tr>
+</table>
+<p style="margin-top:4px;font-size:0.85rem;color:var(--text2);">加权 3.7 × 0.8（覆盖乘数）→ 最终 <strong>3.0/10</strong></p>
+
+<p style="margin-top:16px;font-size:0.85rem;color:var(--text2);">本报告由 HaluCatch 生成。✅ 五维评估全部执行完毕</p></div>
       <div class="report-content" id="tab-action"><h3>🤖 AI 行动版 — 直接给 AI 的修复指令</h3>
-<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（审计根目录 SKILL.md）</p>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（五维评估）</p>
 <hr>
+
 <h4>🛠️ 建议修复清单（按优先级排序）</h4>
 <table>
-<tr><th>优先级</th><th>文件</th><th>修改建议</th><th>状态</th></tr>
-<tr><td>~~🔴 高~~</td><td>~~halucatch_core.py~~</td><td>~~裸 except: pass → 改为 <code>except Exception as e:</code> 并打印日志~~</td><td>✅ 已修复</td></tr>
-<tr><td>~~🔴 高~~</td><td>~~halucatch_core.py~~</td><td>~~[除零风险] 除法前检查分母是否为 0~~</td><td>✅ 已修复</td></tr>
-<tr><td>~~🟠 中~~</td><td>~~halucatch_core.py~~</td><td>~~[静默覆盖] 写文件前检查是否存在，或用追加模式~~</td><td>✅ 已修复（版本号+防覆盖）</td></tr>
-<tr><td>~~🟠 中~~</td><td>~~SKILL.md~~</td><td>~~声明数据时效性约束（如"数据不超过 7 天"）~~</td><td>✅ 已修复</td></tr>
-<tr><td>~~🟠 中~~</td><td>~~SKILL.md~~</td><td>~~声明前提假设（如"输入数据已去重"）~~</td><td>✅ 已修复</td></tr>
+<tr><th>优先级</th><th>指标</th><th>修改建议</th></tr>
+<tr><td>🔴 高</td><td>章节复杂度</td><td>合并同级 ## 标题，将同级 section 聚合为 fewer headings</td></tr>
+<tr><td>🔴 高</td><td>指令密度</td><td>大量条件分支（如果/若/否则）可移入单独的 FAQ/边缘情况章节</td></tr>
+<tr><td>🟠 中</td><td>脚本覆盖比</td><td>17 步中仅 2 步有脚本——为核心步骤（扫描→评估→报告）各写一个 wrapper 脚本</td></tr>
+<tr><td>🟡 低</td><td>模糊表述</td><td>将 SKILL.md 中的"通常"替换为具体条件或阈值</td></tr>
 </table>
 
 <hr>
 <h4>✅ 验证检查点（修复后自检）</h4>
 <ul>
-  <li>☑ 所有异常处理都打印了日志，没有裸 except: pass</li>
-  <li>☑ 所有除法操作前有分母为零的检查</li>
-  <li>☑ 报告文件名含版本号或时间戳，冲突时自动加序号</li>
-  <li>☑ SKILL.md 有"数据要求"章节（时效性 + 前提假设）</li>
-  <li>☑ 未找到标准 SKILL.md 时，自动启发式匹配替代文件并报告规范性问题</li>
+  <li>☑ 章节复杂度从 10.0 降至 ≤7</li>
+  <li>☑ 指令密度从 7.4 降至 ≤6</li>
+  <li>☑ 脚本覆盖比从 12% 升至 ≥30%</li>
+  <li>☑ 运行 `--validate` 通过</li>
+  <li>☑ 无硬编码路径</li>
 </ul>
 
 <hr>
 <h4>📋 直接可用的提示词（发给 AI 执行修复）</h4>
-<pre style="margin-top:12px;">当前 HaluCatch 自审未发现高/中优先级问题。如有新需求，请描述具体场景。</pre></div>
+<pre style="margin-top:12px;">对 halucatch/SKILL.md 做以下修改：
+1. 合并相似的 ## 子章节，减少标题层级深度
+2. 把"如果用户说X→做Y"这类条件逻辑统一移到单独一节"## 交互决策树"
+3. 为核心步骤（扫描→评估→报告）各增加一个 wrapper 脚本入口
+4. 将"通常"替换为具体条件或阈值</pre></div>
     </div>
   </div>
 </section>
@@ -496,7 +420,7 @@
               <div class="intro-bubble">📁 扫描目录...
 📝 发现 SKILL.md (120 行)
 🐍 发现 core.py (45 行)
-📊 开始四维评估...</div>
+📊 开始五维评估...</div>
             </div>
             <div class="intro-msg ai">
               <div class="intro-bubble">审查完成。报告已保存在 reports/ 目录：
@@ -515,7 +439,7 @@
               <svg class="flow-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               <div class="flow-step">
                 <svg class="flow-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>
-                <span class="flow-label">四维评估</span>
+                <span class="flow-label">五维评估</span>
               </div>
               <svg class="flow-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               <div class="flow-step">
@@ -573,9 +497,12 @@ cd HaluCatch</pre>
         <div class="step-num">2</div>
         <div class="step-content">
           <h3>运行审查</h3>
-          <pre><span class="comment">#自动检测语言（中文/英文）</span>\npython3 halucatch_core.py --skill-dir /path/to/your-skill
-<span class="comment">#或强制英文输出</span>\npython3 halucatch_core.py --skill-dir /path/to/your-skill --lang en
-<span class="comment">#或使用包方式</span>\npython3 -m halucatch --skill-dir /path/to/your-skill</pre>
+          <pre><span class="comment">#自动检测语言（中文/英文）</span>
+python3 halucatch_core.py --skill-dir /path/to/your-skill
+<span class="comment">#或强制英文输出</span>
+python3 halucatch_core.py --skill-dir /path/to/your-skill --lang en
+<span class="comment">#或使用包方式</span>
+python3 -m halucatch --skill-dir /path/to/your-skill</pre>
         </div>
       </div>
       <div class="step">
@@ -742,7 +669,7 @@ window.halucatchDemo = new AIChatDemo({
     "thinking": [
       "🤔 用户想了解工具功能...",
       "📋 从 HaluCatch 的 SKILL.md 中提取核心能力描述...",
-      "✅ 确认：四维度评估（地基/代码/规则/护栏）"
+      "✅ 确认：五维度评估（地基/代码/规则/护栏/复杂度）"
     ],
     "ai_message": "HaluCatch 自动审查你的 Skill 指令文件，找出幻觉风险、输出不稳定风险、安全漏洞和逻辑漏洞——帮你在 AI 执行前把问题修掉。",
     "options": [
