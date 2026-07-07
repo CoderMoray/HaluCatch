@@ -401,14 +401,14 @@ setTimeout(function() {{ window.halucatchDemo.begin(); }}, 100);
         <div class="step-num">1</div>
         <div class="step-content">
           <h3>{dev_i18n.get('step1_title', 'Clone')}</h3>
-          <pre>{dev.get('clone_cmd', f'git clone {config["github_url"]}.git{chr(10)}cd {config["name"]}').strip()}</pre>
+          <pre>{dev.get('clone_cmd', f'git clone {config["github_url"]}.git\ncd {config["name"]}').strip()}</pre>
         </div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-content">
           <h3>{dev_i18n.get('step2_title', 'Run')}</h3>
-          <pre>{chr(10).join([f'<span class="comment">#{c["comment"]}</span>{chr(10)}{c["cmd"]}' if c.get("comment") else c["cmd"] for c in dev.get("run_cmds", [])])}</pre>
+          <pre>{chr(10).join([f'<span class="comment">#{c["comment"]}</span>\n{c["cmd"]}' if c.get("comment") else c["cmd"] for c in dev.get("run_cmds", [])])}</pre>
         </div>
       </div>
       <div class="step">
