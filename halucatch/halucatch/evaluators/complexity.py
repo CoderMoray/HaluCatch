@@ -240,7 +240,7 @@ def _script_coverage_ratio(info):
     md = info.get('skill_md', '') or ''
     steps = _count_steps(md)
     if steps == 0:
-        return 1.0  # 无法判断时不惩罚
+        return 1.0, 0.0, 0, 0  # 无法判断时不惩罚
 
     script_refs = _count_script_refs(info)
     ratio = min(script_refs / steps, 1.0)

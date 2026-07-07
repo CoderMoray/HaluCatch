@@ -17,17 +17,28 @@ def _lang_stats_table(code_result, msg):
     lang_names = {'python': 'Python', 'shell': 'Shell', 'go': 'Go',
                   'javascript': 'JS', 'typescript': 'TS', 'ruby': 'Ruby',
                   'rust': 'Rust', 'perl': 'Perl'}
+    has_issues = any(s['findings'] > 0 for s in ls.values())
+
+    header_cols = '| 语言 | 文件数 | 规则 | 通过 |'
+    sep_cols = '|------|------|------|------|'
+    if has_issues:
+        header_cols += ' 告警 |'
+        sep_cols += '------|'
+
     rows = []
     for lang, stats in sorted(ls.items()):
         name = lang_names.get(lang, lang)
         clean = stats['files'] - stats['findings']
-        rows.append(f"| {name} | {stats['files']} | {stats['rules']} | {clean}/{stats['files']} |")
+        # rules = 语言专属规则 + 2 条通用规则（超长行、硬编码密钥）
+        total_rules = stats.get('rules', 0) + 2
+        row = f'| {name} | {stats["files"]} | {total_rules} | {clean}/{stats["files"]} |'
+        if has_issues:
+            alert = f'{stats["findings"]} 个' if stats['findings'] > 0 else '—'
+            row += f' {alert} |'
+        rows.append(row)
 
-    if not rows:
-        return ''
-
-    table = '| 语言 | 文件数 | 规则 | 通过 |\n|------|------|------|------|\n'
-    return table + '\n'.join(rows) + '\n'
+    table = header_cols + '\n' + sep_cols + '\n' + '\n'.join(rows) + '\n'
+    return table
 
 
 def _complexity_table(cx_result):
