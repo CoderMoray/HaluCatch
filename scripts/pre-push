@@ -10,6 +10,6 @@ echo "🔍 pre-push: pytest..."
 python3 -m pytest tests/ -q
 
 echo "🔍 pre-push: ruff..."
-ruff check skill/halucatch/ tests/
+ruff check halucatch/halucatch/ tests/
 
 echo "✅ pre-push 通过"

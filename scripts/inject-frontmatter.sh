@@ -6,7 +6,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-OUTPUT="$ROOT/skill/SKILL.md"
+OUTPUT="$ROOT/halucatch/SKILL.md"
 CONFIG="$ROOT/config.yaml"
 STRICT=""
 MINIMAL=""

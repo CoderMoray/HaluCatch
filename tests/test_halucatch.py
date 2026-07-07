@@ -6,7 +6,7 @@ import os
 import sys
 import tempfile
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'skill'))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'halucatch'))
 
 from halucatch.classifier import classify_skill
 from halucatch.config import MESSAGES

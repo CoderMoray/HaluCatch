@@ -34,11 +34,11 @@ fi
 
 # 3) agentskills.sh 官方格式校验（skills-ref）
 if command -v skills-ref &>/dev/null; then
-  if skills-ref validate "$ROOT/skill" &>/dev/null; then
+  if skills-ref validate "$ROOT/halucatch" &>/dev/null; then
     echo "  ✅ skills-ref validate 通过"
   else
     echo "  ❌ skills-ref validate 失败"
-    echo "     运行 skills-ref validate $ROOT/skill 查看详情"
+    echo "     运行 skills-ref validate $ROOT/halucatch 查看详情"
     errors=$((errors + 1))
   fi
 else
@@ -49,7 +49,7 @@ fi
 config_ver=$(grep '^version:' "$ROOT/config.yaml" | sed 's/^version: *"//;s/"$//' 2>/dev/null || echo "?")
 skill_ver=$(python3 -c "
 import re
-with open('$ROOT/skill/SKILL.md') as f:
+with open('$ROOT/halucatch/SKILL.md') as f:
     m = re.search(r'^version:\s*\"?(.+?)\"?\s*$', f.read(), re.MULTILINE)
     print(m.group(1) if m else '?')
 " 2>/dev/null || echo "?")

@@ -27,9 +27,9 @@ trap 'rm -rf "$TMP"' EXIT
 SKILL_DIR="$TMP/halucatch"
 mkdir -p "$SKILL_DIR"
 
-cp "$ROOT/skill/SKILL.md"       "$SKILL_DIR/"
-cp "$ROOT/skill/halucatch_core.py" "$SKILL_DIR/"
-cp -r "$ROOT/skill/halucatch"      "$SKILL_DIR/"
+cp "$ROOT/halucatch/SKILL.md"       "$SKILL_DIR/"
+cp "$ROOT/halucatch/halucatch_core.py" "$SKILL_DIR/"
+cp -r "$ROOT/halucatch/halucatch"      "$SKILL_DIR/"
 cp "$ROOT/README.md"          "$SKILL_DIR/"
 cp "$ROOT/config.yaml"        "$SKILL_DIR/"
 cp "$ROOT/manifest.json"      "$SKILL_DIR/"
@@ -37,7 +37,7 @@ cp "$ROOT/LICENSE"            "$SKILL_DIR/" 2>/dev/null || true
 
 # docs 下只保留 FAQ 和 CHANGELOG
 [[ -f "$ROOT/docs/CHANGELOG.md" ]] && cp "$ROOT/docs/CHANGELOG.md" "$SKILL_DIR/CHANGELOG.md"
-[[ -f "$ROOT/skill/FAQ.md" ]]      && cp "$ROOT/skill/FAQ.md"      "$SKILL_DIR/FAQ.md"
+[[ -f "$ROOT/halucatch/FAQ.md" ]]      && cp "$ROOT/halucatch/FAQ.md"      "$SKILL_DIR/FAQ.md"
 
 # 清理 halucatch/reports
 if [[ -d "$SKILL_DIR/halucatch/reports" ]]; then

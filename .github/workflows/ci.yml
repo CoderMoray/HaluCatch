@@ -16,4 +16,4 @@ jobs:
           python-version: "3.12"
       - run: uv pip install pytest ruff
       - run: uv run pytest tests/ -v
-      - run: uvx ruff check skill/halucatch/ tests/
+      - run: uvx ruff check halucatch/halucatch/ tests/

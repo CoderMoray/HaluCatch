@@ -24,9 +24,9 @@ fi
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 
-cp "$ROOT/skill/SKILL.md"       "$TMP/"
-cp "$ROOT/skill/halucatch_core.py" "$TMP/"
-cp -r "$ROOT/skill/halucatch"      "$TMP/"
+cp "$ROOT/halucatch/SKILL.md"       "$TMP/"
+cp "$ROOT/halucatch/halucatch_core.py" "$TMP/"
+cp -r "$ROOT/halucatch/halucatch"      "$TMP/"
 cp "$ROOT/README.md"          "$TMP/"
 cp "$ROOT/config.yaml"        "$TMP/"
 cp "$ROOT/manifest.json"      "$TMP/"
@@ -34,7 +34,7 @@ cp "$ROOT/LICENSE"            "$TMP/" 2>/dev/null || true
 
 # docs 下只保留 FAQ 和 CHANGELOG
 [[ -f "$ROOT/docs/CHANGELOG.md" ]] && cp "$ROOT/docs/CHANGELOG.md" "$TMP/CHANGELOG.md"
-[[ -f "$ROOT/skill/FAQ.md" ]]      && cp "$ROOT/skill/FAQ.md"      "$TMP/FAQ.md"
+[[ -f "$ROOT/halucatch/FAQ.md" ]]      && cp "$ROOT/halucatch/FAQ.md"      "$TMP/FAQ.md"
 
 # 清理 halucatch/reports
 if [[ -d "$TMP/halucatch/reports" ]]; then
