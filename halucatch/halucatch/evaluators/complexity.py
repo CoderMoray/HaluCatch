@@ -574,17 +574,19 @@ def check_complexity(info, skill_type='code-engineered'):
             'multiplier': multiplier,
         }
 
-        # 7) 代码/文档比（文档占比越高越好）
+        # 7) 代码/文档比（代码越少越红——代码型 skill 没代码是硬伤）
         cdr = _code_doc_ratio(info)
         cdr_pct = f'{cdr:.0%}'
-        if cdr >= 0.7:
-            cdr_score, cdr_label = 0, '🟢 文档充分'
+        if cdr < 0.2:
+            cdr_score, cdr_label = 0, '🟢 你这是代码仓库啊，兄弟'
+        elif cdr >= 0.8:
+            cdr_score, cdr_label = 9, '🔴 代码稀缺，全靠嘴说'
+        elif cdr >= 0.6:
+            cdr_score, cdr_label = 6, '🟠 代码偏少，嘴比手多'
         elif cdr >= 0.4:
-            cdr_score, cdr_label = 3, '🟡 文档适中'
-        elif cdr >= 0.2:
-            cdr_score, cdr_label = 6, '🟠 文档偏少'
+            cdr_score, cdr_label = 3, '🟡 代码差不多够'
         else:
-            cdr_score, cdr_label = 9, '🔴 文档不足'
+            cdr_score, cdr_label = 0, '🟢 代码充足'
         scores['code_doc_ratio'] = {
             'label': '代码/文档比',
             'value': f'文档 {cdr_pct} — {cdr_label}',
