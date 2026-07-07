@@ -10,7 +10,7 @@ allowed-tools:
   - Bash
 compatibility: Requires Python 3.8+, fully offline
 author: CoderMoray
-version: 1.7.9
+version: 1.7.10
 metadata:
   hermes:
     tags:
@@ -36,7 +36,6 @@ tags:
   - 工程质量
   - 可靠性
 ---
-
 > **一句话总结**：把一个 AI Skill 的文件夹扔给 HaluCatch，它会逐项检查数据管线、代码逻辑、业务规则、安全护栏有没有漏洞，然后给你三份报告（标准版看全貌、专业版看细节、行动版直接修），全程几秒钟、完全离线。
 >
 > [快速开始](#1-入口逻辑) · [能力边界](#能力边界) · [输出解读](#5-报告)

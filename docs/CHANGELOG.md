@@ -12,35 +12,9 @@
 ## [Unreleased]
 
 
-### Added
-
-- Add pre-push hook (pytest + ruff before push)
-- Add web/build.py step, sync web/config.yaml version
-
 ### Changed
 
-- Merge release/mcpmarket into release/agentskills, rename build-mcpmarket → build-clawhub
-- Fix release.sh step numbers 1-6 to /10
-- Minimal frontmatter for agentskill.sh webhook
-- Single-line description
-- Move skill files into skill/ subdirectory
-- Rename skill/ to halucatch/ for gh skill compatibility
-- Add anti-patterns/常见避坑 checklist to FAQ
-
-### Fixed
-
-- Set git identity in build scripts for CI compatibility
-- Add GITHUB_TOKEN authentication for CI git push
-- Remove --system flag from uv pip install (Python 3.13 compat)
-- Update test_scan_skips_subdirectories to match new recursive scan behavior
-- Resolve all ruff lint warnings and test failures
-- Rename release/agentskills → agentskills (mcpmarket compat)
-- Use git rev-parse for pre-push hook root path
-- Nest skill files in halucatch/ subdir for mcpmarket compat
-- Install pyyaml in sync-agentskills workflow
-- Update release.yml zip paths for skill/ subdirectory
-- Add top-level error handling to cli.py with Chinese-friendly messages
-- Force push to AtomGit to resolve history divergence
+- Add one-sentence summary, usage scenarios, and capability limits
 
 ---
 
