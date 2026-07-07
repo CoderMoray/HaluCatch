@@ -17,26 +17,19 @@ def _lang_stats_table(code_result, msg):
     lang_names = {'python': 'Python', 'shell': 'Shell', 'go': 'Go',
                   'javascript': 'JS', 'typescript': 'TS', 'ruby': 'Ruby',
                   'rust': 'Rust', 'perl': 'Perl'}
-    has_issues = any(s['findings'] > 0 for s in ls.values())
 
-    header_cols = '| 代码文件类型 | 规则 | 通过 |'
-    sep_cols = '|------|------|------|'
-    if has_issues:
-        header_cols += ' 告警 |'
-        sep_cols += '------|'
+    header = '| 代码文件类型 | 审查规则数量 | 全通过 | 部分问题 | 全不通过 |'
+    sep = '|------|------|------|------|------|'
 
     rows = []
     for lang, stats in sorted(ls.items()):
         name = lang_names.get(lang, lang)
-        clean = stats['files'] - stats['findings']
-        total_rules = stats.get('rules', 0) + 2
-        row = f'| {name} | {total_rules} | {clean}/{stats["files"]} |'
-        if has_issues:
-            alert = f'{stats["findings"]} 个' if stats['findings'] > 0 else '—'
-            row += f' {alert} |'
-        rows.append(row)
+        rows.append(
+            f'| {name} | {stats["rules"]} | {stats["clean"]} | '
+            f'{stats["partial"]} | {stats["all_fail"]} |'
+        )
 
-    table = header_cols + '\n' + sep_cols + '\n' + '\n'.join(rows) + '\n'
+    table = header + '\n' + sep + '\n' + '\n'.join(rows) + '\n'
     return table
 
 
