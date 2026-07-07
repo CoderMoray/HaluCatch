@@ -30,6 +30,42 @@ def _lang_stats_table(code_result, msg):
     return table + '\n'.join(rows) + '\n'
 
 
+def _complexity_table(cx_result):
+    """生成复杂度评估指标表。"""
+    raw = cx_result.get('raw', {})
+    if not raw:
+        return ''
+
+    headers = '| 指标 | 得分 | 详情 |\n|------|------|------|\n'
+    rows = []
+    for _key, s in raw.items():
+        label = s.get('label', _key)
+        score = s.get('score', 0)
+        value = s.get('value', '')
+        level = s.get('level', '')
+        score_str = f'{level} {score:.1f}' if isinstance(score, (int, float)) else f'{level} {score}'
+        # 脚本覆盖比：附加乘数信息
+        if 'multiplier' in s:
+            score_str += f'（乘数 ×{s["multiplier"]}）'
+        rows.append(f'| {label} | {score_str} | {value} |')
+
+    if not rows:
+        return ''
+
+    table = headers + '\n'.join(rows)
+
+    # 附加加权说明
+    weighted = cx_result.get('weighted')
+    final = cx_result.get('final')
+    if weighted is not None and final is not None:
+        if weighted != final:
+            table += f'\n\n加权平均 {weighted:.1f} → 最终得分 **{final:.1f}/10**'
+        else:
+            table += f'\n\n加权平均 **{final:.1f}/10**'
+
+    return table + '\n'
+
+
 def generate_report(info, results, output_dir=None, lang='zh-CN'):
     """生成审查报告三版本（支持中英文）。"""
     msg = MESSAGES[lang]
@@ -136,6 +172,9 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
 {gi}
 
 ### 📐 {msg['complexity']}
+
+{_complexity_table(cx)}
+
 {cxi}
 
 ---
