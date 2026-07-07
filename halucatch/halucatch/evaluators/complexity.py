@@ -257,24 +257,22 @@ def _script_ref_breadth(info):
 
 
 def _code_doc_ratio(info):
-    """代码/文档比：codelines / (codelines + SKILL.md 行数)。"""
+    """文档占比：SKILL.md 行数 / (代码行数 + SKILL.md 行数)。越高 = 文档越充分。"""
     md = info.get('skill_md', '') or ''
     md_lines = len(md.splitlines()) if md else 0
     if md_lines == 0:
-        return 0
+        return 1.0  # 只有代码无文档 → 最差
 
-    # 统计所有 Python 文件的代码行数
     code_lines = 0
     py_content = info.get('py', '') or ''
     if py_content:
-        # py_content 是拼接的内容，去掉注释和空行
         for line in py_content.splitlines():
             stripped = line.strip()
             if stripped and not stripped.startswith('#'):
                 code_lines += 1
 
     total = code_lines + md_lines
-    return code_lines / max(total, 1)
+    return md_lines / max(total, 1)  # 文档占比
 
 
 def _redundancy_score(md):
@@ -576,16 +574,20 @@ def check_complexity(info, skill_type='code-engineered'):
             'multiplier': multiplier,
         }
 
-        # 7) 代码/文档比
+        # 7) 代码/文档比（文档占比越高越好）
         cdr = _code_doc_ratio(info)
-        cdr_score = max(0, (1.0 - cdr) * 10) if cdr < 0.3 else 0  # 代码<30% 才有风险
         cdr_pct = f'{cdr:.0%}'
-        cdr_label = '🟢 描述充分' if cdr >= 0.3 else (
-            '🟡 描述偏少' if cdr >= 0.15 else '🔴 描述不足'
-        )
+        if cdr >= 0.7:
+            cdr_score, cdr_label = 0, '🟢 文档充分'
+        elif cdr >= 0.4:
+            cdr_score, cdr_label = 3, '🟡 文档适中'
+        elif cdr >= 0.2:
+            cdr_score, cdr_label = 6, '🟠 文档偏少'
+        else:
+            cdr_score, cdr_label = 9, '🔴 文档不足'
         scores['code_doc_ratio'] = {
             'label': '代码/文档比',
-            'value': f'{cdr_pct} — {cdr_label}',
+            'value': f'文档 {cdr_pct} — {cdr_label}',
             'score': cdr_score,
             'level': cdr_label,
         }
