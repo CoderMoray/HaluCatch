@@ -45,7 +45,6 @@ def _count_steps(md):
     for line in lines:
         if re.match(r'^## ', line):
             heading = line.lower()
-            # 只统计指令/流程/使用/Quick Start 类章节
             in_instructions = any(kw in heading for kw in (
                 'instruction', 'usage', 'quick', 'steps', 'flow',
                 'workflow', 'procedure', '指南', '指令', '步骤', '流程',
@@ -58,6 +57,62 @@ def _count_steps(md):
     if count == 0:
         count = len(STEP_PAT.findall(md))
     return count
+
+
+def _count_workflow_steps(md):
+    """统计工作流步骤：步骤项中引用了脚本/代码块的。"""
+    if not md:
+        return 0
+    lines = md.split('\n')
+    in_instructions = False
+    in_step = False
+    workflow_lines = []
+    step_block = ''
+    for line in lines:
+        if re.match(r'^## ', line):
+            heading = line.lower()
+            in_instructions = any(kw in heading for kw in (
+                'instruction', 'usage', 'quick', 'steps', 'flow',
+                'workflow', 'procedure', '指南', '指令', '步骤', '流程',
+                '使用', '快速开始', 'how to', 'getting started', 'setup',
+            ))
+            continue
+        if not in_instructions:
+            continue
+        if STEP_PAT.search(line):
+            if in_step and step_block:
+                workflow_lines.append(step_block)
+            step_block = line
+            in_step = True
+        elif in_step and line.strip():
+            step_block += '\n' + line
+        else:
+            in_step = False
+            if step_block:
+                workflow_lines.append(step_block)
+            step_block = ''
+
+    # 尾处理
+    if step_block:
+        workflow_lines.append(step_block)
+
+    # 筛选：包含脚本引用/代码块的步骤算工作流步骤
+    script_signal = re.compile(
+        r'(?:'
+        r'scripts/|src/|bin/|\[EXEC\]'
+        r'|```'                                                                     # fenced code block
+        r'|`[^`]*\.(?:py|sh|go|rb|js|ts|pl|R|java|swift|kt)[^`]*`'                 # inline code: `xxx.py`
+        r'|`[^`]*(?:python3?|bash|node|ruby|go run|npx|pip)[^`]*`'                 # inline code: `python3 xxx`
+        r'|(?:python3?|bash|node|ruby|\./)\s+\S+\.(?:py|sh|go|rb|js|ts|pl|R)'      # plain CLI ref
+        r')', re.MULTILINE
+    )
+    # 回退：如果没找到指令章节，全文统计
+    if len(workflow_lines) == 0:
+        workflow_lines = []
+        for line in lines:
+            if STEP_PAT.search(line):
+                workflow_lines.append(line)
+    return sum(1 for blk in workflow_lines if script_signal.search(blk))
 
 
 def _count_script_refs(info):
@@ -75,14 +130,27 @@ def _count_script_refs(info):
                '__pycache__' not in fp and not fp.endswith('.pyc'):
                 count += 1
 
-    # 2) SKILL.md 内嵌代码块
+    # 2) SKILL.md 内嵌代码块（分两种）
     md = info.get('skill_md', '') or ''
     if md:
-        # 找所有 fenced code blocks
-        blocks = re.findall(r'```(\w*)', md)
-        for lang in blocks:
+        # 2a) Fenced code blocks ```python\n...```
+        fenced = re.findall(r'```(\w*)', md)
+        for lang in fenced:
             if lang.lower() in CODE_BLOCK_LANGS:
                 count += 1
+
+        # 2b) Inline code: `command` or `path/to/script.py`
+        # 匹配 `python3 xxx`、`./script.sh`、`xxx.py` 等 backtick 内的脚本引用
+        inline_refs = set()
+        for m in re.finditer(r'`([^`]+)`', md):
+            content = m.group(1).strip()
+            # 命令行调用
+            if re.search(r'(?:python3?|bash|node|ruby|go\s+run|npx|pip|make|\./)\b', content):
+                inline_refs.add(content)
+            # 脚本文件路径（含扩展名）
+            elif re.search(r'\b\w+\.(?:py|sh|go|rb|js|ts|pl|R|java|swift|kt)\b', content):
+                inline_refs.add(content)
+        count += len(inline_refs)
 
     # 3) SKILL.md 中命令行调用
     if md:
@@ -213,45 +281,114 @@ def _code_doc_ratio(info):
 
 
 def _redundancy_score(md):
-    """重复冗余度：相近短语反复出现次数 / 行数。"""
+    """重复冗余度：bigram Jaccard 相似度检测 copy-paste 重复内容。"""
     if not md:
         return 0
-    lines = [ln.strip() for ln in md.splitlines() if ln.strip() and not ln.startswith('#')]
-    if len(lines) < 10:
+
+    # 1. 只保留有意义的正文行（跳过标题/代码/表格/引用/短行）
+    lines = []
+    for ln in md.splitlines():
+        s = ln.strip()
+        if not s:
+            continue
+        first_ch = s[0]
+        if first_ch in ('#', '`', '|', '-', '>'):
+            continue
+        if len(s) < 10:
+            continue
+        lines.append(s)
+
+    n = len(lines)
+    if n < 50:
         return 0
 
-    # 提取 5-10 个词的中等长度段落（有意义的指令片段）
-    phrases = {}
-    for line in lines:
-        words = line.split()
-        if 3 <= len(words) <= 15:
-            key = ' '.join(words[:5]).lower()
-            phrases[key] = phrases.get(key, 0) + 1
+    # 2. 预计算 bigram set
+    def _bigrams(s):
+        return frozenset(s[i:i + 2] for i in range(len(s) - 1))
 
-    # 出现 >= 3 次的短语数 / 总行数 → 归一化到 0-10
-    duplicates = sum(1 for c in phrases.values() if c >= 3)
-    ratio = duplicates / max(len(lines), 1)
-    return min(ratio * 100, 10)
+    print(f"  📐 重复冗余: {n} 行正文, 预计算 bigram...")
+    bg_sets = [_bigrams(ln) for ln in lines]
+
+    # 3. 全量对比 + 进度显示
+    dup_lines = set()
+    threshold = 0.6
+    total_pairs = n * (n - 1) // 2
+    pair_idx = 0
+    last_pct = -1
+
+    for i in range(n):
+        for j in range(i + 1, n):
+            pair_idx += 1
+            # 每 5% 打印一次进度
+            pct = pair_idx * 100 // total_pairs
+            if pct >= last_pct + 5:
+                print(f"      {pct}% ({pair_idx}/{total_pairs})")
+                last_pct = pct
+
+            # Jaccard = |A ∩ B| / |A ∪ B|
+            a, b = bg_sets[i], bg_sets[j]
+            inter = len(a & b)
+            if inter == 0:
+                continue
+            union = len(a | b)
+            if inter / union >= threshold:
+                dup_lines.add(i)
+                dup_lines.add(j)
+
+    dup_count = len(dup_lines)
+    score = min(dup_count / n * 20, 10)
+    print(f"    ✅ 完成。{n} 行 → {total_pairs} 对比较 → {dup_count} 行有近似重复 → 得分 {score:.1f}")
+    return score
 
 
 def _table_complexity(md):
-    """表格复杂度 = 表格数 × 平均列数 / 参考值。"""
+    """表格复杂度：按大小分级加权。
+
+    小型表(≤3列 或 ≤2行): 10%    中型表(>3列,>2行,体量<30): 20%
+    巨型表(体量≥30):     40%    最宽列: 15%    最大体量: 15%"""
     if not md:
         return 0
-    tables = re.findall(r'^\|[-| ]+\|\s*$', md, re.MULTILINE)
-    if not tables:
+    seps = re.findall(r'^\|[-| :]+\|\s*$', md, re.MULTILINE)
+    if not seps:
         return 0
-    table_count = 0
-    total_cols = 0
-    for match in re.finditer(r'^\|[-| ]+\|\s*$', md, re.MULTILINE):
-        table_count += 1
-        cols = len(match.group().split('|')) - 2  # 去掉首尾空
-        total_cols += max(cols, 0)
-    if table_count == 0:
-        return 0
-    avg_cols = total_cols / table_count
-    # 阈值：3 列 × 3 张表 = 9，超过线性增长
-    return min(table_count * avg_cols / 3, 10)
+    cols_list = [max(len(s.split('|')) - 2, 0) for s in seps]
+
+    # 统计每张表的行数
+    sep_positions = [m.start() for m in re.finditer(r'^\|[-| :]+\|\s*$', md, re.MULTILINE)]
+    lines = md.split('\n')
+    rows_per_table = []
+    for i, pos in enumerate(sep_positions):
+        line_idx = md[:pos].count('\n')
+        next_line = sep_positions[i + 1] if i + 1 < len(sep_positions) else len(md)
+        next_idx = md[:next_line].count('\n')
+        body_rows = [l for l in lines[line_idx + 1:next_idx] if l.strip().startswith('|')]
+        rows_per_table.append(len(body_rows) + 1)
+
+    # 分三类
+    small, medium, large = 0, 0, 0
+    big_cols, big_sizes = [], []
+    for c, r in zip(cols_list, rows_per_table):
+        size = c * r
+        if c <= 3 or r <= 2:
+            small += 1
+        elif size >= 30:
+            large += 1
+            big_cols.append(c)
+            big_sizes.append(size)
+        else:
+            medium += 1
+            big_cols.append(c)
+            big_sizes.append(size)
+
+    # 各项得分
+    small_score = min(small / 3, 1) * 10 * 0.10
+    medium_score = min(medium / 3, 1) * 10 * 0.20
+    large_score = min(large / 2, 1) * 10 * 0.40
+
+    width_score = (min(max(big_cols) / 8, 1) * 10 * 0.15) if big_cols else 0
+    size_score = (min(max(big_sizes) / 50, 1) * 10 * 0.15) if big_sizes else 0
+
+    return round(small_score + medium_score + large_score + width_score + size_score, 1)
 
 
 def _instruction_density(md):
@@ -287,14 +424,17 @@ def _score_to_level(score):
 
 
 def _script_coverage_ratio(info):
-    """计算脚本覆盖比 (0-1) 并返回乘数。"""
+    """计算脚本覆盖比：脚本引用数 / 工作流步骤数（仅含脚本引用的步骤）。"""
     md = info.get('skill_md', '') or ''
-    steps = _count_steps(md)
-    if steps == 0:
-        return 1.0, 0.0, 0, 0  # 无法判断时不惩罚
-
+    total_steps = _count_steps(md)
+    workflow_steps = _count_workflow_steps(md)
     script_refs = _count_script_refs(info)
-    ratio = min(script_refs / steps, 1.0)
+
+    # 无工作流步骤 → 无需覆盖
+    if workflow_steps == 0:
+        return 0.3, 1.0, total_steps, workflow_steps, script_refs
+
+    ratio = min(script_refs / workflow_steps, 1.0)
 
     if ratio >= 0.9:
         multiplier = 0.3
@@ -305,7 +445,7 @@ def _script_coverage_ratio(info):
     else:
         multiplier = 1.0
 
-    return multiplier, ratio, steps, script_refs
+    return multiplier, ratio, total_steps, workflow_steps, script_refs
 
 
 def check_complexity(info, skill_type='code-engineered'):
@@ -395,7 +535,7 @@ def check_complexity(info, skill_type='code-engineered'):
     # ── 代码工程型专属 ──
     if is_code:
         # 6) 脚本覆盖比（计算但不计入 weighted，用作乘数）
-        multiplier, ratio, steps_count, script_count = _script_coverage_ratio(info)
+        multiplier, ratio, total_steps, workflow_steps, script_count = _script_coverage_ratio(info)
         coverage_pct = f'{ratio:.0%}' if ratio > 0 else '0%'
         coverage_label = '🟢 全覆盖' if ratio >= 0.9 else (
             '🟡 多数覆盖' if ratio >= 0.7 else (
@@ -404,7 +544,7 @@ def check_complexity(info, skill_type='code-engineered'):
         )
         scores['coverage'] = {
             'label': '脚本覆盖比',
-            'value': f'{coverage_pct} ({script_count} 脚本/{steps_count} 步骤) — {coverage_label}',
+            'value': f'{coverage_pct} ({script_count} 脚本/{workflow_steps} 工作流步骤, 含 {total_steps - workflow_steps} 说明性步骤) — {coverage_label}',
             'score': (1.0 - ratio) * 10,  # 0→10, 1.0→0
             'level': coverage_label,
             'multiplier': multiplier,
@@ -505,6 +645,11 @@ def check_complexity(info, skill_type='code-engineered'):
         ))
 
     score_display = f'{final:.1f}/10 (加权 {weighted:.1f})' if is_code else f'{final:.1f}/10'
+
+    # 注入权重到每个指标
+    for key in scores:
+        if key in weights:
+            scores[key]['weight'] = weights[key]
 
     return {
         'rating': rating,
