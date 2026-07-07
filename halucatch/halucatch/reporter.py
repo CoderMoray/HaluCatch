@@ -282,6 +282,9 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
 
 **{msg['date']}**: {today}
 
+### {msg['tldr']}
+{summary}
+
 ## {msg['simple_result']}
 
 | 🏗️ {msg['foundation']} | 🤖 {msg['code']} | 📝 {msg['rules']} | 🛡️ {msg['guardrails']} | 📐 {msg['complexity']} |
@@ -293,9 +296,6 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
 
 ### {msg['simple_attention']}
 {standard_attention_block}
-
-### {msg['simple_summary']}
-{summary}
 
 ---
 
