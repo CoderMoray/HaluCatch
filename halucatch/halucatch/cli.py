@@ -9,6 +9,7 @@ from .classifier import classify_skill
 from .config import MESSAGES, detect_system_locale
 from .evaluators import (
     check_code_risks,
+    check_complexity,
     check_foundation,
     check_guardrails,
     check_methodology,
@@ -93,6 +94,9 @@ def main():
             results['guardrails'] = check_guardrails(info, skill_type)
             print(f"     {results['guardrails']['rating']}")
             results['guardrails']['issues'].append((msg["ai_supplement"], 'info'))
+            print(msg["check_complexity"])
+            results['complexity'] = check_complexity(info, skill_type)
+            print(f"     {results['complexity']['rating']}")
         else:
             print(msg["check_methodology"])
             results['rules'] = check_methodology(info)
@@ -102,6 +106,9 @@ def main():
             results['guardrails'] = check_guardrails(info, skill_type)
             print(f"     {results['guardrails']['rating']}")
             results['guardrails']['issues'].append((msg["ai_supplement"], 'info'))
+            print(msg["check_complexity"])
+            results['complexity'] = check_complexity(info, skill_type)
+            print(f"     {results['complexity']['rating']}")
 
         # Phase 3: 报告
         print("\n📊 生成报告...")
@@ -109,7 +116,7 @@ def main():
         _reports = generate_report(info, results, default_out, lang)
 
         # 自检
-        dims = ['foundation', 'code', 'rules', 'guardrails']
+        dims = ['foundation', 'code', 'rules', 'guardrails', 'complexity']
         all_dims_done = all(d in results and 'rating' in results[d] for d in dims)
         has_info_items = any(
             any(i[1] == 'info' for i in results[d].get('issues', []))

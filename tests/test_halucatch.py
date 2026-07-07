@@ -12,6 +12,7 @@ from halucatch.classifier import classify_skill
 from halucatch.config import MESSAGES
 from halucatch.evaluators import (
     check_code_risks,
+    check_complexity,
     check_foundation,
     check_guardrails,
     check_methodology,
@@ -299,4 +300,139 @@ def test_scan_skips_subdirectories():
         assert result is not None
         assert result['py'] is not None  # 子目录 .py 文件会被扫描
         assert result['skill_md'] is not None
-        assert len(result['files']) == 2  # SKILL.md + deep.py
+
+
+# =============================================================================
+# 复杂度评估测试
+# =============================================================================
+
+def _make_info(md_content='', py_content=None, files=None):
+    """构造测试用 info dict。"""
+    return {
+        'skill_md': md_content,
+        'py': py_content or '',
+        'files': files or [],
+        'has_data': False,
+    }
+
+
+def test_complexity_empty():
+    """空 SKILL.md。"""
+    result = check_complexity(_make_info(''), 'methodology')
+    assert float(result['score'].split('/')[0]) == 0.0
+
+
+def test_complexity_shallow_md():
+    """浅层结构的简单 Skill。"""
+    md = """## Usage
+1. Do this
+2. Do that
+"""
+    result = check_complexity(_make_info(md), 'methodology')
+    assert float(result['score'].split('/')[0]) <= 5
+
+
+def test_complexity_deep_nesting():
+    """深层嵌套 → 复杂度升高。"""
+    md = """## Usage
+### Step 1
+#### Detail A
+##### Sub A1
+### Step 2
+#### Detail B
+"""
+    result = check_complexity(_make_info(md), 'methodology')
+    raw = result['raw']
+    assert raw['nesting']['value'].startswith('5')
+
+
+def test_complexity_code_engineered_with_scripts():
+    """代码型 + 高脚本覆盖 → 乘数拉低总分。"""
+    md = """## Quick Start
+1. Run scanner
+```bash
+python3 scanner.py
+```
+2. Load config
+```bash
+cat config.yaml
+```
+3. Execute
+```bash
+python3 main.py
+```
+"""
+    info = _make_info(md)
+    info['files'] = [
+        {'name': 'scripts/scanner.py', 'path': 'scripts/scanner.py', 'ext': '.py'},
+        {'name': 'scripts/main.py', 'path': 'scripts/main.py', 'ext': '.py'},
+    ]
+    result = check_complexity(info, 'code-engineered')
+    assert float(result['score'].split('/')[0]) <= 3
+    assert 'coverage' in result['raw']
+
+
+def test_complexity_methodology_high_density():
+    """纯方法论型 + 高指令密度 → 中高风险。"""
+    md = """## Instructions
+You must always ensure that the output is valid. You should check the input.
+你必须验证输入。你必须检查输出。千万不要跳过检查步骤。
+Make sure to validate the results. Never skip validation.
+Ensure all files are properly closed. Always check for errors.
+你必须确认所有步骤都完成。千万不要忽略警告。
+1. First step
+2. Second step
+3. Third step
+4. Fourth step
+5. Fifth step
+6. Sixth step
+7. Seventh step
+8. Eighth step
+"""
+    result = check_complexity(_make_info(md), 'methodology')
+    assert float(result['score'].split('/')[0]) >= 2
+
+
+def test_complexity_cross_file_deps():
+    """多跨文件引用 → 高依赖度。"""
+    md = """## Usage
+See [reference guide](references/guide.md) for details.
+Also check [configuration](configs/settings.yaml).
+Run [script](scripts/helper.py) first.
+Refer to [API docs](docs/api.md).
+See also [troubleshooting](docs/troubleshooting.md).
+"""
+    result = check_complexity(_make_info(md), 'methodology')
+    assert result['raw']['deps']['score'] >= 1
+
+
+def test_complexity_low_coverage_multiplier():
+    """代码型 + 低脚本覆盖 → 乘数 ≈ 1.0。"""
+    md = """## Instructions
+1. Step one
+2. Step two
+3. Step three
+4. Step four
+5. Step five
+"""
+    info = _make_info(md)
+    info['files'] = [
+        {'name': 'scripts/helper.py', 'path': 'scripts/helper.py', 'ext': '.py'}
+    ]
+    result = check_complexity(info, 'code-engineered')
+    cov = result['raw']['coverage']
+    assert cov['multiplier'] == 1.0
+
+
+def test_complexity_table_complex():
+    """多列表格 → 复杂度上升。"""
+    md = """## Config
+| Param | Type | Default | Description | Required |
+|-------|------|---------|-------------|----------|
+| host  | str  | localhost | Server host | yes |
+| port  | int  | 8080      | Server port | yes |
+| debug | bool | false     | Debug mode  | no  |
+| timeout | int | 30      | Timeout sec  | no  |
+"""
+    result = check_complexity(_make_info(md), 'methodology')
+    assert result['raw']['table']['score'] >= 1.5

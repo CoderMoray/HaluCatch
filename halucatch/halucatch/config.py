@@ -32,6 +32,7 @@ MESSAGES = {
         'check_rules': '  📋 规则评估...',
         'check_methodology': '  📝 方法论评估...',
         'check_guardrails': '  🛡️ 护栏评估...',
+        'check_complexity': '  📐 复杂度评估...',
         'ai_supplement': '  以上为脚本基线检查，AI 应在此基础上补充语义分析',
         # 报告生成
         'generating_report': '\n📊 生成报告...',
@@ -131,6 +132,7 @@ MESSAGES = {
         'check_rules': '  📋 Rules evaluation...',
         'check_methodology': '  📝 Methodology evaluation...',
         'check_guardrails': '  🛡️ Guardrails evaluation...',
+        'check_complexity': '  📐 Complexity evaluation...',
         'ai_supplement': '  Above is script baseline check, AI should supplement semantic analysis',
         # Report generation
         'generating_report': '\n📊 Generating report...',
