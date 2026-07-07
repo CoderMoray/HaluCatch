@@ -30,12 +30,14 @@
   });
 
   // 所有 section：IntersectionObserver 统一处理
+  // requestAnimationFrame 确保浏览器 commit 了初始 opacity:0 再触发 transition
   var demoStarted = false;
   var observer = new IntersectionObserver(function(entries) {
     entries.forEach(function(entry) {
       if (entry.isIntersecting) {
-        entry.target.classList.add('in');
-        // Demo 首次进入视图时启动
+        requestAnimationFrame(function() {
+          entry.target.classList.add('in');
+        });
         if (entry.target.id === 'demo' && !demoStarted && window.halucatchDemo) {
           demoStarted = true;
           setTimeout(function() { window.halucatchDemo.begin(); }, 400);
