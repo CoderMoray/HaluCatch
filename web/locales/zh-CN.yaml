@@ -5,7 +5,7 @@
 # ── SEO / Meta ──
 seo:
   title: "{name} — AI Skill 执行可靠性审计"
-  description: "AI 为你创建的 Skill 执行起来靠谱吗？{name} 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——五维排查，帮你把问题修掉再执行。"
+  description: "AI 为你创建的 Skill 执行起来靠谱吗？五维自动审查——地基是否稳固 · 代码有无隐患 · 规则是否明确 · 护栏是否到位 · 复杂度是否可控"
 
 # ── 辅助功能 ──
 a11y:
@@ -41,7 +41,7 @@ nav:
 hero:
   subtitle: |
     AI 为你创建的 Skill 执行起来靠谱吗？
-    自动排查幻觉风险 · 输出不稳定风险 · 安全漏洞 · 逻辑漏洞
+    五维自动审查——地基是否稳固 · 代码有无隐患 · 规则是否明确 · 护栏是否到位 · 复杂度是否可控
   cta_github: ⭐ GitHub 开源
   cta_skillhub: 📦 SkillHub        # 仅当有 skillhub 配置时使用
   cta_clawhub: 🦞 ClawHub           # 仅当有 clawhub 配置时使用

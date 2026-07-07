@@ -8,7 +8,7 @@ name: HaluCatch
 name_zh: 捕幻
 version: 1.7.10
 version_short: 1.7
-description: AI 为你创建的 Skill 执行起来靠谱吗？HaluCatch 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——五维排查，帮你把问题修掉再执行。
+description: AI 为你创建的 Skill 执行起来靠谱吗？五维自动审查——地基是否稳固 · 代码有无隐患 · 规则是否明确 · 护栏是否到位 · 复杂度是否可控
 author: CoderMoray
 lang: zh-CN
 
@@ -50,7 +50,7 @@ hero:
   title: HaluCatch 捕幻
   subtitle: |
     AI 为你创建的 Skill 执行起来靠谱吗？
-    自动排查幻觉风险 · 输出不稳定风险 · 安全漏洞 · 逻辑漏洞
+    五维自动审查——地基是否稳固 · 代码有无隐患 · 规则是否明确 · 护栏是否到位 · 复杂度是否可控
   badges:
     - "🐍 Python"
     - "📋 3 份报告"
