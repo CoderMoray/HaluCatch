@@ -100,7 +100,7 @@ def _count_workflow_steps(md):
     script_signal = re.compile(
         r'(?:'
         r'scripts/|src/|bin/|\[EXEC\]'
-        r'|```'                                                                     # fenced code block
+        r'|```\w'                                                                   # fenced code block (with lang tag)
         r'|`[^`]*\.(?:py|sh|go|rb|js|ts|pl|R|java|swift|kt)[^`]*`'                 # inline code: `xxx.py`
         r'|`[^`]*(?:python3?|bash|node|ruby|go run|npx|pip)[^`]*`'                 # inline code: `python3 xxx`
         r'|(?:python3?|bash|node|ruby|\./)\s+\S+\.(?:py|sh|go|rb|js|ts|pl|R)'      # plain CLI ref
@@ -144,11 +144,8 @@ def _count_script_refs(info):
         inline_refs = set()
         for m in re.finditer(r'`([^`]+)`', md):
             content = m.group(1).strip()
-            # 命令行调用
-            if re.search(r'(?:python3?|bash|node|ruby|go\s+run|npx|pip|make|\./)\b', content):
-                inline_refs.add(content)
-            # 脚本文件路径（含扩展名）
-            elif re.search(r'\b\w+\.(?:py|sh|go|rb|js|ts|pl|R|java|swift|kt)\b', content):
+            if (re.search(r'(?:python3?|bash|node|ruby|go\s+run|npx|pip|make|\./)\b', content)
+                    or re.search(r'\b\w+\.(?:py|sh|go|rb|js|ts|pl|R|java|swift|kt)\b', content)):
                 inline_refs.add(content)
         count += len(inline_refs)
 
@@ -361,13 +358,13 @@ def _table_complexity(md):
         line_idx = md[:pos].count('\n')
         next_line = sep_positions[i + 1] if i + 1 < len(sep_positions) else len(md)
         next_idx = md[:next_line].count('\n')
-        body_rows = [l for l in lines[line_idx + 1:next_idx] if l.strip().startswith('|')]
+        body_rows = [ln for ln in lines[line_idx + 1:next_idx] if ln.strip().startswith('|')]
         rows_per_table.append(len(body_rows) + 1)
 
     # 分三类
     small, medium, large = 0, 0, 0
     big_cols, big_sizes = [], []
-    for c, r in zip(cols_list, rows_per_table):
+    for c, r in zip(cols_list, rows_per_table, strict=True):
         size = c * r
         if c <= 3 or r <= 2:
             small += 1
@@ -398,13 +395,22 @@ def _instruction_density(md):
     lines = md.splitlines()
     total = max(len(lines), 1)
 
-    # 祈使句：以动词开头的行或包含 "必须/应该/不要" 等
+    # 祈使句：精确匹配——避免「请用/请使用」等示例型问法
     imperatives = len(re.findall(
-        r'(?i)(?:you\s+(?:should|must|cannot|need|have)|'
-        r'[Mm]ake\s+sure|[Ee]nsure\s+|[Dd]o\s+not|[Nn]ever\s+|'
-        r'[Aa]lways\s+|必须|应该|不要|请|务必|切勿)',
+        r'(?i)(?:'
+        r'you\s+(?:should|must|cannot|need|have)\b|'
+        r'\b[Mm]ake\s+sure\b|\b[Ee]nsure\b|\b[Dd]o\s+not\b|'
+        r'\b[Nn]ever\s+|\b[Aa]lways\s+|'
+        r'必须|应该|务必|切勿|禁止|'
+        r'请(?:确保|检查|确认|不要|勿|执行|运行|参照|参考|遵循|记录|保存|输出)'
+        r')',
         md
     ))
+    steps = _count_steps(md)
+    code_blocks = len(re.findall(r'```', md)) // 2  # 每对 ``` 算一个块
+
+    density = (imperatives + steps + code_blocks) / total
+    return min(density * 100, 10)
     steps = _count_steps(md)
     code_blocks = len(re.findall(r'```', md)) // 2  # 每对 ``` 算一个块
 
@@ -424,28 +430,33 @@ def _score_to_level(score):
 
 
 def _script_coverage_ratio(info):
-    """计算脚本覆盖比：脚本引用数 / 工作流步骤数（仅含脚本引用的步骤）。"""
+    """计算脚本覆盖比：有脚本引用的步骤数 / 总步骤数。"""
     md = info.get('skill_md', '') or ''
     total_steps = _count_steps(md)
-    workflow_steps = _count_workflow_steps(md)
+    workflow_steps = _count_workflow_steps(md)  # 有脚本引用的步骤数
     script_refs = _count_script_refs(info)
 
-    # 无工作流步骤 → 无需覆盖
-    if workflow_steps == 0:
+    # 无步骤 → 跳过
+    if total_steps == 0:
         return 0.3, 1.0, total_steps, workflow_steps, script_refs
 
-    ratio = min(script_refs / workflow_steps, 1.0)
+    ratio = min(workflow_steps / total_steps, 1.0)
 
-    if ratio >= 0.9:
+    # ≥50% 覆盖 = 满分（=0 风险），<10% = 几乎无兜底
+    if ratio >= 0.5:
         multiplier = 0.3
-    elif ratio >= 0.7:
+        coverage_score = 0
+    elif ratio >= 0.3:
         multiplier = 0.6
-    elif ratio >= 0.5:
+        coverage_score = 3
+    elif ratio >= 0.1:
         multiplier = 0.8
+        coverage_score = 6
     else:
         multiplier = 1.0
+        coverage_score = 9
 
-    return multiplier, ratio, total_steps, workflow_steps, script_refs
+    return multiplier, ratio, total_steps, workflow_steps, script_refs, coverage_score
 
 
 def check_complexity(info, skill_type='code-engineered'):
@@ -535,17 +546,20 @@ def check_complexity(info, skill_type='code-engineered'):
     # ── 代码工程型专属 ──
     if is_code:
         # 6) 脚本覆盖比（计算但不计入 weighted，用作乘数）
-        multiplier, ratio, total_steps, workflow_steps, script_count = _script_coverage_ratio(info)
+        multiplier, ratio, total_steps, wf_steps, script_count, coverage_score = _script_coverage_ratio(info)
+        desc_steps = total_steps - wf_steps
         coverage_pct = f'{ratio:.0%}' if ratio > 0 else '0%'
-        coverage_label = '🟢 全覆盖' if ratio >= 0.9 else (
-            '🟡 多数覆盖' if ratio >= 0.7 else (
-                '🟠 半数覆盖' if ratio >= 0.5 else '🔴 覆盖不足'
+        coverage_label = (
+            '🟢 覆盖充分' if ratio >= 0.5 else (
+                '🟡 覆盖不足' if ratio >= 0.3 else (
+                    '🟠 覆盖薄弱' if ratio >= 0.1 else '🔴 基本无覆盖'
+                )
             )
         )
         scores['coverage'] = {
             'label': '脚本覆盖比',
-            'value': f'{coverage_pct} ({script_count} 脚本/{workflow_steps} 工作流步骤, 含 {total_steps - workflow_steps} 说明性步骤) — {coverage_label}',
-            'score': (1.0 - ratio) * 10,  # 0→10, 1.0→0
+            'value': f'{coverage_pct} ({wf_steps}/{total_steps} 步有脚本, {desc_steps} 步无) — {coverage_label}',
+            'score': coverage_score,
             'level': coverage_label,
             'multiplier': multiplier,
         }

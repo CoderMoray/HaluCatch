@@ -408,21 +408,24 @@ See also [troubleshooting](docs/troubleshooting.md).
 
 
 def test_complexity_low_coverage_multiplier():
-    """代码型 + 低脚本覆盖 → 乘数 ≈ 1.0。"""
+    """代码型 + 5 步中 2 步有脚本 → 40% 覆盖 → 乘数 ×0.6。"""
     md = """## Instructions
-1. Step one
+1. Run scripts/etl.py to process data
 2. Step two
 3. Step three
-4. Step four
+4. python3 scripts/clean.py --output clean.csv
 5. Step five
 """
     info = _make_info(md)
     info['files'] = [
-        {'name': 'scripts/helper.py', 'path': 'scripts/helper.py', 'ext': '.py'}
+        {'name': 'scripts/etl.py', 'path': 'scripts/etl.py', 'ext': '.py'},
+        {'name': 'scripts/clean.py', 'path': 'scripts/clean.py', 'ext': '.py'},
     ]
     result = check_complexity(info, 'code-engineered')
     cov = result['raw']['coverage']
-    assert cov['multiplier'] == 1.0
+    # 2/5 = 40% → ≥30% → multiplier 0.6
+    assert cov['multiplier'] == 0.6
+    assert cov['score'] == 3
 
 
 def test_complexity_table_complex():
