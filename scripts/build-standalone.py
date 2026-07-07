@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """Build a standalone, single-file HaluCatch page for offline sharing.
 Dependencies: python3, node (with javascript-obfuscator installed)."""
-import re, urllib.request, subprocess, sys, os, tempfile, shutil
+import os
+import re
+import shutil
+import subprocess
+import tempfile
+import urllib.request
 from pathlib import Path
 
 DOCS = Path(__file__).parent.parent / 'docs'

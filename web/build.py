@@ -3,8 +3,11 @@
 从 config.yaml + locales/xx.yaml 生成 docs/ 目录下的多语言 index.html
 用法: python3 build.py [--lang zh-CN] [--all]
 """
-import yaml, shutil, argparse
+import argparse
+import shutil
 from pathlib import Path
+
+import yaml
 
 ROOT = Path(__file__).resolve().parent
 PROJECT_ROOT = ROOT.parent
@@ -160,8 +163,6 @@ def merge_config(config, locale):
         import json
         stages_js = json.dumps(demo.get("stages", {}), ensure_ascii=False, indent=2)
 
-        demo_stages = demo.get("stages", {})
-
         data["demo_init_script"] = f"""<script>
 window.halucatchDemo = new AIChatDemo({{
   container: '#ai-chat-demo-container',
@@ -286,7 +287,6 @@ setTimeout(function() {{ window.halucatchDemo.begin(); }}, 100);
             </div>\n"""
 
         # 审查对话
-        chat = qs.get("audit_chat", {})
         chat_user = qs_i18n["audit_chat"]["user_msg"].format(name=data["name"])
         chat_scan = qs_i18n["audit_chat"]["ai_scan_msg"].strip()
         chat_done = qs_i18n["audit_chat"]["ai_done_msg"].strip()
@@ -401,14 +401,14 @@ setTimeout(function() {{ window.halucatchDemo.begin(); }}, 100);
         <div class="step-num">1</div>
         <div class="step-content">
           <h3>{dev_i18n.get('step1_title', 'Clone')}</h3>
-          <pre>{dev.get('clone_cmd', f'git clone {config["github_url"]}.git\\ncd {config["name"]}').strip()}</pre>
+          <pre>{dev.get('clone_cmd', f'git clone {config["github_url"]}.git{chr(10)}cd {config["name"]}').strip()}</pre>
         </div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-content">
           <h3>{dev_i18n.get('step2_title', 'Run')}</h3>
-          <pre>{chr(10).join([f'<span class="comment">#{c["comment"]}</span>\\n{c["cmd"]}' if c.get("comment") else c["cmd"] for c in dev.get("run_cmds", [])])}</pre>
+          <pre>{chr(10).join([f'<span class="comment">#{c["comment"]}</span>{chr(10)}{c["cmd"]}' if c.get("comment") else c["cmd"] for c in dev.get("run_cmds", [])])}</pre>
         </div>
       </div>
       <div class="step">
@@ -547,7 +547,7 @@ def copy_assets(output_dir, config=None):
         content = theme_js.read_text(encoding="utf-8")
         content = content.replace("{{ theme_storage_key }}", config.get("theme_storage_key", "halucatch-theme"))
         theme_js.write_text(content, encoding="utf-8")
-        print(f"  🔧 theme.js STORAGE_KEY replaced")
+        print("  🔧 theme.js STORAGE_KEY replaced")
 
     # 复制 favicon 到输出根目录（浏览器默认从 / 加载）
     favicon = assets_src / "images" / "favicon.svg"
@@ -584,10 +584,7 @@ def main():
         context = merge_config(config, locale)
 
         # 输出路径：docs/index.html (zh-CN) 或 docs/{lang}/index.html
-        if lang == "zh-CN":
-            out_dir = DIST
-        else:
-            out_dir = DIST / lang
+        out_dir = DIST if lang == "zh-CN" else DIST / lang
 
         render_template(template, context, out_dir / "index.html")
         copy_assets(out_dir, config)
