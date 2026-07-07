@@ -141,7 +141,7 @@ def merge_config(config, locale):
       {item['name']}
       <span class="status {item['status']}">{item['status_text']}</span>
     </a>\n"""
-        data["security_audit_section"] = f"""<section class="anim-item" data-anim="1800" style="text-align:center;padding:0 20px 40px;">
+        data["security_audit_section"] = f"""<section class="anim-item scroll-anim" style="text-align:center;padding:0 20px 40px;">">
   <h3 style="font-size:1.2rem;margin-bottom:14px;text-align:center;font-weight:600;color:var(--text2);">{locale["security"]["title"]}</h3>
   <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
     {items_html.strip()}
@@ -154,7 +154,7 @@ def merge_config(config, locale):
     demo = config.get("demo")
     if demo:
         demo_i18n = locale.get("demo", {})
-        data["demo_section"] = f"""<section id="demo" class="anim-item" data-anim="2300">
+        data["demo_section"] = f"""<section id="demo" class="anim-item scroll-anim">
   <h2>{demo_i18n.get("title", "Live Demo").format(name=data['name'])}</h2>
   <div id="ai-chat-demo-container"></div>
 </section>"""
