@@ -260,24 +260,6 @@ def check_code_risks(info):
             if file_has_issue:
                 lang_stats[lang]['findings'] += 1
 
-    # 全局：Python 代码量统计（兼容旧逻辑）
-    py_lines = 0
-    py_count = 0
-    if 'python' in lang_files:
-        for f in lang_files['python']:
-            try:
-                with open(f['path'], 'r') as fh:
-                    py_lines += len(fh.readlines())
-            except Exception:
-                pass
-            py_count += 1
-
-    if py_lines > 200:
-        if py_count > 1:
-            issues.append((f'🟡 嵌入代码 {py_count} 个 .py 文件，最大单文件约 {py_lines} 行 — 文件较多，AI 复现时可能遗漏', 'warn'))
-        else:
-            issues.append((f'🟡 嵌入代码 {py_lines} 行 — 较长，AI 复现时可能遗漏或篡改', 'warn'))
-
     # 测试文件正向信号
     test_py_count = info.get('test_py_count', 0)
     if test_py_count > 0:
