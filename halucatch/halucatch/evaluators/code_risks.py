@@ -141,6 +141,18 @@ def _check_legacy_python(py_content, info):
     return {'rating': rating, 'issues': issues, 'score': score_display}
 
 
+def _is_safe_division(code):
+    """检查代码中的除法是否安全（分母是常量或函数调用）。"""
+    for m in re.finditer(r'return\s+[^/\n]*/\s*(\w+)(\s*\()?', code):
+        denom = m.group(1)
+        has_paren = m.group(2) is not None
+        if denom.isdigit():
+            continue  # 纯数字常量，安全
+        if has_paren:
+            continue  # 分母后跟 (，是 max/min/len 等函数调用，安全
+        return False  # 找到真正危险的（变量除法无保护）
+    return True  # 所有除法都安全
+
 def _read_file(path):
     """读取文件内容，失败返回空。"""
     try:
@@ -150,24 +162,6 @@ def _read_file(path):
         return ''
 
 
-def _check_universal(source, lang, path):
-    """通用跨语言检查。"""
-    findings = []
-    preprocessed = _preprocess(source) if lang == 'python' else source
-
-    for name, pattern, desc in UNIVERSAL_PATTERNS:
-        if name == '超长行':
-            long_lines = [ln for ln in source.splitlines() if len(ln) > 200]
-            if long_lines:
-                findings.append((
-                    f'🟡 [超长行] {desc}（{len(long_lines)} 行超过 200 字符，出现在 {path}）',
-                    'warn'
-                ))
-            continue
-        if pattern and re.search(pattern, preprocessed, re.IGNORECASE):
-            findings.append((f'🔴 [{name}] {desc}（{path}）', 'fail'))
-
-    return findings
 
 
 # ── 主函数 ─────────────────────────────────────────────────────────
@@ -212,7 +206,9 @@ def check_code_risks(info):
         'perl': PERL_PATTERNS,
     }
 
-    scanned_count = 0
+    files_with_issues = 0
+    total_files = 0
+
     for lang, file_list in lang_files.items():
         patterns = lang_patterns.get(lang, [])
         if not patterns:
@@ -221,24 +217,40 @@ def check_code_risks(info):
         for f in file_list:
             path = f.get('rel_path') or f.get('path') or f.get('name', '')
             source = _read_file(f.get('path', ''))
+            file_has_issue = False
+            total_files += 1
 
             # 语言专属规则
             preprocessed = _preprocess(source) if lang == 'python' else source
             for name, pattern, desc in patterns:
                 total_checks += 1
                 if re.search(pattern, preprocessed, re.MULTILINE | re.DOTALL):
+                    # 除零风险：排除分母为常量或 max()/min() 保护的情况
+                    if name == '除零风险' and _is_safe_division(preprocessed):
+                        continue
                     issues.append((f'🟠 [{lang}/{name}] {desc}（{path}）', 'warn'))
                     found_risks += 1
+                    file_has_issue = True
 
             # 通用规则
-            universal_findings = _check_universal(source, lang, path)
-            for text, severity in universal_findings:
-                issues.append((text, severity))
+            for uv_name, uv_pattern, uv_desc in UNIVERSAL_PATTERNS:
                 total_checks += 1
-                if severity in ('fail', 'warn'):
+                if uv_name == '超长行':
+                    long_lines = [ln for ln in source.splitlines() if len(ln) > 200]
+                    if long_lines:
+                        issues.append((
+                            f'🟡 [超长行] {uv_desc}（{len(long_lines)} 行超过 200 字符，出现在 {path}）',
+                            'warn'
+                        ))
+                        found_risks += 1
+                        file_has_issue = True
+                elif uv_pattern and re.search(uv_pattern, preprocessed, re.IGNORECASE):
+                    issues.append((f'🔴 [{uv_name}] {uv_desc}（{path}）', 'fail'))
                     found_risks += 1
+                    file_has_issue = True
 
-            scanned_count += 1
+            if file_has_issue:
+                files_with_issues += 1
 
     # 全局：Python 代码量统计（兼容旧逻辑）
     py_lines = 0
@@ -263,13 +275,17 @@ def check_code_risks(info):
     if test_py_count > 0:
         issues.append((f'✅ 检测到 {test_py_count} 个测试文件（有测试代码，质量意识不错）', 'pass'))
 
-    # 评级
-    if found_risks == 0 and py_lines <= 200:
+    # 评级（按有问题的文件数）
+    if files_with_issues == 0:
         rating = '🟢 低风险'
-    elif found_risks <= 2:
+    elif files_with_issues <= 2:
         rating = '🟠 有风险'
     else:
         rating = '🔴 高风险'
 
     score_display = f'{total_checks - found_risks}/{total_checks}' if total_checks > 0 else '-'
+    if total_files > 0 and files_with_issues > 0:
+        score_display += f'（{total_files - files_with_issues}/{total_files} 文件无问题）'
+    elif total_files > 0:
+        score_display += f'（{total_files} 文件全过）'
     return {'rating': rating, 'issues': issues, 'score': score_display}
