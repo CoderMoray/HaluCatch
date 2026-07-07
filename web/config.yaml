@@ -6,7 +6,7 @@
 # ── 基础信息 ──
 name: HaluCatch
 name_zh: 捕幻
-version: 1.7.8
+version: 1.7.9
 version_short: 1.7
 description: AI 为你创建的 Skill 执行起来靠谱吗？HaluCatch 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——四维排查，帮你把问题修掉再执行。
 author: CoderMoray

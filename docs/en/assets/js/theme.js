@@ -3,7 +3,7 @@
    暗色 / 亮色 / 跟随系统，滑动药丸指示器，3 段渐变光晕
    ============================================================ */
 (function() {
-  var STORAGE_KEY = '{{ theme_storage_key }}';
+  var STORAGE_KEY = 'halucatch-theme';
   var pill = document.getElementById('theme-pill');
   var btns = pill.querySelectorAll('.theme-pill-btn');
   var mql = window.matchMedia('(prefers-color-scheme: dark)');

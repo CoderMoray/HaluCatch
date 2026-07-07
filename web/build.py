@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """HaluCatch — 官网构建脚本
-从 config.yaml + locales/xx.yaml 生成 dist/ 目录下的多语言 index.html
+从 config.yaml + locales/xx.yaml 生成 docs/ 目录下的多语言 index.html
 用法: python3 build.py [--lang zh-CN] [--all]
 """
 import yaml, shutil, argparse
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-DIST = ROOT / "dist"
+PROJECT_ROOT = ROOT.parent
+DIST = PROJECT_ROOT / "docs"      # 输出到 docs/（GitHub Pages 部署目录）
 
 
 def load_yaml(path):
@@ -150,7 +151,7 @@ def merge_config(config, locale):
     demo = config.get("demo")
     if demo:
         demo_i18n = locale.get("demo", {})
-        data["demo_section"] = f"""<section id="demo" class="anim-item" data-anim="1900">
+        data["demo_section"] = f"""<section id="demo" class="anim-item" data-anim="2300">
   <h2>{demo_i18n.get("title", "Live Demo").format(name=data['name'])}</h2>
   <div id="ai-chat-demo-container"></div>
 </section>"""
@@ -158,6 +159,8 @@ def merge_config(config, locale):
         # 序列化 demo stages 为 JavaScript 对象字面量
         import json
         stages_js = json.dumps(demo.get("stages", {}), ensure_ascii=False, indent=2)
+
+        demo_stages = demo.get("stages", {})
 
         data["demo_init_script"] = f"""<script>
 window.halucatchDemo = new AIChatDemo({{
@@ -174,6 +177,7 @@ window.halucatchDemo = new AIChatDemo({{
     action: REPORTS_DATA.action
   }}
 }});
+setTimeout(function() {{ window.halucatchDemo.begin(); }}, 100);
 </script>"""
     else:
         data["demo_section"] = ""
@@ -527,8 +531,8 @@ def render_template(template_path, context, output_path):
     print(f"  ✅ {output_path}")
 
 
-def copy_assets(output_dir):
-    """复制 web/assets/ 全部静态资源到 dist"""
+def copy_assets(output_dir, config=None):
+    """复制 web/assets/ 全部静态资源到输出目录"""
     assets_src = ROOT / "assets"
     if assets_src.exists():
         dest = output_dir / "assets"
@@ -536,6 +540,20 @@ def copy_assets(output_dir):
             shutil.rmtree(dest)
         shutil.copytree(assets_src, dest)
         print(f"  📁 assets → {dest}")
+
+    # 替换 theme.js 中的 STORAGE_KEY 占位符
+    theme_js = dest / "js" / "theme.js"
+    if theme_js.exists():
+        content = theme_js.read_text(encoding="utf-8")
+        content = content.replace("{{ theme_storage_key }}", config.get("theme_storage_key", "halucatch-theme"))
+        theme_js.write_text(content, encoding="utf-8")
+        print(f"  🔧 theme.js STORAGE_KEY replaced")
+
+    # 复制 favicon 到输出根目录（浏览器默认从 / 加载）
+    favicon = assets_src / "images" / "favicon.svg"
+    if favicon.exists():
+        shutil.copy2(favicon, output_dir / "favicon.svg")
+        print(f"  📄 favicon.svg → {output_dir}")
 
 
 def main():
@@ -565,14 +583,14 @@ def main():
         locale = load_yaml(locale_path)
         context = merge_config(config, locale)
 
-        # 输出路径：dist/index.html (默认) 或 dist/en/index.html
+        # 输出路径：docs/index.html (zh-CN) 或 docs/{lang}/index.html
         if lang == "zh-CN":
             out_dir = DIST
         else:
             out_dir = DIST / lang
 
         render_template(template, context, out_dir / "index.html")
-        copy_assets(out_dir)
+        copy_assets(out_dir, config)
 
     print(f"\n🎉 Done! Output in {DIST}/")
 

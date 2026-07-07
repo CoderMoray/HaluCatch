@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HaluCatch — AI Skill 执行可靠性审计</title>
+  <meta name="description" content="AI 为你创建的 Skill 执行起来靠谱吗？HaluCatch 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——四维排查，帮你把问题修掉再执行。">
+  <meta property="og:title" content="HaluCatch — AI Skill 执行可靠性审计">
+  <meta property="og:description" content="AI 为你创建的 Skill 执行起来靠谱吗？HaluCatch 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——四维排查，帮你把问题修掉再执行。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://codermoray.github.io/HaluCatch/">
+  <meta property="og:image" content="https://codermoray.github.io/HaluCatch/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="HaluCatch — AI Skill 执行可靠性审计">
+  <meta name="twitter:description" content="AI 为你创建的 Skill 执行起来靠谱吗？HaluCatch 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——四维排查，帮你把问题修掉再执行。">
+  <meta name="twitter:image" content="https://codermoray.github.io/HaluCatch/og-image.png">
+  <link rel="canonical" href="https://codermoray.github.io/HaluCatch/">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <script>
+    function buildJSONLD() {
+      return {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "HaluCatch",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "macOS, Windows, Linux",
+        "description": "AI 为你创建的 Skill 执行起来靠谱吗？HaluCatch 在 AI 动手前自动审查你的指令文件，找出幻觉风险、输出不稳定风险、安全漏洞、逻辑漏洞——四维排查，帮你把问题修掉再执行。",
+        "version": HC_VER,
+        "license": "https://github.com/CoderMoray/HaluCatch/blob/main/LICENSE",
+        "url": "https://codermoray.github.io/HaluCatch/",
+        "inLanguage": "zh-CN",
+        "author": { "@type": "Person", "name": "CoderMoray" },
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" }
+      };
+    }
+  </script>
+  <script>
+    // ── 版本号（唯一源头） ──
+    var HC_VER = '1.7.8';      // full: X.Y.Z
+    var HC_VER_SHORT = '1.7';  // short: X.Y
+
+    var _t = (function(){ try { return localStorage.getItem('halucatch-theme'); } catch(e){} return null; })() || 'system';
+    if (_t === 'system') _t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', _t);
+    document.write('<style>html,body{background:' + (_t === 'dark' ? '#0a0a0f' : '#f7f7fb') + '}</style>');
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --surface2: #1a1a2e;
+      --border: #2a2a3e;
+      --text: #e0e0f0;
+      --text2: #8888aa;
+      --accent: #6c63ff;
+      --accent2: #00d4aa;
+      --red: #ff6b6b;
+      --orange: #ffa94d;
+      --green: #51cf66;
+      --blue: #339af0;
+      --glow: #1a1a3e;
+      --h1-from: #6c63ff;
+      --h1-to: #00d4aa;
+      --spring-stiffness: 1.36;
+      --spring-duration: 0.5s;
+      --c-border: var(--border);
+      --c-bg: var(--bg);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      :root {
+        --spring-stiffness: 1;
+        --spring-duration: 0.2s;
+      }
+    }
+    [data-theme="light"] {
+      --bg: #f7f7fb;
+      --surface: #ffffff;
+      --surface2: #eeeef5;
+      --border: #dddde8;
+      --text: #1a1a2e;
+      --text2: #6e6e86;
+      --accent: #5a52e0;
+      --accent2: #0d8a5e;
+      --red: #d94a4a;
+      --orange: #d9812e;
+      --green: #3b8c4a;
+      --blue: #2878c8;
+      --glow: #d0dff5;
+      --h1-from: #6c63ff;
+      --h1-to: #00d4aa;
+    }
+    :root { --glow-opacity: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      position: relative;
+      padding-top: 52px;
+      transition: background-color 0.5s ease, color 0.5s ease;
+    }
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 8px;
+      z-index: 10000;
+      padding: 8px 16px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 0 0 6px 6px;
+      text-decoration: none;
+      transition: top 0.2s ease;
+    }
+    .skip-link:focus {
+      top: 0;
+      outline: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    #main-content {
+      scroll-margin-top: 60px;
+    }
+    html { scroll-behavior: smooth; }
+
+    /* Nav */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0; z-index: 100;
+      height: 52px;
+      background: linear-gradient(to bottom, rgba(10,10,15,0.75) 0%, rgba(10,10,15,0.75) 40%, rgba(10,10,15,0.68) 50%, rgba(10,10,15,0.38) 75%, rgba(10,10,15,0.09) 92%, rgba(10,10,15,0) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      transition: transform 0.3s ease;
+    }
+    .nav.hidden { transform: translateY(-100%); }
+    .nav.entering { transform: translateY(-100%); }
+    [data-theme="light"] .nav {
+      background: linear-gradient(to bottom, rgba(247,247,251,1) 0%, rgba(247,247,251,1) 40%, rgba(247,247,251,0.9) 50%, rgba(247,247,251,0.5) 75%, rgba(247,247,251,0.12) 92%, rgba(247,247,251,0) 100%);
+    }
+    .nav-inner {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+      position: relative;
+    }
+    .nav-brand {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-brand:hover { text-decoration: none; }
+    .nav-brand svg { flex-shrink: 0; }
+    .nav-links {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .nav-link {
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      color: var(--text2);
+      text-decoration: none;
+      white-space: nowrap; flex-shrink: 0;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .nav-link:hover { color: var(--text); background: var(--surface2); text-decoration: none; }
+    .nav-blog { position: relative; }
+    .nav-blog-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      min-width: 160px;
+      padding: 6px;
+      z-index: 200;
+    }
+    .nav-blog:hover .nav-blog-menu,
+    .nav-blog:focus-within .nav-blog-menu { display: block; }
+    .nav-blog-item {
+      display: block;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      color: var(--text2);
+      text-decoration: none;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .nav-blog-item:hover { color: var(--text); background: var(--surface2); text-decoration: none; }
+
+    /* Smooth reflow for cards & buttons */
+    .problem-card, .report-card, .blog-card, .install-card,
+    .badge, .btn, .chat-option-btn {
+      transition: transform 0.36s ease, width 0.36s ease, margin 0.36s ease, padding 0.36s ease, font-size 0.36s ease;
+    }
+
+    /* Smooth theme transitions */
+    .nav, .nav-link, .problem-card, .preview-container, .badge, pre, .btn,
+    .qs-tab, .step-num, footer, .theme-pill, .nav-blog-menu, .nav-blog-item, .nav-share-btn, .nav-share-menu {
+      transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, opacity 0.55s ease-out, transform 0.55s ease-out;
+    }
+    .nav { transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, transform 0.4s ease-out; }
+    .theme-pill {
+      position: relative;
+      display: inline-flex;
+      background: rgba(59,130,246,.04);
+      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--c-border);
+      border-radius: 22px;
+      padding: 2px;
+      gap: 0;
+      flex-shrink: 0;
+      transition: background-color .5s ease, color .5s ease, border-color .5s ease;
+    }
+    .theme-pill-indicator {
+      position: absolute;
+      top: 2px;
+      height: calc(100% - 4px);
+      background: var(--surface);
+      border-radius: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      transition: left var(--spring-duration) cubic-bezier(0.34, var(--spring-stiffness), 0.64, 1), width var(--spring-duration) cubic-bezier(0.34, var(--spring-stiffness), 0.64, 1);
+      z-index: 0;
+      pointer-events: none;
+    }
+    [data-theme="light"] .theme-pill-indicator {
+      background: color-mix(in srgb, var(--c-bg) 75%, transparent);
+    }
+    [data-theme="dark"] .theme-pill-indicator {
+      background: color-mix(in srgb, rgba(200,215,255,.5), transparent);
+    }
+    [data-theme="dark"] .risk-tag.hallucination { background: #2a1a0e; border-color: #ffa94d; color: #ffb74d; }
+    [data-theme="dark"] .risk-tag.unstable { background: #2a2a0e; border-color: #ffd43b; color: #ffd54f; }
+    [data-theme="dark"] .risk-tag.security { background: #2a0e0e; border-color: #ff6b6b; color: #ff8787; }
+    [data-theme="dark"] .risk-tag.logic { background: #1a1a3e; border-color: #339af0; color: #5cb8ff; }
+    [data-theme="dark"] .risk-tag.reuse { background: #2a1a3e; border-color: #b39ddb; color: #ce93d8; }
+    [data-theme="dark"] .risk-tag.noprogress { background: #2a2a20; border-color: #a09080; color: #c0b0a0; }
+    [data-theme="dark"] .risk-tag.nocheck { background: #2a2a4e; border-color: #8888bb; color: #bbbbdd; }
+    [data-theme="dark"] .risk-tag.dependency { background: #0e2a0e; border-color: #69db7c; color: #69db7c; }
+    .theme-pill-btn {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: none;
+      background: transparent;
+      color: var(--text2);
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: color var(--spring-duration) cubic-bezier(0.34, var(--spring-stiffness), 0.64, 1);
+      font-family: inherit;
+    }
+    .theme-pill-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .theme-pill-btn.active { color: var(--text); }
+    .theme-pill-btn:hover:not(.active) { color: var(--text); }
+
+    /* 顶部固定渐变光晕，防止下拉时断层 */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 500px;
+      background: radial-gradient(ellipse at top, var(--glow) 0%, transparent 60%);
+      opacity: var(--glow-opacity);
+      pointer-events: none;
+      z-index: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    /* ── Entrance animations ── */
+    .anim-item {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.55s ease-out, transform 0.55s ease-out;
+    }
+    .anim-item.in { opacity: 1; transform: translateY(0); }
+    .anim-spring { transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+    a { color: var(--accent2); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 80px 20px 60px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--h1-from), var(--h1-to));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+      transition: background 0.5s ease, opacity 0.55s ease-out, transform 0.55s ease-out, font-size 0.36s ease;
+    }
+    .hero .subtitle {
+      font-size: 1.2rem;
+      color: var(--text2);
+      max-width: 600px;
+      margin: 0 auto 32px;
+    }
+    .hero .badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 32px; }
+    .badge {
+      background: color-mix(in srgb, var(--surface2) 60%, transparent);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 0.85rem;
+      color: var(--text2);
+    }
+    .safety-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 5px 6px; border-radius: 20px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--surface) 60%, transparent);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      color: var(--text2);
+      font-size: 0.8rem;
+      line-height: 1;
+      text-decoration: none;
+      transition: border-color 0.2s;
+    }
+    .safety-badge:hover { border-color: var(--accent); }
+    .safety-badge img { width: 16px; height: 16px; border-radius: 2px; flex-shrink: 0; }
+    .safety-badge .status {
+      display: inline-block; font-weight: 600; font-size: 0.72rem;
+      padding: 3px 8px; border-radius: 20px;
+      transform: translateY(0.5px);
+    }
+.safety-badge .status.pass { background: color-mix(in srgb, #c8e6c9 75%, transparent); color: #2e7d32; }
+.safety-badge .status.warn { background: color-mix(in srgb, #ffe0b2 75%, transparent); color: #e65100; }
+[data-theme="dark"] .safety-badge .status.pass { background: color-mix(in srgb, #234d38 75%, transparent); color: #66bb8a; }
+[data-theme="dark"] .safety-badge .status.warn { background: color-mix(in srgb, #4d3a1a 75%, transparent); color: #ffb74d; }
+    .cta-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+    .btn-outline:hover {
+      background: var(--accent);
+      color: white;
+      text-decoration: none;
+    }
+    .btn-outline:active {
+      background: #5a52e0;
+      border-color: #5a52e0;
+      color: white;
+    }
+    [data-theme="light"] .step-num { background: var(--accent); color: white; }
+
+    /* Sections */
+    section { padding: 60px 20px; max-width: 1100px; margin: 0 auto; }
+    section h2 {
+      font-size: 1.8rem;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    /* Problem */
+    .problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .problem-card {
+      display: flex;
+      flex-direction: column;
+      background: color-mix(in srgb, var(--surface) 75%, transparent);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .problem-card .icon { font-size: 2rem; margin-bottom: 12px; }
+    .problem-card h3 { font-size: 1rem; margin-bottom: 8px; }
+    .problem-card p { font-size: 0.9rem; color: var(--text2); }
+    .problem-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; padding-top: 10px; }
+    .risk-tag {
+      display: inline-flex; align-items: center;
+      padding: 2px 10px; border-radius: 10px;
+      font-size: 9px; font-weight: 600; line-height: 1.8;
+      border: 1px solid;
+    }
+    .risk-tag.hallucination { background: #fff3e0; border-color: #ffa94d; color: #e65100; }
+    .risk-tag.unstable { background: #fff8e1; border-color: #ffd43b; color: #f09f00; }
+    .risk-tag.security { background: #ffe8e8; border-color: #ff6b6b; color: #c92a2a; }
+    .risk-tag.logic { background: #e8f4fd; border-color: #339af0; color: #1976d2; }
+    .risk-tag.reuse { background: #f3e8ff; border-color: #b39ddb; color: #7b1fa2; }
+    .risk-tag.noprogress { background: #f5f0ec; border-color: #d0c8c0; color: #8c7a68; }
+    .risk-tag.nocheck { background: #dcdce6; border-color: #aaaabb; color: #666; }
+    .risk-tag.dependency { background: #e8f8e8; border-color: #69db7c; color: #2b8a3e; }
+
+    /* Report Preview */
+    .preview-container {
+      background: color-mix(in srgb, var(--surface) 75%, transparent);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .preview-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: color-mix(in srgb, var(--surface2) 75%, transparent);
+    }
+    .preview-tab {
+      padding: 12px 24px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--text2);
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .preview-tab.active {
+      color: var(--accent2);
+      border-bottom-color: var(--accent2);
+    }
+    .preview-body { padding: 32px; overflow-x: auto; }
+    .preview-body .report-content { display: none; }
+    .preview-body .report-content.active { display: block; }
+
+    /* Report styles */
+    .preview-body .report-content h3 { font-size: 1.1rem; margin: 24px 0 12px; color: var(--accent2); }
+    .preview-body .report-content h4 { font-size: 1rem; margin: 16px 0 8px; }
+    .preview-body .report-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 0.9rem;
+    }
+    .preview-body .report-content th, .preview-body .report-content td {
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .preview-body .report-content th { background: var(--surface2); }
+    .preview-body .report-content .pass { color: var(--green); }
+    .preview-body .report-content .warn { color: var(--orange); }
+    .preview-body .report-content .fail { color: var(--red); }
+    .preview-body .report-content ul { padding-left: 20px; margin: 8px 0; }
+    .preview-body .report-content li { margin: 4px 0; font-size: 0.9rem; }
+    .preview-body .report-content hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+    .preview-body .report-content .tip-box {
+      background: var(--surface2);
+      border-left: 3px solid var(--accent2);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 12px 0;
+      font-size: 0.9rem;
+    }
+
+    /* Quick Start */
+    .install-steps { display: grid; gap: 20px; }
+    .step {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .step-num {
+      width: 40px;
+      height: 40px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .step-content { flex: 1; }
+    .step-content h3 { margin-bottom: 8px; }
+    .step-content p { color: var(--text2); font-size: 0.9rem; margin-bottom: 8px; }
+    code {
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      color: var(--accent); padding: 2px 8px; border-radius: 11px; font-size: 0.85em; font-weight: 600;
+    }
+    pre {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    pre .comment { color: var(--text2); }
+
+    /* Tab Switch */
+    .qs-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+    .qs-tab {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 20px;
+      font-size: 0.9rem;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .qs-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .qs-tab:hover:not(.active) { background: var(--border); }
+    .qs-panel { display: none; }
+    .qs-panel.active { display: block; }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid var(--border);
+      color: var(--text2);
+      font-size: 0.9rem;
+    }
+    footer a { margin: 0 12px; }
+
+    /* Blog Section */
+    .blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .blog-card {
+      display: block;
+      background: color-mix(in srgb, var(--surface) 75%, transparent);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .blog-card:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+    .blog-card h3 { font-size: 1.05rem; margin: 8px 0; font-weight: 600; }
+    .blog-card p { color: var(--text2); font-size: 0.9rem; line-height: 1.6; }
+    .blog-platform {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 4px;
+    }
+    [data-theme="dark"] .blog-platform { background: #1a3a5c; color: #339af0; }
+    [data-theme="light"] .blog-platform { background: #e6f1fb; color: #2878c8; }
+    .blog-card:nth-child(1) .blog-platform { background: #e8f5fe; color: #1e80ff; }
+    .blog-card:nth-child(2) .blog-platform { background: #fef0f0; color: #e53e3e; }
+    [data-theme="dark"] .blog-card:nth-child(1) .blog-platform { background: #1a2840; color: #5aa8ff; }
+    [data-theme="dark"] .blog-card:nth-child(2) .blog-platform { background: #2a1818; color: #fc8181; }
+
+    /* FAQ Accordion */
+    .faq-list { display: flex; flex-direction: column; gap: 10px; }
+    .faq-item {
+      background: color-mix(in srgb, var(--surface) 75%, transparent);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .faq-q {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; background: none; border: none; padding: 14px 18px;
+      font-size: 0.9rem; color: var(--text); cursor: pointer; text-align: left;
+      font-family: inherit;
+    }
+    .faq-q:hover { color: var(--accent); }
+    .faq-arrow { flex-shrink: 0; transition: transform 0.4s ease; color: var(--text2); }
+    .faq-item.open .faq-arrow { transform: rotate(180deg); color: var(--accent); }
+    .faq-a {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+    }
+    .faq-item.open .faq-a { }
+    .faq-a p, .faq-a ol { padding: 0 18px 14px 36px; font-size: 0.85rem; color: var(--text2); line-height: 1.7; }
+    .faq-a ol { padding-left: 40px; }
+
+    /* Copy button */
+    .copy-wrapper { position: relative; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      display: flex; align-items: center; gap: 4px;
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 6px;
+      padding: 4px 10px; font-size: 0.75rem; color: var(--text2); cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .copy-btn svg { width: 13px; height: 13px; }
+    .copy-btn.copied { color: var(--green); border-color: var(--green); }
+
+    /* Report cards */
+    .report-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .report-card {
+      background: color-mix(in srgb, var(--surface) 75%, transparent);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .report-card h4 { font-size: 0.95rem; margin-bottom: 6px; }
+    .report-card .rc-audience { font-size: 0.75rem; color: var(--accent); margin-bottom: 8px; font-weight: 600; }
+    .report-card p { font-size: 0.85rem; color: var(--text2); line-height: 1.6; }
+
+    /* Install cards */
+    .install-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .install-card {
+      background: color-mix(in srgb, var(--surface) 75%, transparent);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+    }
+    .install-title { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .install-subtitle { font-size: 0.72rem; color: var(--text2); margin-bottom: 10px; }
+    .install-note {
+      display: inline-block; font-size: 0.72rem; font-weight: 600;
+      padding: 3px 10px; border-radius: 12px;
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      color: var(--accent);
+    }
+    .install-note-wrap { margin-bottom: 16px; }
+    .install-copy-btn {
+      display: block; margin: 0 auto;
+      background: var(--accent); border: none; border-radius: 8px;
+      padding: 10px 20px; font-size: 0.85rem; color: #fff; cursor: pointer;
+      transition: background 0.3s ease; font-family: inherit; font-weight: 600;
+      white-space: nowrap;
+    }
+    .install-copy-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .install-copy-btn:active { transform: translateY(0); }
+    .install-copy-btn.copied { background: var(--green); }
+    .install-copy-text { display: inline-block; position: relative; overflow: hidden; }
+    .install-copy-text > span { display: block; white-space: nowrap; transition: transform 0.3s ease; }
+    .install-copy-text > span.copied-label { position: absolute; left: 0; top: 0; transform: translateY(100%); }
+    .install-copy-btn.copied .install-copy-text > span.copy-label { transform: translateY(-100%); }
+    .install-copy-btn.copied .install-copy-text > span.copied-label { transform: translateY(0); }
+
+    /* Audit Flow */
+    .audit-flow-wrap { margin-top: 28px; text-align: center; }
+    .flow-desc { font-size: 0.85rem; color: var(--text2); margin-bottom: 14px; }
+    .audit-flow { display: flex; align-items: center; justify-content: space-between; gap: 8px; max-width: 640px; margin: 0 auto; }
+    .flow-step {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 14px 24px; min-width: 90px;
+    }
+    .flow-icon-svg { width: 26px; height: 26px; color: var(--accent); }
+    .flow-label { font-size: 0.82rem; color: var(--text2); white-space: nowrap; font-weight: 500; }
+    .flow-arrow { width: 22px; height: 22px; color: var(--text2); flex-shrink: 0; }
+
+    /* Intro Chat */
+    .intro-chat {
+      display: flex; flex-direction: column; gap: 10px;
+      background: color-mix(in srgb, var(--surface) 75%, transparent);
+      -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+      border: 1px solid var(--border); border-radius: 12px;
+      padding: 20px; max-width: 640px; margin: 0 auto;
+    }
+    .intro-msg { display: flex; max-width: 90%; animation: introFadeIn 0.35s ease backwards; }
+    .intro-msg.user { align-self: flex-end; }
+    .intro-msg.ai { align-self: flex-start; flex-direction: column; gap: 4px; }
+    .intro-msg:nth-child(2) { animation-delay: 0.15s; }
+    .intro-msg:nth-child(3) { animation-delay: 0.3s; }
+    .intro-msg-head { display: flex; align-items: center; gap: 6px; }
+    .intro-avatar {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--accent); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; flex-shrink: 0;
+    }
+    .intro-name { font-size: 0.75rem; color: var(--text2); font-weight: 500; }
+    .intro-bubble {
+      padding: 8px 14px; border-radius: 10px; font-size: 0.82rem; line-height: 1.7;
+    }
+    .intro-msg.user .intro-bubble {
+      background: var(--accent); color: #fff; border-bottom-right-radius: 3px;
+    }
+    .intro-msg.ai .intro-bubble {
+      background: var(--surface2); color: var(--text);
+      border: 1px solid var(--border); border-bottom-left-radius: 3px;
+    }
+    @keyframes introFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Share button */
+    .nav-share {
+      position: relative;
+    }
+    .nav-tools {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-share-btn {
+      display: flex; align-items: center; gap: 4px;
+      background: none; border: 1px solid var(--border); border-radius: 8px;
+      padding: 4px 10px; font-size: 0.8rem; color: var(--text); cursor: pointer;
+      transition: border-color 0.3s ease, background 0.3s ease;
+    }
+    .nav-share-btn:hover { border-color: var(--accent); background: var(--surface2); }
+    .nav-share-btn svg { width: 14px; height: 14px; }
+    .nav-share-menu {
+      position: absolute; top: 40px; right: 0; z-index: 200;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 6px; min-width: 160px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      opacity: 0; transform: translateY(-6px); pointer-events: none;
+      transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .nav-share:focus-within .nav-share-menu,
+    .nav-share:hover .nav-share-menu { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .nav-share-item {
+      display: flex; align-items: center; gap: 8px; width: 100%;
+      background: none; border: none; border-radius: 6px; padding: 8px 10px;
+      font-size: 0.8rem; color: var(--text); cursor: pointer; text-align: left;
+      opacity: 0; transform: translateY(-6px) scale(0.95);
+      transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .nav-share-item:nth-child(1) { transition-delay: 0ms; }
+    .nav-share-item:nth-child(2) { transition-delay: 50ms; }
+    .nav-share-item:nth-child(3) { transition-delay: 100ms; }
+    .nav-share:hover .nav-share-item,
+    .nav-share:focus-within .nav-share-item { opacity: 1; transform: translateY(0) scale(1); }
+    .nav-share-item:hover { background: var(--surface2); }
+    .nav-share-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .share-toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--accent); color: white; padding: 8px 20px; border-radius: 8px;
+      font-size: 0.85rem; z-index: 300; pointer-events: none;
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+    .share-toast.show { opacity: 1; }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 2rem; }
+      .preview-tabs { overflow-x: auto; }
+      .cta-group { flex-direction: column; align-items: center; }
+      .nav-inner { padding: 0 12px; }
+      .nav-links { gap: 0; }
+      .nav-link { padding: 5px 7px; font-size: 0.78rem; transition: font-size 0.36s ease; }
+    }
+
+    /* Pill & share label animation */
+    .pill-label { display: inline; transition: opacity 0.36s ease, max-width 0.36s ease, padding 0.36s ease; max-width: 80px; overflow: hidden; white-space: nowrap; padding: 0; }
+    .share-label { display: inline; transition: opacity 0.36s ease, max-width 0.36s ease; max-width: 50px; overflow: hidden; white-space: nowrap; }
+
+    /* Hamburger button — hidden by default, transition in */
+    .nav-hamburger {
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px 8px; cursor: pointer; color: var(--text2); flex-shrink: 0;
+      opacity: 0; max-width: 0; overflow: hidden;
+      transition: opacity 0.6s ease, max-width 0.6s ease;
+    }
+    .nav-hamburger:hover { color: var(--text); border-color: var(--accent); }
+
+    /* Nav-links has shrink transition for smooth collapse into hamburger */
+    .nav-links {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      max-width: 600px; overflow: hidden; flex-wrap: nowrap;
+      opacity: 1;
+      transition: max-width 0.6s ease, opacity 0.6s ease, gap 0.6s ease;
+    }
+
+    /* ≤1080px: pill & share icons only */
+    @media (max-width: 1080px) {
+      .pill-label, .share-label { opacity: 0; max-width: 0; padding: 0; }
+      .theme-pill-btn { gap: 0; }
+      .nav-share-btn { padding: 4px 8px; }
+    }
+
+    /* 960→860px: nav-links collapses, hamburger emerges */
+    @media (max-width: 960px) {
+      .nav-links { max-width: 0; opacity: 0; gap: 0; }
+      .nav-hamburger { opacity: 1; max-width: 40px; }
+    }
+
+    /* ≤860px: hamburger fully active, nav-links becomes dropdown */
+    @media (max-width: 860px) {
+      .nav-hamburger { max-width: 50px; }
+      .nav-links {
+        max-width: none; opacity: 1; gap: 4px;
+        position: fixed; top: 52px; right: 12px; left: auto; transform: none;
+        flex-direction: column; align-items: stretch;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px; padding: 8px; z-index: 99;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+        opacity: 0; visibility: hidden; pointer-events: none;
+        transform: translateY(-8px);
+        transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s !important;
+      }
+      .nav-links.open {
+        opacity: 1; visibility: visible; pointer-events: auto;
+        transform: translateY(0);
+      }
+      .nav-link { padding: 10px 14px; font-size: 0.9rem; border-radius: 8px; }
+      .nav-link:hover { background: var(--surface2); }
+    }
+
+    .brand-wrap { position: relative; display: inline-block; vertical-align: middle; }
+    .brand-full { white-space: nowrap; clip-path: inset(0 0 0 0); transition: clip-path 0.96s ease 0s; }
+    .brand-short { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transform: translateX(var(--brand-shift, 100px)); transition: opacity 0.3s ease 0.66s, transform 0.54s ease 0s; }
+
+    @media (max-width: 460px) {
+      .brand-full { clip-path: inset(0 100% 0 0); transition: clip-path 0.54s ease 0.3s; }
+      .brand-short { opacity: 1; transform: translateX(0); transition: opacity 0.3s ease 0s, transform 0.6s ease 0.36s; }
+    }
+  </style>
+  <link rel="stylesheet" href="components/ai-chat-demo/ai-chat-demo.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked@3.0.8/marked.min.js"></script>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+<nav class="nav entering">
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+      <span class="brand-wrap"><span class="brand-full">HaluCatch / 捕幻</span><span class="brand-short">捕幻</span></span>
+    </a>
+    <div class="nav-links" id="nav-links">
+      <a href="#demo" class="nav-link">在线体验</a>
+      <a href="#report-preview" class="nav-link">报告预览</a>
+      <a href="#quickstart" class="nav-link">快速开始</a>
+      <a href="#blog" class="nav-link">Blogs</a>
+      <a href="#faq" class="nav-link">FAQ</a>
+    </div>
+    <div class="nav-tools">
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="菜单">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="theme-pill" id="theme-pill">
+      <button class="theme-pill-btn" data-theme="light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg><span class="pill-label">Light</span></button>
+      <button class="theme-pill-btn" data-theme="dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="pill-label">Night</span></button>
+      <button class="theme-pill-btn" data-theme="system"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span class="pill-label">Auto</span></button>
+    </div>
+    <div class="nav-share" id="nav-share">
+      <button class="nav-share-btn" aria-label="分享页面">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+        <span class="share-label">Share</span>
+      </button>
+      <div class="nav-share-menu">
+        <button class="nav-share-item" data-platform="url">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          复制链接
+        </button>
+        <button class="nav-share-item" data-platform="feishu">
+          <img src="https://www.feishu.cn/favicon.ico" width="16" height="16" alt="" style="flex-shrink:0;border-radius:2px;">
+          分享到飞书
+        </button>
+        <button class="nav-share-item" data-platform="twitter">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          分享到 X
+        </button>
+      </div>
+    </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="main-content">
+  <h1 class="anim-item" data-anim="600"><svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;position:relative;top:-4px;"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/><path d="m16 16-1.9-1.9"/></svg>HaluCatch 捕幻</h1>
+  <p class="subtitle anim-item" data-anim="900">AI 为你创建的 Skill 执行起来靠谱吗？<br>自动排查幻觉风险 · 输出不稳定风险 · 安全漏洞 · 逻辑漏洞</p>
+  <div class="badges anim-item" data-anim="1200">
+    <span class="badge" id="badge-version">v1.7.1</span>
+    <span class="badge">🐍 Python</span>
+    <span class="badge">📋 3 份报告</span>
+    <span class="badge">🌏 中英文</span>
+    <span class="badge">📦 零依赖</span>
+    <span class="badge">MIT 开源</span>
+  </div>
+  <div class="cta-group anim-item" data-anim="1500" style="margin-top: 32px;">
+    <a href="https://github.com/CoderMoray/HaluCatch" class="btn btn-outline">⭐ GitHub 开源</a>
+    <a href="https://skillhub.cn/skills/halucatch" class="btn btn-outline" target="_blank">📦 SkillHub</a>
+    <a href="https://clawhub.ai/codermoray/skills/halucatch" class="btn btn-outline" target="_blank">🦞 ClawHub</a>
+  </div>
+</section>
+
+<!-- Security Audit -->
+<section class="anim-item" data-anim="1800" style="text-align:center;padding:0 20px 40px;">
+  <h3 style="font-size:1.2rem;margin-bottom:14px;text-align:center;font-weight:600;color:var(--text2);">行业级安全隐私审计报告</h3>
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+    <a href="https://tix.qq.com/search/skill?keyword=f2d20a95388fc9735cca337481a45a12" target="_blank" class="safety-badge">
+      <img src="https://tix.qq.com/favicon.ico" alt="TIX" loading="lazy">
+      腾讯安全｜威胁情报中心
+      <span class="status pass">安全</span>
+    </a>
+    <a href="https://static.cloudsec.tencent.com/html-report-v2/2026/07/03/604962_27e56356b76c849bf884e1a11f4c3cdd.html?q-sign-algorithm=sha1&q-ak=AKID8JMG1bzBC1dz96qNhssfFftujT1NCoFi&q-sign-time=1783319698%3B1814855698&q-key-time=1783319698%3B1814855698&q-header-list=host&q-url-param-list=&q-signature=4c2847954a2c18ec62192b7b8d28297a921bd75c" target="_blank" class="safety-badge">
+      <img src="https://cloud.tencent.com/favicon.ico" alt="腾讯云" loading="lazy">
+      腾讯安全云鼎实验室
+      <span class="status pass">100</span>
+    </a>
+    <a href="https://clawhub.ai/codermoray/skills/halucatch/security-audit" target="_blank" class="safety-badge">
+      <img src="https://openclaw.ai/favicon.svg" alt="ClawHub" loading="lazy">
+      ClawScan
+      <span class="status pass">Pass</span>
+    </a>
+    <a href="https://www.virustotal.com/gui/file/b962bf2f18e49fdec66b89e55ddf48c58a1f633e41369ee49cf45f065175d525" target="_blank" class="safety-badge">
+      <img src="https://www.virustotal.com/gui/images/favicon.svg" alt="VirusTotal" loading="lazy">
+      VirusTotal
+      <span class="status pass">65 个安全引擎全通过</span>
+    </a>
+  </div>
+</section>
+
+<!-- Interactive Demo -->
+<section id="demo" class="anim-item" data-anim="1900">
+  <h2>在线体验 HaluCatch</h2>
+  <div id="ai-chat-demo-container"></div>
+</section>
+
+<!-- Problem -->
+<section class="anim-item scroll-anim">
+  <h2>用 AI Skill 时，这些坑你遇到过吗？</h2>
+  <div class="problem-grid">
+    <div class="problem-card">
+      <div class="icon">🤷</div>
+      <h3>换个电脑就用不了</h3>
+      <p>AI 帮你做的 Skill 只认你这台电脑，换台机器就废了——它把你电脑上的地址记进去了</p>
+      <div class="problem-tags">
+        <span class="risk-tag logic">逻辑漏洞</span>
+        <span class="risk-tag reuse">复用失败</span>
+      </div>
+    </div>
+    <div class="problem-card">
+      <div class="icon">🤨</div>
+      <h3>结果不敢信</h3>
+      <p>AI 给的结果，你分不清哪些是来自你的数据、哪些是它自己编的</p>
+      <div class="problem-tags">
+        <span class="risk-tag hallucination">幻觉风险</span>
+        <span class="risk-tag unstable">输出不稳</span>
+      </div>
+    </div>
+    <div class="problem-card">
+      <div class="icon">😵‍💫</div>
+      <h3>每回跑结果不一样</h3>
+      <p>即使是同一个模型、用同个 Skill，每次执行输出的格式、内容、质量都不同，没法放心用</p>
+      <div class="problem-tags">
+        <span class="risk-tag unstable">输出不稳</span>
+      </div>
+    </div>
+    <div class="problem-card">
+      <div class="icon">😱</div>
+      <h3>AI 擅自做主</h3>
+      <p>让它分析文件，它顺手把文件改了，你都不知道</p>
+      <div class="problem-tags">
+        <span class="risk-tag security">安全漏洞</span>
+        <span class="risk-tag dependency">靠天吃饭</span>
+        <span class="risk-tag nocheck">缺乏检查</span>
+      </div>
+    </div>
+    <div class="problem-card">
+      <div class="icon">😵</div>
+      <h3>贪多嚼不烂</h3>
+      <p>塞太多功能，AI 能不能调对全靠运气——每次都得额外解释，心累</p>
+      <div class="problem-tags">
+        <span class="risk-tag reuse">复用失败</span>
+        <span class="risk-tag dependency">靠天吃饭</span>
+      </div>
+    </div>
+    <div class="problem-card">
+      <div class="icon">😰</div>
+      <h3>有问题它不说</h3>
+      <p>执行过程中遇到状况，AI 悄悄跳过不报错，你完全不知道</p>
+      <div class="problem-tags">
+        <span class="risk-tag security">安全漏洞</span>
+        <span class="risk-tag noprogress">进度失控</span>
+        <span class="risk-tag nocheck">缺乏检查</span>
+      </div>
+    </div>
+    <div class="problem-card">
+      <div class="icon">😩</div>
+      <h3>不敢中断</h3>
+      <p>跑了一个东西不知道要等多久，想中断又怕搞坏了，只能干着急</p>
+      <div class="problem-tags">
+        <span class="risk-tag noprogress">进度失控</span>
+      </div>
+    </div>
+    <div class="problem-card">
+      <div class="icon">💀</div>
+      <h3>前功尽弃</h3>
+      <p>跑了好久突然断了，让 AI 继续做，结果它从头开始全跑偏了，之前的全白费</p>
+      <div class="problem-tags">
+        <span class="risk-tag noprogress">进度失控</span>
+        <span class="risk-tag dependency">靠天吃饭</span>
+      </div>
+    </div>
+  </div>
+  <p style="text-align:center;margin-top:40px;font-size:0.85rem;color:var(--text2);">
+    还有别的坑？
+    <a href="https://github.com/CoderMoray/HaluCatch/issues" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:600;">
+      来 GitHub 提 Issue ↗
+    </a>
+  </p>
+</section>
+
+<!-- Report Preview -->
+<section id="report-preview" class="anim-item scroll-anim">
+  <h2>审计报告预览</h2>
+  <p style="text-align:center;color:var(--text2);margin-bottom:24px;">同一份 Skill，三份视角 — 以下是 HaluCatch 审计自身的真实报告</p>
+  <div class="preview-container">
+    <div class="preview-tabs">
+      <div class="preview-tab active" onclick="switchTab('standard')">📗 标准版</div>
+      <div class="preview-tab" onclick="switchTab('pro')">📊 专业版</div>
+      <div class="preview-tab" onclick="switchTab('action')">🤖 AI 行动版</div>
+    </div>
+    <div class="preview-body">
+
+      <!-- 标准版（默认） -->
+      <div class="report-content active" id="tab-standard">
+<h3>📗 标准版 — 用人话告诉你哪里有问题</h3>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（审计根目录 SKILL.md）</p>
+<hr>
+<h4>🔍 规则/方法论 — 用人话解释</h4>
+<p><strong>这项检查在干什么？</strong><br>检查 SKILL.md 的步骤是否清晰、是否有"如果出错了怎么办"的分支、输出格式是否明确、有没有给 AI 看示例。</p>
+<p style="margin-top:8px;"><strong>结果：</strong><span class="pass">✅ 明确</span></p>
+<ul>
+  <li>✅ 未检测到模糊词汇（"大概"、"酌情"等）</li>
+  <li>✅ 有异常分支处理</li>
+  <li>✅ 声明了默认值/回退策略</li>
+  <li class="warn">🟡 未检测到明确的数值边界约束 — 建议加上"误差小于 X"等具体边界</li>
+</ul>
+<div class="tip-box"><strong>💡 怎么改：</strong>在 SKILL.md 的"规则"章节，补充数值边界，比如"差异超过 5% 时标记为异常"。</div>
+
+<hr>
+<h4>🛡️ 护栏 — 用人话解释</h4>
+<p><strong>这项检查在干什么？</strong><br>检查 Skill 有没有写"禁止做 X"，以及 AI 执行完后有没有验证输出的步骤。</p>
+<p style="margin-top:8px;"><strong>结果：</strong><span class="pass">🟢 到位</span></p>
+<ul>
+  <li>✅ 明确了输出格式</li>
+  <li>✅ 包含验证/自检步骤</li>
+  <li>✅ 定义了错误处理/回退策略</li>
+  <li>✅ 已声明数据时效性约束</li>
+  <li>✅ 已声明前提假设</li>
+</ul>
+<div class="tip-box"><strong>💡 状态：</strong>所有已知问题已修复，护栏完整。</div>
+      </div>
+
+      <!-- 专业版 -->
+      <div class="report-content" id="tab-pro">
+<h3>📊 专业版 — 结构化评估结果</h3>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（审计根目录 SKILL.md）</p>
+<hr>
+<h3>📌 核心结论</h3>
+<p>✅ 自检全部通过，无阻塞项。所有已知高/中优先级问题已修复。</p>
+
+<h3>🎯 核心结论卡片</h3>
+<table>
+<tr><th>维度</th><th>评级</th><th>分数</th></tr>
+<tr><td>🏗️ 地基</td><td class="pass">🟢 稳固</td><td>6/6</td></tr>
+<tr><td>🤖 代码</td><td class="pass">🟢 低风险</td><td>0/7</td></tr>
+<tr><td>📝 规则/方法论</td><td class="pass">🟢 明确</td><td>5/6</td></tr>
+<tr><td>🛡️ 护栏</td><td class="pass">🟢 到位</td><td>8/8</td></tr>
+</table>
+
+<h3>🔍 审查发现</h3>
+<h4>🏗️ 地基</h4>
+<ul>
+  <li class="pass">✅ 有固化 .py 脚本</li>
+  <li class="pass">✅ 路径已参数化，无硬编码</li>
+  <li class="pass">✅ 有 --validate 验证模式</li>
+  <li class="pass">✅ 有输入验证/列名校验</li>
+</ul>
+<h4>🤖 代码</h4>
+<ul>
+  <li class="pass">✅ [异常处理] 已修复：裸 except: pass → except Exception</li>
+  <li class="pass">✅ [除零风险] 已修复：除法前添加 max(total, 1) 保护</li>
+  <li class="pass">✅ [静默覆盖] 已修复：报告文件名含版本号/时间戳，冲突时自动加序号</li>
+  <li class="pass">✅ [模块拆分] 已修复：1191 行单文件拆分为 11 个模块，单文件 ≤270 行</li>
+</ul>
+<h4>🛡️ 护栏</h4>
+<ul>
+  <li class="pass">✅ 明确了输出格式</li>
+  <li class="pass">✅ 包含验证/自检步骤</li>
+  <li class="pass">✅ 定义了错误处理/回退策略</li>
+  <li class="pass">✅ 已声明数据时效性约束</li>
+  <li class="pass">✅ 已声明前提假设</li>
+</ul>
+<p style="margin-top:16px;font-size:0.85rem;color:var(--text2);">本报告由 HaluCatch 生成。自检: ✅ 全部通过</p>
+      </div>
+
+      <!-- AI 行动版 -->
+      <div class="report-content" id="tab-action">
+<h3>🤖 AI 行动版 — 直接给 AI 的修复指令</h3>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（审计根目录 SKILL.md）</p>
+<hr>
+<h4>🛠️ 建议修复清单（按优先级排序）</h4>
+<table>
+<tr><th>优先级</th><th>文件</th><th>修改建议</th><th>状态</th></tr>
+<tr><td>~~🔴 高~~</td><td>~~halucatch_core.py~~</td><td>~~裸 except: pass → 改为 <code>except Exception as e:</code> 并打印日志~~</td><td>✅ 已修复</td></tr>
+<tr><td>~~🔴 高~~</td><td>~~halucatch_core.py~~</td><td>~~[除零风险] 除法前检查分母是否为 0~~</td><td>✅ 已修复</td></tr>
+<tr><td>~~🟠 中~~</td><td>~~halucatch_core.py~~</td><td>~~[静默覆盖] 写文件前检查是否存在，或用追加模式~~</td><td>✅ 已修复（版本号+防覆盖）</td></tr>
+<tr><td>~~🟠 中~~</td><td>~~SKILL.md~~</td><td>~~声明数据时效性约束（如"数据不超过 7 天"）~~</td><td>✅ 已修复</td></tr>
+<tr><td>~~🟠 中~~</td><td>~~SKILL.md~~</td><td>~~声明前提假设（如"输入数据已去重"）~~</td><td>✅ 已修复</td></tr>
+</table>
+
+<hr>
+<h4>✅ 验证检查点（修复后自检）</h4>
+<ul>
+  <li>☑ 所有异常处理都打印了日志，没有裸 except: pass</li>
+  <li>☑ 所有除法操作前有分母为零的检查</li>
+  <li>☑ 报告文件名含版本号或时间戳，冲突时自动加序号</li>
+  <li>☑ SKILL.md 有"数据要求"章节（时效性 + 前提假设）</li>
+  <li>☑ 未找到标准 SKILL.md 时，自动启发式匹配替代文件并报告规范性问题</li>
+</ul>
+
+<hr>
+<h4>📋 直接可用的提示词（发给 AI 执行修复）</h4>
+<pre style="margin-top:12px;">当前 HaluCatch 自审未发现高/中优先级问题。如有新需求，请描述具体场景。</pre>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Quick Start -->
+<section id="quickstart" class="anim-item scroll-anim">
+  <h2>快速开始</h2>
+
+  <div class="qs-tabs">
+    <button class="qs-tab active" onclick="switchQsTab('user')">👤 普通用户</button>
+    <button class="qs-tab" onclick="switchQsTab('dev')">👨‍💻 开发者</button>
+  </div>
+
+  <!-- 普通用户 -->
+  <div id="qs-user" class="qs-panel active">
+    <div class="install-steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>安装</h3>
+          <p>复制下方提示词发给 AI，即可安装 HaluCatch</p>
+          <div class="install-cards">
+            <div class="install-card">
+              <p class="install-title"><span style="font-size:1.1em;">🇨🇳</span> 国内用户方案</p>
+              <p class="install-subtitle">为国内用户提供 SkillHub 安装提示词</p>
+              <div class="install-note-wrap"><span class="install-note">中文环境 · 免费 · 开箱即用</span></div>
+              <button class="install-copy-btn" onclick="copyInstall(this, '请先检查是否已安装 SkillHub 商店，若未安装，请根据 https://skillhub.cn/install/skillhub.md 安装SkillHub商店，但是只安装CLI，然后安装halucatch技能。若已安装，则直接安装halucatch技能。')"><span class="install-copy-text"><span class="copy-label">一键复制</span><span class="copied-label">复制成功</span></span></button>
+            </div>
+            <div class="install-card">
+              <p class="install-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;color:var(--accent);"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>国际用户方案</p>
+              <p class="install-subtitle">为国际用户提供 ClawHub 安装提示词</p>
+              <div class="install-note-wrap"><span class="install-note">Global AI skill marketplace</span></div>
+              <button class="install-copy-btn" onclick="copyInstall(this, `Before installing anything, inspect the ClawHub skill metadata and setup requirements. If the skill asks you to install a third-party package or CLI, verify its source, maintainer, and package contents before running the install command. Install the skill HaluCatch (@codermoray/halucatch) from ClawHub only after those checks pass. Skill page: https://clawhub.ai/codermoray/skills/halucatch. Keep the work scoped to this skill only. After install, help me finish setup from verified skill metadata. Use only the metadata you can verify from ClawHub; do not invent missing requirements. Ask before making any broader environment changes.`)"><span class="install-copy-text"><span class="copy-label">一键复制</span><span class="copied-label">复制成功</span></span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>审查目标 Skill</h3>
+          <p>告诉 AI 你要审查哪个 Skill 或者你的 Skill 所在的文件夹路径</p>
+
+          <!-- Chat Example -->
+          <div class="intro-chat">
+            <div class="intro-msg user">
+              <div class="intro-bubble">请用 HaluCatch 审查 /my-skill</div>
+            </div>
+            <div class="intro-msg ai">
+              <div class="intro-msg-head">
+                <span class="intro-avatar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span>
+                <span class="intro-name">HaluCatch</span>
+              </div>
+              <div class="intro-bubble">
+                📁 扫描目录...<br>
+                📝 发现 SKILL.md (120 行)<br>
+                🐍 发现 core.py (45 行)<br>
+                📊 开始四维评估...
+              </div>
+            </div>
+            <div class="intro-msg ai">
+              <div class="intro-bubble">
+                审查完成。报告已保存在 <code>reports/</code> 目录：<br>
+                📗 标准版 — 用人话解释哪里有问题<br>
+                📊 专业版 — 结构化检查清单<br>
+                🤖 行动版 — 给 AI 的修复指令
+              </div>
+            </div>
+          </div>
+
+          <!-- Process Flow -->
+          <div class="audit-flow-wrap">
+            <p class="flow-desc">接下来 AI 会做：</p>
+            <div class="audit-flow">
+              <div class="flow-step">
+                <svg class="flow-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                <span class="flow-label">扫描目录</span>
+              </div>
+              <svg class="flow-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              <div class="flow-step">
+                <svg class="flow-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>
+                <span class="flow-label">四维评估</span>
+              </div>
+              <svg class="flow-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              <div class="flow-step">
+                <svg class="flow-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <span class="flow-label">生成报告</span>
+              </div>
+              <svg class="flow-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              <div class="flow-step">
+                <svg class="flow-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                <span class="flow-label">精准修复</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>阅读报告，决定下一步</h3>
+          <p>三份报告分别面向不同角色，选择适合你的阅读</p>
+          <div class="report-cards">
+            <div class="report-card">
+              <h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px;margin-right:6px;"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M9 7h6"/><path d="M9 11h6"/><path d="M9 15h4"/></svg>标准版</h4>
+              <div class="rc-audience">给业务 / 产品经理</div>
+              <p>用人话解释每个问题是什么、为什么重要、怎么改</p>
+            </div>
+            <div class="report-card">
+              <h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px;margin-right:6px;"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>专业版</h4>
+              <div class="rc-audience">给工程师 / 开发者</div>
+              <p>结构化检查清单，每个维度打分，精确到文件和行号</p>
+            </div>
+            <div class="report-card">
+              <h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px;margin-right:6px;"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>AI 行动版</h4>
+              <div class="rc-audience">给 AI（告知 AI 读取即可）</div>
+              <p>修复清单 + 验证检查点，AI 按步骤执行即可</p>
+            </div>
+          </div>
+          <p style="margin-top:12px;color:var(--text2);">💡 如果决定修复：告知 AI 读取行动版报告并执行，它会按清单逐项修复。修复后重新审查，确认问题清零。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 开发者 -->
+  <div id="qs-dev" class="qs-panel">
+    <div class="install-steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>克隆仓库</h3>
+          <pre>git clone https://github.com/CoderMoray/HaluCatch.git
+cd HaluCatch</pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>运行审查</h3>
+          <pre><span class="comment"># 自动检测语言（中文/英文）</span>
+python3 halucatch_core.py --skill-dir /path/to/your-skill
+
+<span class="comment"># 或强制英文输出</span>
+python3 halucatch_core.py --skill-dir /path/to/your-skill --lang en
+
+<span class="comment"># 或使用包方式</span>
+python3 -m halucatch --skill-dir /path/to/your-skill</pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>查看报告</h3>
+          <pre><span class="comment"># 三份报告自动生成在 reports/ 目录</span>
+reports/HaluCatch-report-YYYY-MM-DD.md        <span class="comment"># 专业版</span>
+reports/HaluCatch-report-YYYY-MM-DD-标准版.md  <span class="comment"># 标准版</span>
+reports/HaluCatch-report-YYYY-MM-DD-行动版.md  <span class="comment"># AI 行动版</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Blog -->
+<section id="blog" class="anim-item scroll-anim">
+  <h2><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:8px;position:relative;top:-2px;"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>Blogs</h2>
+  <div class="blog-grid">
+    <a href="https://juejin.cn/post/7656841584964599842" target="_blank" class="blog-card">
+      <div class="blog-platform"><svg width="14" height="14" viewBox="0 0 28 22" fill="currentColor" style="vertical-align:-2px;margin-right:4px;"><path d="M14 13.7l8.6-6.8L20.1 5 14 10h0L7.6 5 5.2 6.9z"/><path d="M14 5.3l3.3-2.7L14 0l-3.3 2.7z"/><path d="M14 18.3L1.3 9.2 0 11.1 14 22l8.6-6.8 5.2-4.1-2.3-1.9z"/></svg>掘金</div>
+      <h3>AI Skill 也会"说胡话"？我做了一个执行可靠性审查工具</h3>
+      <p>介绍 HaluCatch 的设计思路、四维评估框架和实战案例</p>
+    </a>
+    <a href="https://blog.csdn.net/weixin_41767324/article/details/162432750" target="_blank" class="blog-card">
+      <div class="blog-platform"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="vertical-align:-2px;margin-right:4px;"><rect width="14" height="14" rx="3" fill="#fc5531"/><text x="7" y="10.5" text-anchor="middle" font-size="9" font-weight="700" fill="white">C</text></svg>CSDN</div>
+      <h3>如何检查你的 AI Skill 是否可靠？HaluCatch 使用指南</h3>
+      <p>从安装到实战的完整教程，零基础也能上手</p>
+    </a>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="anim-item scroll-anim">
+  <h2><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:8px;position:relative;top:-2px;"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>FAQ</h2>
+  <div class="faq-list">
+    <div class="faq-item glass">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>HaluCatch 需要联网吗？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>不需要。全程离线运行，仅扫描本地文件夹中的 SKILL.md 和 .py 文件，不会发起任何网络请求。</p></div>
+    </div>
+    <div class="faq-item glass">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>HaluCatch 怎么用？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>对 AI 说「请用 HaluCatch 审查 /path/to/skill」即可。AI 自动扫描、评估、生成三份报告到 <code>reports/</code> 目录：</p><ol><li>跑一次审查 → 看通俗版报告了解问题</li><li>打开 <code>-行动版.md</code> → 从第一条开始逐项修复</li><li>修复后重新跑 → 对比分数是否改善</li></ol></div>
+    </div>
+    <div class="faq-item glass">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>我的 Skill 没有 .py 文件，能用吗？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>可以。HaluCatch 会自动分类为「纯方法论型」并跳过地基/代码检查，只评估方法论结构和护栏完整度。</p></div>
+    </div>
+    <div class="faq-item glass">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>审查结果说「护栏薄弱」，怎么修？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>看同目录下的 <code>HaluCatch-report-日期-行动版.md</code>，它逐条列出了修复方案。按清单逐项改，改完后重新审查验证。</p></div>
+    </div>
+    <div class="faq-item glass">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>代码风险检查有哪些规则？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>当前 7 条通用规则：裸 except: pass / 浮点比较 (== 0.0) / 除零风险 / 硬编码阈值 / 路径拼接 / 静默覆盖 / 超时缺失。</p></div>
+    </div>
+    <div class="faq-item glass">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>能一次审查多个 Skill 吗？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>当前版本暂不支持批量模式。你可以逐个运行。批量功能已在 roadmap 中。</p></div>
+    </div>
+  </div>
+  <p style="text-align:center;margin-top:20px;">
+    <a href="FAQ.md" class="btn btn-outline">查看完整 FAQ →</a>
+  </p>
+</section>
+
+<!-- Footer -->
+<footer class="anim-item scroll-anim">
+  <p>
+    <a href="https://github.com/CoderMoray/HaluCatch">GitHub</a>
+    <a href="https://github.com/CoderMoray/HaluCatch/releases">Releases</a>
+    <a href="decision-flowchart.html">决策流程图</a>
+    <a href="https://skillhub.cn/skills/halucatch" target="_blank">SkillHub</a>
+    <a href="https://clawhub.ai/codermoray/skills/halucatch" target="_blank">ClawHub</a>
+  </p>
+  <p style="margin-top:12px;">HaluCatch © 2026 · MIT License</p>
+</footer>
+
+<script>
+  // FAQ toggle with continuous rightward arrow rotation
+  var faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(function(item) {
+    item.addEventListener('transitionend', function(e) {
+      if (e.target === item.querySelector('.faq-a') && !item.classList.contains('open')) {
+        // Remove max-height override after collapse so it resets for next time
+        item.querySelector('.faq-a').style.maxHeight = '';
+      }
+    });
+  });
+  function toggleFaqItem(btn) {
+  var item = btn.parentElement;
+  var arrow = item.querySelector('.faq-arrow');
+  var isOpen = item.classList.contains('open');
+
+  if (isOpen) {
+    // Closing: rotate further to 360deg, then instantly snap to 0
+    arrow.style.transition = 'transform 0.4s ease';
+    arrow.style.transform = 'rotate(360deg)';
+    var done = false;
+    arrow.addEventListener('transitionend', function reset() {
+      if (done) return;
+      done = true;
+      arrow.removeEventListener('transitionend', reset);
+      arrow.style.transition = 'none';
+      arrow.style.transform = '';
+      arrow.offsetHeight;
+    });
+    item.classList.remove('open');
+    var body = item.querySelector('.faq-a');
+    body.style.maxHeight = body.scrollHeight + 'px';
+    body.offsetHeight; // force reflow
+    body.style.maxHeight = '0px';
+  } else {
+    // Opening: standard 180deg — reset both inline styles so CSS takes over
+    arrow.style.cssText = '';
+    item.classList.add('open');
+    var body = item.querySelector('.faq-a');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  }
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.preview-body .report-content').forEach(c => c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function switchQsTab(name) {
+  document.querySelectorAll('.qs-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.qs-panel').forEach(p => p.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('qs-' + name).classList.add('active');
+}
+
+function copyInstall(btn, text) {
+  navigator.clipboard.writeText(text).then(function() {
+    btn.classList.add('copied');
+    setTimeout(function() { btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+
+<script src="components/ai-chat-demo/reports-data.js"></script>
+<script src="components/ai-chat-demo/ai-chat-demo.js"></script>
+<script>
+// Initialize AI Chat Demo
+window.halucatchDemo = new AIChatDemo({
+  container: '#ai-chat-demo-container',
+  modelName: 'HaluCatch ' + HC_VER_SHORT,
+  avatar: '🔮',
+  thinkingEnabled: true,
+  thinkingLabel: '深度思考',
+  endMessage: '这是演示环境。请复制上方安装提示词，在你自己的 AI 平台（如 Kimi、ChatGPT、ClawHub）中继续使用 HaluCatch。',
+  stages: {
+    init: {
+      aiMessage: 'HaluCatch 已就绪。我可以帮你审查任何 Skill 目录，找出幻觉风险、输出不稳定风险、安全漏洞和逻辑漏洞。你可以使用以下选项快速开始：',
+      options: [
+        { text: '好的，请用 HaluCatch 审查这个项目本身', next: 'audit' },
+        { text: '这是什么工具？', next: 'explain' },
+        { text: '我需要准备什么？', next: 'prepare' }
+      ]
+    },
+    explain: {
+      thinking: [
+        '🤔 用户想了解工具功能...',
+        '📋 从 HaluCatch 的 SKILL.md 中提取核心能力描述...',
+        '✅ 确认：四维度评估（地基/代码/规则/护栏）'
+      ],
+      aiMessage: 'HaluCatch 自动审查你的 Skill 指令文件，找出幻觉风险、输出不稳定风险、安全漏洞和逻辑漏洞——帮你在 AI 执行前把问题修掉。',
+      options: [
+        { text: '明白了，请审查这个项目', next: 'audit' }
+      ]
+    },
+    prepare: {
+      thinking: [
+        '🤔 用户询问准备工作...',
+        '📂 分析 Skill 目录的标准结构要求...',
+        '✅ 确认：需要 SKILL.md + 可选 .py / 数据文件'
+      ],
+      aiMessage: '你需要准备一个 Skill 目录，里面至少包含 SKILL.md（指令文件）。Skill 目录中如果有 .py 脚本或数据文件，审查会更全面。',
+      options: [
+        { text: '好的，开始审查', next: 'audit' }
+      ]
+    },
+    audit: {
+      thinking: [
+        '📁 扫描目录结构...',
+        '🔍 读取 SKILL.md (340 行, 11 个模块)...',
+        '🐍 扫描 Python 模块 (1100+ 行代码)...',
+        '🏗️ 评估地基：路径参数化 ✓ / 输入验证 ✗ / 文件发现 ✗',
+        '🤖 扫描代码风险：0 个篡改点 ✓',
+        '📝 检查规则/方法论：模糊词 0 / 边界定义 ✓ / 异常处理 ✓',
+        '🛡️ 检查护栏：输出格式 ✓ / 禁止声明 ✓ / 数据时效性 ✓ / 前提假设 ✓',
+        '📊 生成三份报告 (专业版 / 标准版 / 行动版)...'
+      ],
+      aiMessage: '让我们从审查 HaluCatch 这个 Skill 本身来快速开始。审查完成！已生成三份报告。你可以在右侧查看。整体评级：地基 🟡 / 代码 🟢 / 规则 🟢 / 护栏 🟢',
+      showReports: true
+    }
+  },
+  reports: {
+    standard: REPORTS_DATA.standard,
+    professional: REPORTS_DATA.professional,
+    action: REPORTS_DATA.action
+  }
+});
+</script>
+
+<script>
+// Smart nav bar — auto hide on scroll, mouse reveal at top
+(function() {
+  var nav = document.querySelector('.nav');
+  var demoSection = document.getElementById('demo');
+  var threshold, mouseNearTop = false, scrollPast = false;
+
+  function updateThreshold() { threshold = demoSection ? demoSection.getBoundingClientRect().top + window.scrollY - (window.innerHeight / 2) : 800; }
+  updateThreshold();
+  window.addEventListener('resize', updateThreshold);
+
+  function shouldShow() { return !scrollPast || mouseNearTop; }
+
+  function refresh() {
+    scrollPast = window.scrollY > threshold && window.scrollY > 100;
+    if (shouldShow()) nav.classList.remove('hidden');
+    else nav.classList.add('hidden');
+  }
+
+  window.addEventListener('scroll', refresh, { passive: true });
+
+  document.addEventListener('mousemove', function(e) {
+    var near = e.clientY < 60;
+    if (near !== mouseNearTop) {
+      mouseNearTop = near;
+      refresh();
+    }
+  });
+})();
+</script>
+
+<script>
+// Theme switcher — dark / light / system (sliding pill, 3-step glow)
+(function() {
+  var STORAGE_KEY = 'halucatch-theme';
+  var pill = document.getElementById('theme-pill');
+  var btns = pill.querySelectorAll('.theme-pill-btn');
+  var mql = window.matchMedia('(prefers-color-scheme: dark)');
+
+  var indicator = document.createElement('div');
+  indicator.className = 'theme-pill-indicator';
+  pill.insertBefore(indicator, pill.firstChild);
+
+  function getTheme() { return localStorage.getItem(STORAGE_KEY) || 'system'; }
+
+  function setTheme(t) {
+    // Step 1: fade out glow quickly
+    document.documentElement.style.setProperty('--glow-opacity', '0');
+
+    setTimeout(function() {
+      // Step 2: apply theme (triggers 0.5s color transitions)
+      localStorage.setItem(STORAGE_KEY, t);
+      applyThemeInternal();
+
+      // Step 3: fade glow back in after transitions finish
+      setTimeout(function() {
+        document.documentElement.style.setProperty('--glow-opacity', '1');
+      }, 600);
+    }, 300);
+  }
+
+  function resolveTheme(t) {
+    if (t === 'system') return mql.matches ? 'dark' : 'light';
+    return t;
+  }
+
+  function applyThemeInternal() {
+    var t = getTheme();
+    var resolved = resolveTheme(t);
+    document.documentElement.setAttribute('data-theme', resolved);
+    btns.forEach(function(b) {
+      var active = b.dataset.theme === t;
+      b.classList.toggle('active', active);
+      if (active) {
+        indicator.style.left = b.offsetLeft + 'px';
+        indicator.style.width = b.offsetWidth + 'px';
+      }
+    });
+  }
+
+  function animateToTheme(resolvedColor) {
+    document.documentElement.style.setProperty('--glow-opacity', '0');
+    setTimeout(function() {
+      document.documentElement.setAttribute('data-theme', resolvedColor);
+      var saved = getTheme();
+      btns.forEach(function(b) {
+        var active = b.dataset.theme === saved;
+        b.classList.toggle('active', active);
+        if (active) {
+          indicator.style.left = b.offsetLeft + 'px';
+          indicator.style.width = b.offsetWidth + 'px';
+        }
+      });
+      setTimeout(function() {
+        document.documentElement.style.setProperty('--glow-opacity', '1');
+      }, 600);
+    }, 300);
+  }
+
+  btns.forEach(function(b) {
+    b.addEventListener('click', function() { setTheme(b.dataset.theme); });
+  });
+
+  mql.addEventListener('change', function() {
+    if (getTheme() === 'system') applyThemeInternal();
+  });
+
+  function updateIndicator() {
+    var saved = getTheme();
+    btns.forEach(function(b) {
+      if (b.dataset.theme === saved) {
+        indicator.style.left = b.offsetLeft + 'px';
+        indicator.style.width = b.offsetWidth + 'px';
+      }
+    });
+  }
+
+  // RAF-based smooth tracking during transitions
+  var tracking = false;
+  function scheduleIndicator() {
+    if (!tracking) { tracking = true; requestAnimationFrame(trackLoop); }
+  }
+  function trackLoop() {
+    updateIndicator();
+    requestAnimationFrame(trackLoop);
+  }
+  // Pause tracking when idle (stop requesting frames after 0.1s of no changes)
+  var idleTimer;
+  function resetIdle() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(function() { tracking = false; }, 150);
+  }
+
+  // ResizeObserver on pill + nav keeps indicator in sync during layout changes
+  if (typeof ResizeObserver !== 'undefined') {
+    var ro = new ResizeObserver(function() { scheduleIndicator(); resetIdle(); });
+    ro.observe(pill);
+    ro.observe(document.querySelector('.nav-inner'));
+  }
+  window.addEventListener('resize', function() { scheduleIndicator(); resetIdle(); });
+
+  // Hamburger toggle
+  var hamburger = document.getElementById('nav-hamburger');
+  var navLinks = document.getElementById('nav-links');
+  hamburger.addEventListener('click', function() {
+    navLinks.classList.toggle('open');
+  });
+  // Close when clicking a link
+  navLinks.addEventListener('click', function(e) {
+    if (e.target.classList.contains('nav-link')) navLinks.classList.remove('open');
+  });
+
+  // Brand shift variable for clip-path slide animation
+  (function() {
+    var full = document.querySelector('.brand-full');
+    var short = document.querySelector('.brand-short');
+
+    function calcShift() {
+      if (!full || !short) return;
+      var targetW = short.offsetWidth;
+      var totalW = full.offsetWidth;
+      document.documentElement.style.setProperty('--brand-shift', (totalW - targetW) + 'px');
+    }
+
+    window.addEventListener('resize', calcShift);
+    setTimeout(calcShift, 200);
+  })();
+
+  // Initial load: page already has correct theme from blocking script, just sync pill
+  var saved = getTheme();
+  btns.forEach(function(b) {
+    var active = b.dataset.theme === saved;
+    b.classList.toggle('active', active);
+    if (active) {
+      indicator.style.left = b.offsetLeft + 'px';
+      indicator.style.width = b.offsetWidth + 'px';
+    }
+  });
+})();
+</script>
+
+<script>
+// Entrance animation — staggered above-fold, IntersectionObserver below-fold
+(function() {
+  var nav = document.querySelector('.nav');
+  var isTop = window.scrollY < 200;
+
+  if (!isTop) {
+    // Scrolled down — show everything immediately, no animations
+    nav.classList.remove('entering');
+    document.documentElement.style.setProperty('--glow-opacity', '1');
+    document.querySelectorAll('.anim-item').forEach(function(el) { el.classList.add('in'); });
+    if (window.halucatchDemo) window.halucatchDemo.begin();
+    return;
+  }
+
+  // Step 1: Glow fade in
+  setTimeout(function() {
+    document.documentElement.style.setProperty('--glow-opacity', '1');
+  }, 0);
+
+  // Step 2: Nav slide down
+  setTimeout(function() {
+    nav.classList.remove('entering');
+  }, 200);
+
+  // Step 3: Above-fold elements staggered by data-anim delay
+  document.querySelectorAll('.anim-item[data-anim]').forEach(function(el) {
+    var delay = parseInt(el.getAttribute('data-anim')) || 0;
+    setTimeout(function() { el.classList.add('in'); }, delay);
+  });
+
+  // Start demo typing after section fades in (1900ms + 0.55s transition)
+  setTimeout(function() {
+    if (window.halucatchDemo) window.halucatchDemo.begin();
+  }, 2500);
+
+  // Step 4: Below-fold scroll-triggered (once per element)
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('.anim-item.scroll-anim').forEach(function(el) {
+    observer.observe(el);
+  });
+})();
+</script>
+
+<script>
+// Share button — copy link with toast
+(function() {
+  var URL = 'https://codermoray.github.io/HaluCatch/';
+  var toast = document.createElement('div');
+  toast.className = 'share-toast';
+  document.body.appendChild(toast);
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(function() { toast.classList.remove('show'); }, 2000);
+  }
+
+  document.querySelectorAll('.nav-share-item').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var platform = btn.getAttribute('data-platform');
+      if (platform === 'twitter') {
+        window.open('https://x.com/intent/post?url=' + encodeURIComponent(URL) + '&text=' + encodeURIComponent('HaluCatch - AI Skill 执行可靠性审计'), '_blank');
+        return;
+      }
+      navigator.clipboard.writeText(URL).then(function() {
+        var labels = { feishu: '飞书', url: '' };
+        showToast('链接已复制，到 ' + (labels[platform] || platform) + ' 粘贴即可');
+      }).catch(function() {
+        showToast('复制失败，请手动复制链接');
+      });
+    });
+  });
+})();
+</script>
+
+<!-- ═══ 版本号自动注入 ═══ -->
+<script>
+(function() {
+  // 更新 hero badge
+  var badge = document.getElementById('badge-version');
+  if (badge) badge.textContent = 'v' + HC_VER;
+
+  // 注入 JSON-LD（从 buildJSONLD 函数获取最新版本）
+  var ld = document.createElement('script');
+  ld.type = 'application/ld+json';
+  ld.textContent = JSON.stringify(buildJSONLD());
+  document.head.appendChild(ld);
+})();
+</script>
+
+</body>
+</html>

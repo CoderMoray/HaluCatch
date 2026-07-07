@@ -42,8 +42,10 @@
 
     var _t = (function(){ try { return localStorage.getItem('{{ theme_storage_key }}'); } catch(e){} return null; })() || 'system';
     if (_t === 'system') _t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', _t);
-    document.write('<style>html,body{background:' + (_t === 'dark' ? '#0a0a0f' : '#f7f7fb') + '}</style>');
+
+    // 始终先以暗色渲染，theme.js 加载后会自动切到正确主题
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.write('<style>html,body{background:#0a0a0f}</style>');
   </script>
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/ai-chat-demo/ai-chat-demo.css">
@@ -146,10 +148,10 @@
 <script src="assets/js/tabs.js"></script>
 {{ share_script }}
 <script src="assets/js/install.js"></script>
-<script src="assets/js/entrance.js"></script>
 <script src="assets/ai-chat-demo/reports-data.js"></script>
 <script src="assets/ai-chat-demo/ai-chat-demo.js"></script>
 {{ demo_init_script }}
+<script src="assets/js/entrance.js"></script>
 <script src="assets/js/version.js"></script>
 
 </body>

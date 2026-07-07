@@ -61,7 +61,15 @@ echo "[3/11] 重新生成网站 docs/..."
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "  [DRY-RUN] 将执行: python3 web/build.py --all"
 else
-  python3 "$ROOT/web/build.py" --all
+  # 优先用 venv Python（有 PyYAML），回退系统 python3
+  WEB_PYTHON="python3"
+  if command -v /Users/chrismoray/.workbuddy/binaries/python/envs/default/bin/python3 &>/dev/null; then
+    WEB_PYTHON="/Users/chrismoray/.workbuddy/binaries/python/envs/default/bin/python3"
+  fi
+  if ! $WEB_PYTHON "$ROOT/web/build.py" --all; then
+    echo "  ❌ web/build.py 执行失败，请先 pip install pyyaml"
+    exit 1
+  fi
   echo "  ✅ docs/ 已重新生成"
 fi
 

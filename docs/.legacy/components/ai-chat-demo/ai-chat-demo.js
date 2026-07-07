@@ -31,9 +31,7 @@ class AIChatDemo {
   }
   
   begin() {
-    if (this._begun) return Promise.resolve();
-    this._begun = true;
-    return this.startStage('init');
+    this.startStage('init');
   }
   
   buildHTML() {
@@ -156,24 +154,14 @@ class AIChatDemo {
     const stage = this.stages[stageName];
     if (!stage) return;
     
-    // 兼容 snake_case (JSON) 和 camelCase (JS)
-    const aiMsg = stage.aiMessage || stage.ai_message;
-    const opts = stage.options;
-    const showRep = stage.showReports || stage.show_reports;
-    const think = stage.thinking;
-    
-    if (aiMsg) {
-      await this.typeMessage(aiMsg, 'ai');
+    if (stage.aiMessage) {
+      await this.typeMessage(stage.aiMessage, 'ai');
     }
     
-    if (opts) {
-      this.showOptionsInInputArea(opts);
+    if (stage.options) {
+      this.showOptionsInInputArea(stage.options);
     } else {
       this.showInput();
-    }
-    
-    if (showRep) {
-      this.showReports();
     }
   }
   
@@ -230,6 +218,7 @@ class AIChatDemo {
     
     let msg;
     if (sender === 'ai' && this.currentAiMessage) {
+      // Reuse existing AI container (thinking already rendered in it)
       msg = this.currentAiMessage;
       this.currentAiMessage = null;
     } else {
@@ -368,35 +357,30 @@ class AIChatDemo {
     const stage = this.stages[stageName];
     if (!stage) return;
     
-    const aiMsg = stage.aiMessage || stage.ai_message;
-    const opts = stage.options;
-    const showRep = stage.showReports || stage.show_reports;
-    const think = stage.thinking;
-    
-    if (think && think.length > 0) {
-      this.runThinking(think, async () => {
-        if (aiMsg) {
-          await this.typeMessage(aiMsg, 'ai');
+    if (stage.thinking && stage.thinking.length > 0) {
+      this.runThinking(stage.thinking, async () => {
+        if (stage.aiMessage) {
+          await this.typeMessage(stage.aiMessage, 'ai');
         }
-        if (showRep) {
+        if (stage.showReports) {
           this.showReports();
           this.showInput();
-        } else if (opts) {
-          this.showOptionsInInputArea(opts);
+        } else if (stage.options) {
+          this.showOptionsInInputArea(stage.options);
         } else {
           this.showInput();
         }
       });
     } else {
       (async () => {
-        if (aiMsg) {
-          await this.typeMessage(aiMsg, 'ai');
+        if (stage.aiMessage) {
+          await this.typeMessage(stage.aiMessage, 'ai');
         }
-        if (showRep) {
+        if (stage.showReports) {
           this.showReports();
           this.showInput();
-        } else if (opts) {
-          this.showOptionsInInputArea(opts);
+        } else if (stage.options) {
+          this.showOptionsInInputArea(stage.options);
         } else {
           this.showInput();
         }
