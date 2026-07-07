@@ -389,7 +389,7 @@ def _table_complexity(md):
 
 
 def _instruction_density(md):
-    """指令密度 = (祈使句 + 步骤项 + 代码块) / 总行数，0-10 归一化。"""
+    """指令密度 = (祈使句 + 步骤项 + 代码块 + 条件分支) / 总行数，0-10 归一化。"""
     if not md:
         return 0
     lines = md.splitlines()
@@ -409,7 +409,19 @@ def _instruction_density(md):
     steps = _count_steps(md)
     code_blocks = len(re.findall(r'```', md)) // 2  # 每对 ``` 算一个块
 
-    density = (imperatives + steps + code_blocks) / total
+    # 条件分支：中文 + 英文的 if/else/when/unless 等
+    conditionals = len(re.findall(
+        r'(?i)(?:'
+        r'如果|若[^干]|否则|取决于|视.*而定|'
+        r'\bif\s+(?!in\b)\w|\belse\b|\bunless\b|'
+        r'\bwhen\s+(?!in\b|it\b|user|running|executing|reading|using|the\b)(?:'
+        r'\w+\s+(?:is|has|does|was|can|will|should|\w+s\b)|\w+\s*[=!<>])|'
+        r'\bdepending\s+on\b'
+        r')',
+        md
+    ))
+
+    density = (imperatives + steps + code_blocks + conditionals) / total
     return min(density * 100, 10)
     steps = _count_steps(md)
     code_blocks = len(re.findall(r'```', md)) // 2  # 每对 ``` 算一个块
