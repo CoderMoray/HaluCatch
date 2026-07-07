@@ -8,6 +8,28 @@ from .classifier import classify_skill
 from .config import MESSAGES
 
 
+def _lang_stats_table(code_result, msg):
+    """生成代码风险按语言统计表。"""
+    ls = code_result.get('lang_stats', {})
+    if not ls:
+        return ''
+
+    lang_names = {'python': 'Python', 'shell': 'Shell', 'go': 'Go',
+                  'javascript': 'JS', 'typescript': 'TS', 'ruby': 'Ruby',
+                  'rust': 'Rust', 'perl': 'Perl'}
+    rows = []
+    for lang, stats in sorted(ls.items()):
+        name = lang_names.get(lang, lang)
+        clean = stats['files'] - stats['findings']
+        rows.append(f"| {name} | {stats['files']} | {stats['rules']} | {clean}/{stats['files']} |")
+
+    if not rows:
+        return ''
+
+    table = '| 语言 | 文件数 | 规则 | 通过 |\n|------|------|------|------|\n'
+    return table + '\n'.join(rows) + '\n'
+
+
 def generate_report(info, results, output_dir=None, lang='zh-CN'):
     """生成审查报告三版本（支持中英文）。"""
     msg = MESSAGES[lang]
@@ -103,6 +125,8 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
 
 ### 🤖 {msg['code']}
 {ci}
+
+{_lang_stats_table(c, msg)}
 
 ### 📝 {msg['rules']}
 {ri}

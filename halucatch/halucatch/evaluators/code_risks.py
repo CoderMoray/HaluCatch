@@ -208,6 +208,7 @@ def check_code_risks(info):
 
     files_with_issues = 0
     total_files = 0
+    lang_stats = {}  # {lang: {files: int, findings: int, rules: int}}
 
     for lang, file_list in lang_files.items():
         patterns = lang_patterns.get(lang, [])
@@ -252,6 +253,13 @@ def check_code_risks(info):
             if file_has_issue:
                 files_with_issues += 1
 
+            # 语言统计
+            if lang not in lang_stats:
+                lang_stats[lang] = {'files': 0, 'findings': 0, 'rules': len(patterns)}
+            lang_stats[lang]['files'] += 1
+            if file_has_issue:
+                lang_stats[lang]['findings'] += 1
+
     # 全局：Python 代码量统计（兼容旧逻辑）
     py_lines = 0
     py_count = 0
@@ -284,4 +292,4 @@ def check_code_risks(info):
         rating = '🔴 高风险'
 
     score_display = f'{total_files - files_with_issues}/{total_files}' if total_files > 0 else '-'
-    return {'rating': rating, 'issues': issues, 'score': score_display}
+    return {'rating': rating, 'issues': issues, 'score': score_display, 'lang_stats': lang_stats}
