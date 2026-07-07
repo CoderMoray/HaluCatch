@@ -343,7 +343,7 @@ def test_complexity_deep_nesting():
 """
     result = check_complexity(_make_info(md), 'methodology')
     raw = result['raw']
-    assert raw['nesting']['value'].startswith('5')
+    assert 'deep' in result['raw']['heading_depth']['label'].lower() or raw['heading_depth']['score'] >= 5
 
 
 def test_complexity_code_engineered_with_scripts():

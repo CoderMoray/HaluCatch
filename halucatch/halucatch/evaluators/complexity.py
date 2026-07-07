@@ -95,25 +95,45 @@ def _count_script_refs(info):
     return count
 
 
-def _nesting_depth(md):
-    """Markdown 标题最大嵌套深度。"""
+def _heading_depth(md):
+    """章节深度：最深标题层级 × 2，仅反映最深处。"""
     if not md:
         return 0
     headings = re.findall(r'^(#{2,}) ', md, re.MULTILINE)
-    return max(len(h) for h in headings) if headings else 1
+    if not headings:
+        return 0
+    max_depth = max(len(h) for h in headings)
+    # h2→0, h3→2, h4→5, h5→8, h6→10
+    depth_map = {2: 0, 3: 2, 4: 5, 5: 8, 6: 10}
+    return depth_map.get(max_depth, 10)
 
 
-def _ref_chain_depth(info):
-    """引用链深度：SKILL.md → 被引用文件 → 再引用（最高 3 层）。"""
+def _heading_complexity(md):
+    """章节复杂度：加权统计所有子标题的分散程度。"""
+    if not md:
+        return 0
+    headings = re.findall(r'^(#{2,}) ', md, re.MULTILINE)
+    if not headings:
+        return 0
+    # h3×1 + h4×2 + h5×3 + h6×4
+    total = 0
+    for h in headings:
+        level = len(h)
+        if level >= 3:
+            total += (level - 2)  # h3→1, h4→2, h5→3, h6→4
+    return min(total / 3, 10)
+
+
+def _doc_ref_depth(info):
+    """文档引用深度：SKILL.md → 文档 → 再引用文档，最高 2 层。"""
     md = info.get('skill_md', '')
     if not md:
         return 0
-    # 找 SKILL.md 中引用的本地文件
-    refs = re.findall(r'\[.*?\]\(([^):]+\.(?:md|txt|yaml|yml|json|toml))\)', md)
+    doc_exts = r'(?:md|pdf|png|jpg|jpeg|gif|svg|doc|xlsx|csv|txt|yaml|yml|json|toml)'
+    refs = re.findall(rf'\[.*?\]\(([^):]+\.{doc_exts})\)', md)
     depth = 1 if refs else 0
     if not depth or not info.get('files'):
         return depth
-    # 检查被引用文件是否又引用了其他文件
     for ref in refs:
         ref_content = None
         for f in info['files']:
@@ -122,11 +142,27 @@ def _ref_chain_depth(info):
                 ref_content = f.get('_content', '')
                 break
         if ref_content:
-            sub_refs = re.findall(r'\[.*?\]\(([^):]+\.(?:md|txt|yaml|yml|json|toml))\)', ref_content)
+            sub_refs = re.findall(rf'\[.*?\]\(([^):]+\.{doc_exts})\)', ref_content)
             if sub_refs:
                 depth = 2
                 break
     return depth
+
+
+def _script_path_refs(info):
+    """脚本引用路径：SKILL.md 中引用的可执行脚本路径数。"""
+    md = info.get('skill_md', '') or ''
+    if not md:
+        return 0
+    code_exts = r'(?:py|sh|bash|go|js|ts|rb|rs|pl|java|swift|kt|R)'
+    # 匹配 scripts/xxx.py、./xxx.sh、python3 xxx.py 等
+    refs = len(re.findall(
+        rf'(?:scripts|src|bin)/(\w+/)*[\w-]+\.{code_exts}'
+        rf'|\./[\w/-]+\.{code_exts}'
+        rf'|python3?\s+[\w/-]+\.{code_exts}',
+        md
+    ))
+    return refs
 
 
 def _cross_file_deps(info):
@@ -269,27 +305,45 @@ def check_complexity(info, skill_type='code-engineered'):
     scores = {}
 
     # ── 共通指标 ──
-    # 1) 章节嵌套深度
-    nesting = _nesting_depth(md)
-    nesting_score = min(nesting * 2, 10)  # h2=1, h3=2, h4=4, h5=6...
-    scores['nesting'] = {
-        'label': '章节嵌套',
-        'value': f'{nesting} 层（最深 {"h" + str(nesting)}）',
-        'score': nesting_score,
-        'level': _score_to_level(nesting_score),
+    # 1) 章节深度
+    hdepth = _heading_depth(md)
+    scores['heading_depth'] = {
+        'label': '章节深度',
+        'value': f'{hdepth:.0f} 分',
+        'score': hdepth,
+        'level': _score_to_level(hdepth),
     }
 
-    # 2) 引用链深度
-    ref_depth = _ref_chain_depth(info)
-    ref_depth_score = ref_depth * 5  # 0=0, 1=5, 2=10
-    scores['ref_chain'] = {
-        'label': '引用链深度',
-        'value': f'{ref_depth} 层',
-        'score': ref_depth_score,
-        'level': _score_to_level(ref_depth_score),
+    # 2) 章节复杂度
+    hcomp = _heading_complexity(md)
+    scores['heading_complexity'] = {
+        'label': '章节复杂度',
+        'value': f'{hcomp:.1f}',
+        'score': hcomp,
+        'level': _score_to_level(hcomp),
     }
 
-    # 3) 跨文件依赖度
+    # 3) 文档引用深度
+    doc_ref = _doc_ref_depth(info)
+    doc_ref_score = doc_ref * 5  # 0=0, 1=5, 2=10
+    scores['doc_ref'] = {
+        'label': '文档引用深度',
+        'value': f'{doc_ref} 层',
+        'score': doc_ref_score,
+        'level': _score_to_level(doc_ref_score),
+    }
+
+    # 4) 脚本引用路径
+    script_refs = _script_path_refs(info)
+    script_ref_score = min(script_refs / 2, 10)  # 2+ 个脚本引用 = 10 分
+    scores['script_ref'] = {
+        'label': '脚本引用路径',
+        'value': f'{script_refs} 个',
+        'score': script_ref_score,
+        'level': _score_to_level(script_ref_score),
+    }
+
+    # 5) 跨文件依赖度
     deps = _cross_file_deps(info)
     dep_score = min(deps / 3, 10)  # 3+ 个依赖 = 10 分
     scores['deps'] = {
@@ -360,17 +414,18 @@ def check_complexity(info, skill_type='code-engineered'):
 
         # ── 加权平均 ──
         weights = {
-            'nesting': 0.10,
-            'ref_chain': 0.10,
-            'deps': 0.15,
+            'heading_depth': 0.05,
+            'heading_complexity': 0.05,
+            'doc_ref': 0.08,
+            'script_ref': 0.05,
+            'deps': 0.10,
             'redundancy': 0.05,
             'table': 0.10,
-            'coverage': 0.10,  # 加权参与但不主导（乘数才是主导）
+            'coverage': 0.10,
             'code_doc_ratio': 0.15,
-            'density': 0.25,
+            'density': 0.27,
         }
     else:
-        # 纯方法论型：指令密度替代脚本覆盖/代码比
         density = _instruction_density(md)
         scores['density'] = {
             'label': '指令密度',
@@ -380,12 +435,14 @@ def check_complexity(info, skill_type='code-engineered'):
         }
 
         weights = {
-            'nesting': 0.15,
-            'ref_chain': 0.15,
-            'deps': 0.25,
+            'heading_depth': 0.08,
+            'heading_complexity': 0.07,
+            'doc_ref': 0.10,
+            'script_ref': 0.05,
+            'deps': 0.20,
             'redundancy': 0.15,
             'table': 0.10,
-            'density': 0.20,
+            'density': 0.25,
         }
 
     # 计算加权平均分
