@@ -149,17 +149,46 @@ def _doc_ref_depth(info):
     return depth
 
 
-
-
-def _cross_file_deps(info):
-    """跨文件依赖度 = 被引用的外部文件数 + 脚本数。"""
+def _script_ref_depth(info):
+    """脚本引用深度：SKILL.md → 脚本 → 脚本内引用的其他脚本/配置。"""
     md = info.get('skill_md', '')
     if not md:
         return 0
-    refs = len(re.findall(r'\[.*?\]\(([^):]+\.(?:md|py|sh|rb|js|go|yaml|yml|json|toml|txt))\)', md))
-    scripts = _count_script_refs(info)
-    # 去重：如果已经在 refs 里的不额外算
-    return refs + scripts
+    code_exts = r'(?:py|sh|bash|go|js|ts|rb|rs|pl|R|java|swift|kt)'
+    refs = re.findall(
+        rf'(?:scripts|src|bin)/(\w+/)*[\w-]+\.{code_exts}|\./[\w/-]+\.{code_exts}|python3?\s+[\w/-]+\.{code_exts}',
+        md
+    )
+    depth = 1 if refs else 0
+    return depth
+
+
+def _doc_ref_breadth(info):
+    """文档引用广度：SKILL.md 中 Markdown 链接引用的文档文件数量。"""
+    md = info.get('skill_md', '')
+    if not md:
+        return 0
+    doc_exts = r'(?:md|pdf|png|jpg|jpeg|gif|svg|doc|xlsx|csv|txt|yaml|yml|json|toml)'
+    return len(re.findall(rf'\[.*?\]\(([^):]+\.{doc_exts})\)', md))
+
+
+def _script_ref_breadth(info):
+    """脚本引用广度：SKILL.md 中引用的脚本路径 + scripts/ 文件数。"""
+    md = info.get('skill_md', '') or ''
+    code_exts = r'(?:py|sh|bash|go|js|ts|rb|rs|pl|R|java|swift|kt)'
+    refs = len(re.findall(
+        rf'(?:scripts|src|bin)/(\w+/)*[\w-]+\.{code_exts}|\./[\w/-]+\.{code_exts}|python3?\s+[\w/-]+\.{code_exts}',
+        md
+    ))
+    # 加上 scripts/ 下的实际文件数（更准确）
+    scripts_count = 0
+    if info.get('files'):
+        for f in info['files']:
+            fp = f.get('path', '') or f.get('name', '')
+            if ('scripts/' in fp or 'src/' in fp or '/bin/' in fp) and \
+               '__pycache__' not in fp and not fp.endswith('.pyc'):
+                scripts_count += 1
+    return refs + scripts_count
 
 
 def _code_doc_ratio(info):
@@ -309,24 +338,40 @@ def check_complexity(info, skill_type='code-engineered'):
         'level': _score_to_level(hcomp),
     }
 
-    # 3) 文档引用链
-    doc_ref = _doc_ref_depth(info)
-    doc_ref_score = doc_ref * 5
-    scores['doc_ref'] = {
-        'label': '文档引用链',
-        'value': f'{doc_ref} 层',
-        'score': doc_ref_score,
-        'level': _score_to_level(doc_ref_score),
+    # 3) 文档引用链深度
+    doc_ref_depth_val = _doc_ref_depth(info)
+    scores['doc_ref_depth'] = {
+        'label': '文档引用链深度',
+        'value': f'{doc_ref_depth_val} 层',
+        'score': doc_ref_depth_val * 5,
+        'level': _score_to_level(doc_ref_depth_val * 5),
     }
 
-    # 4) 跨文件依赖度
-    deps = _cross_file_deps(info)
-    dep_score = min(deps / 3, 10)  # 3+ 个依赖 = 10 分
-    scores['deps'] = {
-        'label': '跨文件依赖',
-        'value': f'{deps} 项',
-        'score': dep_score,
-        'level': _score_to_level(dep_score),
+    # 4) 文档引用链广度
+    doc_ref_breadth = _doc_ref_breadth(info)
+    scores['doc_ref_breadth'] = {
+        'label': '文档引用链广度',
+        'value': f'{doc_ref_breadth} 个',
+        'score': min(doc_ref_breadth / 2, 10),
+        'level': _score_to_level(min(doc_ref_breadth / 2, 10)),
+    }
+
+    # 5) 脚本引用链深度
+    script_ref_depth_val = _script_ref_depth(info)
+    scores['script_ref_depth'] = {
+        'label': '脚本引用链深度',
+        'value': f'{script_ref_depth_val} 层',
+        'score': script_ref_depth_val * 5,
+        'level': _score_to_level(script_ref_depth_val * 5),
+    }
+
+    # 6) 脚本引用链广度
+    script_ref_breadth = _script_ref_breadth(info)
+    scores['script_ref_breadth'] = {
+        'label': '脚本引用链广度',
+        'value': f'{script_ref_breadth} 个',
+        'score': min(script_ref_breadth / 2, 10),
+        'level': _score_to_level(min(script_ref_breadth / 2, 10)),
     }
 
     # 4) 重复冗余度
@@ -392,8 +437,11 @@ def check_complexity(info, skill_type='code-engineered'):
         weights = {
             'heading_depth': 0.05,
             'heading_complexity': 0.05,
-            'doc_ref': 0.08,
-            'deps': 0.15,
+            'doc_ref_depth': 0.10,
+            'doc_ref_breadth': 0.05,
+            'script_ref_depth': 0.04,
+            'script_ref_breadth': 0.04,
+
             'redundancy': 0.05,
             'table': 0.10,
             'coverage': 0.10,
@@ -412,8 +460,10 @@ def check_complexity(info, skill_type='code-engineered'):
         weights = {
             'heading_depth': 0.08,
             'heading_complexity': 0.07,
-            'doc_ref': 0.10,
-            'deps': 0.30,
+            'doc_ref_depth': 0.12,
+            'doc_ref_breadth': 0.08,
+            'script_ref_depth': 0.04,
+            'script_ref_breadth': 0.03,
             'redundancy': 0.15,
             'table': 0.10,
             'density': 0.20,

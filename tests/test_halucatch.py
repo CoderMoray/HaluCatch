@@ -403,7 +403,8 @@ Refer to [API docs](docs/api.md).
 See also [troubleshooting](docs/troubleshooting.md).
 """
     result = check_complexity(_make_info(md), 'methodology')
-    assert result['raw']['deps']['score'] >= 1
+    # 5 个 Markdown 链接引用 → 文档引用链广度
+    assert result['raw']['doc_ref_breadth']['score'] >= 2
 
 
 def test_complexity_low_coverage_multiplier():
