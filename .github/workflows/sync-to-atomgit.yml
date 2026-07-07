@@ -17,4 +17,4 @@ jobs:
       - name: Sync to AtomGit
         run: |
           git remote add atomgit https://${{ secrets.ATOMGIT_USERNAME }}:${{ secrets.ATOMGIT_TOKEN }}@atomgit.com/CoderMoray/HaluCatch.git 2>/dev/null || true
-          git push atomgit main --tags
+          git push atomgit main --tags --force
