@@ -25,9 +25,10 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
     c = results['code']
     r = results['rules']
     g = results['guardrails']
+    cx = results['complexity']
 
     # 摘要
-    all_items = f['issues'] + c['issues'] + r['issues'] + g['issues']
+    all_items = f['issues'] + c['issues'] + r['issues'] + g['issues'] + cx['issues']
     issues = [i for i in all_items if i[1] in ['fail', 'warn']]
     infos = [i for i in all_items if i[1] == 'info']
     if not issues and not infos:
@@ -56,14 +57,17 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
     r_score = r['score']
     g_rating = g['rating']
     g_score = g['score']
+    cx_rating = cx['rating']
+    cx_score = cx['score']
     fi = fmt_issues(f['issues'])
     ci = fmt_issues(c['issues'])
     ri = fmt_issues(r['issues'])
     gi = fmt_issues(g['issues'])
+    cxi = fmt_issues(cx['issues'])
     sp = info.get('skill_md_path', '')
 
     # 专业版
-    self_check_passed = all(k in results for k in ['foundation', 'code', 'rules', 'guardrails'])
+    self_check_passed = all(k in results for k in ['foundation', 'code', 'rules', 'guardrails', 'complexity'])
     self_check_msg = msg['self_check_pass'] if self_check_passed else msg['self_check_warn']
 
     report = f"""# {msg['report_title']} — {skill_name}
@@ -88,6 +92,7 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
 | 🤖 {msg['code']} | {c_rating} | {c_score} |
 | 📝 {msg['rules']} | {r_rating} | {r_score} |
 | 🛡️ {msg['guardrails']} | {g_rating} | {g_score} |
+| 📐 {msg['complexity']} | {cx_rating} | {cx_score} |
 
 ---
 
@@ -104,6 +109,9 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
 
 ### 🛡️ {msg['guardrails']}
 {gi}
+
+### 📐 {msg['complexity']}
+{cxi}
 
 ---
 
@@ -209,9 +217,9 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
 
 ## {msg['simple_result']}
 
-| 🏗️ {msg['foundation']} | 🤖 {msg['code']} | 📝 {msg['rules']} | 🛡️ {msg['guardrails']} |
+| 🏗️ {msg['foundation']} | 🤖 {msg['code']} | 📝 {msg['rules']} | 🛡️ {msg['guardrails']} | 📐 {msg['complexity']} |
 |--------|--------|--------|--------|
-| {f_rating} {f_score} | {c_rating} {c_score} | {r_rating} {r_score} | {g_rating} {g_score} |
+| {f_rating} {f_score} | {c_rating} {c_score} | {r_rating} {r_score} | {g_rating} {g_score} | {cx_rating} {cx_score} |
 
 ### {msg['simple_good']}
 {standard_good_block}
