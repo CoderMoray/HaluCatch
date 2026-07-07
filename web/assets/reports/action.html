@@ -1,30 +1,29 @@
 <h3>🤖 AI 行动版 — 直接给 AI 的修复指令</h3>
-<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（五维评估）</p>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（五维评估 v1.7.10）</p>
 <hr>
 
-<h4>🛠️ 建议修复清单（按优先级排序）</h4>
-<table>
-<tr><th>优先级</th><th>指标</th><th>修改建议</th></tr>
-<tr><td>🔴 高</td><td>章节复杂度</td><td>合并同级 ## 标题，将同级 section 聚合为 fewer headings</td></tr>
-<tr><td>🔴 高</td><td>指令密度</td><td>大量条件分支（如果/若/否则）可移入单独的 FAQ/边缘情况章节</td></tr>
-<tr><td>🟠 中</td><td>脚本覆盖比</td><td>17 步中仅 2 步有脚本——为核心步骤（扫描→评估→报告）各写一个 wrapper 脚本</td></tr>
-<tr><td>🟡 低</td><td>模糊表述</td><td>将 SKILL.md 中的"通常"替换为具体条件或阈值</td></tr>
-</table>
+<h4>🛠️ 修复清单</h4>
+<ul>
+  <li class="warn">🟠 存在模糊表述: ['通常']</li>
+  <li class="warn">🟡 章节深度: 5 分</li>
+  <li class="warn">🔴 章节复杂度: 10.0</li>
+  <li class="warn">🟡 脚本引用链深度: 1 层</li>
+  <li class="warn">🟡 脚本覆盖比: 12% (2/17 步有脚本) — 🟠 覆盖薄弱</li>
+  <li class="warn">🔴 指令密度: 7.4</li>
+</ul>
 
-<hr>
 <h4>✅ 验证检查点（修复后自检）</h4>
 <ul>
-  <li>☑ 章节复杂度从 10.0 降至 ≤7</li>
-  <li>☑ 指令密度从 7.4 降至 ≤6</li>
-  <li>☑ 脚本覆盖比从 12% 升至 ≥30%</li>
-  <li>☑ 运行 `--validate` 通过</li>
+  <li>☑ 运行 <code>--validate</code> 通过</li>
+  <li>☑ 所有列名校验通过</li>
   <li>☑ 无硬编码路径</li>
+  <li>☑ 用真实数据跑通一次</li>
 </ul>
 
 <hr>
-<h4>📋 直接可用的提示词（发给 AI 执行修复）</h4>
-<pre style="margin-top:12px;">对 halucatch/SKILL.md 做以下修改：
-1. 合并相似的 ## 子章节，减少标题层级深度
-2. 把"如果用户说X→做Y"这类条件逻辑统一移到单独一节"## 交互决策树"
-3. 为核心步骤（扫描→评估→报告）各增加一个 wrapper 脚本入口
-4. 将"通常"替换为具体条件或阈值</pre>
+<h4>📋 下一步</h4>
+<ol>
+  <li><strong>执行修复</strong> — 将本报告发给你的 AI，让它按方案修改目标 Skill。修复后重新验证</li>
+  <li><strong>不执行</strong> — 不做任何修改，审查结束</li>
+  <li><strong>我有更好的意见</strong> — 描述你的修复想法，我据此重新生成修复方案</li>
+</ol>
