@@ -46,6 +46,8 @@ MESSAGES = {
         'report_saved_to': '   报告已保存至: {path}',
         # 报告模板
         'report_title': 'HaluCatch 审计报告',
+        'tldr': '一句话总结',
+        'lang_stats': '代码风险细则',
         'date': '日期',
         'skill_type': 'Skill 类型',
         'skill_file': '文件',
@@ -147,6 +149,8 @@ MESSAGES = {
         'report_saved_to': '   Report saved to: {path}',
         # Report template
         'report_title': 'HaluCatch Audit Report',
+        'tldr': 'TL;DR',
+        'lang_stats': 'Code Risk Breakdown',
         'date': 'Date',
         'skill_type': 'Skill Type',
         'skill_file': 'File',

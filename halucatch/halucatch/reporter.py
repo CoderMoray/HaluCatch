@@ -100,7 +100,7 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
 
 ---
 
-## 📌 TL;DR
+## 📌 {msg['tldr']}
 
 {summary}
 
@@ -124,9 +124,10 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
 {fi}
 
 ### 🤖 {msg['code']}
-{ci}
 
 {_lang_stats_table(c, msg)}
+
+{ci}
 
 ### 📝 {msg['rules']}
 {ri}
