@@ -19,8 +19,8 @@ def _lang_stats_table(code_result, msg):
                   'rust': 'Rust', 'perl': 'Perl'}
     has_issues = any(s['findings'] > 0 for s in ls.values())
 
-    header_cols = '| 语言 | 文件数 | 规则 | 通过 |'
-    sep_cols = '|------|------|------|------|'
+    header_cols = '| 代码文件类型 | 规则 | 通过 |'
+    sep_cols = '|------|------|------|'
     if has_issues:
         header_cols += ' 告警 |'
         sep_cols += '------|'
@@ -29,9 +29,8 @@ def _lang_stats_table(code_result, msg):
     for lang, stats in sorted(ls.items()):
         name = lang_names.get(lang, lang)
         clean = stats['files'] - stats['findings']
-        # rules = 语言专属规则 + 2 条通用规则（超长行、硬编码密钥）
         total_rules = stats.get('rules', 0) + 2
-        row = f'| {name} | {stats["files"]} | {total_rules} | {clean}/{stats["files"]} |'
+        row = f'| {name} | {total_rules} | {clean}/{stats["files"]} |'
         if has_issues:
             alert = f'{stats["findings"]} 个' if stats['findings'] > 0 else '—'
             row += f' {alert} |'
