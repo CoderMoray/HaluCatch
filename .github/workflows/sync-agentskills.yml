@@ -22,7 +22,7 @@ jobs:
           cache: 'pip'
 
       - name: Install skills-ref
-        run: pip install skills-ref
+        run: pip install skills-ref pyyaml
 
       - name: Build & Push agentskills
         env:
