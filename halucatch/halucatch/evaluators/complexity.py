@@ -149,20 +149,6 @@ def _doc_ref_depth(info):
     return depth
 
 
-def _script_path_refs(info):
-    """脚本引用路径：SKILL.md 中引用的可执行脚本路径数。"""
-    md = info.get('skill_md', '') or ''
-    if not md:
-        return 0
-    code_exts = r'(?:py|sh|bash|go|js|ts|rb|rs|pl|java|swift|kt|R)'
-    # 匹配 scripts/xxx.py、./xxx.sh、python3 xxx.py 等
-    refs = len(re.findall(
-        rf'(?:scripts|src|bin)/(\w+/)*[\w-]+\.{code_exts}'
-        rf'|\./[\w/-]+\.{code_exts}'
-        rf'|python3?\s+[\w/-]+\.{code_exts}',
-        md
-    ))
-    return refs
 
 
 def _cross_file_deps(info):
@@ -323,27 +309,17 @@ def check_complexity(info, skill_type='code-engineered'):
         'level': _score_to_level(hcomp),
     }
 
-    # 3) 文档引用深度
+    # 3) 文档引用链
     doc_ref = _doc_ref_depth(info)
-    doc_ref_score = doc_ref * 5  # 0=0, 1=5, 2=10
+    doc_ref_score = doc_ref * 5
     scores['doc_ref'] = {
-        'label': '文档引用深度',
+        'label': '文档引用链',
         'value': f'{doc_ref} 层',
         'score': doc_ref_score,
         'level': _score_to_level(doc_ref_score),
     }
 
-    # 4) 脚本引用路径
-    script_refs = _script_path_refs(info)
-    script_ref_score = min(script_refs / 2, 10)  # 2+ 个脚本引用 = 10 分
-    scores['script_ref'] = {
-        'label': '脚本引用路径',
-        'value': f'{script_refs} 个',
-        'score': script_ref_score,
-        'level': _score_to_level(script_ref_score),
-    }
-
-    # 5) 跨文件依赖度
+    # 4) 跨文件依赖度
     deps = _cross_file_deps(info)
     dep_score = min(deps / 3, 10)  # 3+ 个依赖 = 10 分
     scores['deps'] = {
@@ -417,8 +393,7 @@ def check_complexity(info, skill_type='code-engineered'):
             'heading_depth': 0.05,
             'heading_complexity': 0.05,
             'doc_ref': 0.08,
-            'script_ref': 0.05,
-            'deps': 0.10,
+            'deps': 0.15,
             'redundancy': 0.05,
             'table': 0.10,
             'coverage': 0.10,
@@ -438,11 +413,10 @@ def check_complexity(info, skill_type='code-engineered'):
             'heading_depth': 0.08,
             'heading_complexity': 0.07,
             'doc_ref': 0.10,
-            'script_ref': 0.05,
-            'deps': 0.20,
+            'deps': 0.30,
             'redundancy': 0.15,
             'table': 0.10,
-            'density': 0.25,
+            'density': 0.20,
         }
 
     # 计算加权平均分
