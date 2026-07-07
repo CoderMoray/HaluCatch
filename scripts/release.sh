@@ -41,7 +41,7 @@ run() {
 }
 
 # ── Step 1: Bump Version ────────────────────────────────────────────
-echo "[1/10] 升级版本号..."
+echo "[1/11] 升级版本号..."
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "  [DRY-RUN] 将执行: bump-version.sh $VERSION"
 else
@@ -49,76 +49,85 @@ else
 fi
 
 # ── Step 2: Inject Frontmatter ──────────────────────────────────────
-echo "[2/10] 注入 frontmatter 到 SKILL.md..."
+echo "[2/11] 注入 frontmatter 到 SKILL.md..."
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "  [DRY-RUN] 将执行: inject-frontmatter.sh"
 else
   bash "$SCRIPTS/inject-frontmatter.sh"
 fi
 
-# ── Step 3: Generate Changelog ──────────────────────────────────────
-echo "[3/10] 自动生成 CHANGELOG..."
+# ── Step 3: Build Web ───────────────────────────────────────────────
+echo "[3/11] 重新生成网站 docs/..."
+if [[ "$DRY_RUN" == "true" ]]; then
+  echo "  [DRY-RUN] 将执行: python3 web/build.py --all"
+else
+  python3 "$ROOT/web/build.py" --all
+  echo "  ✅ docs/ 已重新生成"
+fi
+
+# ── Step 4: Generate Changelog ──────────────────────────────────────
+echo "[4/11] 自动生成 CHANGELOG..."
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "  [DRY-RUN] 将执行: generate-changelog.sh --write"
 else
   bash "$SCRIPTS/generate-changelog.sh" --write
 fi
 
-# ── Step 4: Lint ────────────────────────────────────────────────────
-echo "[4/10] 发布前自检..."
+# ── Step 5: Lint ────────────────────────────────────────────────────
+echo "[5/11] 发布前自检..."
 bash "$SCRIPTS/lint-paths.sh"
 
-# ── Step 5: Build SkillHub Package ──────────────────────────────────
-echo "[5/10] 构建 SkillHub 包..."
+# ── Step 6: Build SkillHub Package ──────────────────────────────────
+echo "[6/11] 构建 SkillHub 包..."
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "  [DRY-RUN] 将执行: build-skillhub.sh"
 else
   bash "$SCRIPTS/build-skillhub.sh"
 fi
 
-# ── Step 6: Check File Size ─────────────────────────────────────────
-echo "[6/10] 文件尺寸检查..."
+# ── Step 7: Check File Size ─────────────────────────────────────────
+echo "[7/11] 文件尺寸检查..."
 bash "$SCRIPTS/check-file-size.sh"
 
 ZIP_PATH="$ROOT/releases/HaluCatch-${VERSION}-skillhub.zip"
 CLAWHUB_ZIP="$ROOT/releases/HaluCatch-${VERSION}-clawhub.zip"
 
-# ── Step 7: Build ClawHub Package ─────────────────────────────────────
+# ── Step 8: Build ClawHub Package ─────────────────────────────────────
 if [[ "$DRY_RUN" == "true" ]]; then
-  echo "[7/10] DRY-RUN: 将构建 ClawHub 包"
+  echo "[8/11] DRY-RUN: 将构建 ClawHub 包"
 elif [[ "$SKIP_CLAWHUB" == "false" ]]; then
-  echo "[7/10] 构建 ClawHub 发布包..."
+  echo "[8/11] 构建 ClawHub 发布包..."
   bash "$SCRIPTS/build-clawhub.sh"
 else
-  echo "[7/10] 跳过 ClawHub 构建"
+  echo "[8/11] 跳过 ClawHub 构建"
 fi
 
-# ── Step 8: Publish to SkillHub ─────────────────────────────────────
+# ── Step 9: Publish to SkillHub ─────────────────────────────────────
 if [[ "$DRY_RUN" == "true" ]]; then
-  echo "[8/10] DRY-RUN: 将发布到 SkillHub ($ZIP_PATH)"
+  echo "[9/11] DRY-RUN: 将发布到 SkillHub ($ZIP_PATH)"
 elif [[ "$SKIP_SKILLHUB" == "false" ]]; then
-  echo "[8/10] 发布到 SkillHub..."
+  echo "[9/11] 发布到 SkillHub..."
   skillhub publish "$ZIP_PATH" || echo "⚠️  SkillHub 发布失败（可手动重试）"
 else
-  echo "[8/10] 跳过 SkillHub"
+  echo "[9/11] 跳过 SkillHub"
 fi
 
-# ── Step 9: Publish to ClawHub ──────────────────────────────────────
+# ── Step 10: Publish to ClawHub ──────────────────────────────────────
 if [[ "$DRY_RUN" == "true" ]]; then
-  echo "[9/10] DRY-RUN: 将发布到 ClawHub (halucatch@$VERSION)"
+  echo "[10/11] DRY-RUN: 将发布到 ClawHub (halucatch@$VERSION)"
 elif [[ "$SKIP_CLAWHUB" == "false" ]]; then
-  echo "[9/10] 发布到 ClawHub..."
+  echo "[10/11] 发布到 ClawHub..."
   TMP_CLAWHUB="/tmp/halucatch-publish"
   rm -rf "$TMP_CLAWHUB" && mkdir -p "$TMP_CLAWHUB"
   unzip -q "$CLAWHUB_ZIP" -d "$TMP_CLAWHUB"
   (cd "$TMP_CLAWHUB" && clawhub publish . --slug halucatch --name "HaluCatch / 捕幻" --version "$VERSION") || echo "⚠️  ClawHub 发布失败（可手动重试）"
   rm -rf "$TMP_CLAWHUB"
 else
-  echo "[9/10] 跳过 ClawHub"
+  echo "[10/11] 跳过 ClawHub"
 fi
 
-# ── Step 10: Git Commit + Tag + Push ─────────────────────────────────
-echo "[10/10] Git 提交 + Tag + Push..."
+# ── Step 11: Git Commit + Tag + Push ─────────────────────────────────
+echo "[11/11] Git 提交 + Tag + Push..."
 
 # 检查 tag 是否已存在
 TAG_EXISTS=false
