@@ -4,7 +4,8 @@ import re
 
 from .rules import _is_tool_skill
 
-# 模板文件后缀：可能包含 {{ }} / {% %} / <%= %> 等模板引擎语法
+# 渲染函数名前缀：用于兜底检测 Python 代码中的输出生成函数
+_RENDER_FN_PREFIXES = ('render_', 'build_', 'generate_', 'output_', 'export_', 'compile_')
 _TEMPLATE_EXTS = frozenset({'.html', '.htm', '.tpl', '.j2', '.jinja2', '.hbs', '.mustache', '.liquid', '.tex'})
 _TEMPLATE_SYNTAX = re.compile(r'\{\{|\{%|<%=|%>')
 
@@ -164,37 +165,52 @@ def _prohibition_signal(md):
 
 
 def _check_output_determinism(info):
-    """检测输出确定性：扫描候选文件中的模板引擎语法。
+    """检测输出确定性：两级信号，命中任一级即 pass。
 
-    在 info['files'] 中按后缀筛选 .html / .j2 / .hbs 等模板文件，
-    打开读取内容，检测是否包含 Jinja2 / Handlebars / ERB 等模板引擎
-    的变量插入（{{ }}）或控制流（{% %}）语法。
+    一级（模板文件）：在 info['files'] 中按后缀筛选候选文件，
+    打开读取内容，检测 Jinja2/Handlebars/ERB 等模板引擎语法
+    （{{ }} / {% %} / <%= %>）。模板 = 固定渲染管线 = 高置信度。
 
-    模板文件 = 输出经过固定渲染管线而非 LLM 自由生成 = 输出可复现。
+    二级（渲染函数）：无模板时，扫描 info['py'] 中 Python 函数定义，
+    查找 render_/build_/generate_/output_/export_/compile_ 前缀。
+    命中说明有代码在管理输出生成。
+
+    已知风险：
+    - 仅扫描 Python 代码（info['py']），JS/Go/Shell 中的渲染逻辑会漏掉。
+    - 函数名匹配依赖命名约定，AI 可能用任意名称生成输出（如 make_report）。
+    - 无直接渲染管线时，输出仍可能经 f-string 拼接或 LLM 结构化指令生成，
+      这些模式当前无法可靠检测。
+    - 后续方向：跨语言代码扫描、AST 级输出调用链分析。
 
     Returns (status, text)，status 为 'pass' | 'warn'。
     """
+    # 一级：模板文件检测
     candidates = [f for f in info.get('files', [])
                   if f['ext'] in _TEMPLATE_EXTS
                   and not f.get('is_test')
-                  and f['size'] < 1024 * 1024]  # 跳过 >1MB 文件
+                  and f['size'] < 1024 * 1024]
 
-    if not candidates:
-        return ('warn', '🟠 未发现模板文件，输出可能由 LLM 自由生成')
+    found_tpl = []
+    if candidates:
+        for f in candidates:
+            try:
+                with open(f['path'], 'r', encoding='utf-8', errors='backslashreplace') as fh:
+                    content = fh.read()
+                if _TEMPLATE_SYNTAX.search(content):
+                    found_tpl.append(f['rel_path'])
+            except OSError:
+                pass
 
-    found = []
-    for f in candidates:
-        try:
-            with open(f['path'], 'r', encoding='utf-8', errors='backslashreplace') as fh:
-                content = fh.read()
-            if _TEMPLATE_SYNTAX.search(content):
-                found.append(f['rel_path'])
-        except OSError:
-            pass
+    if found_tpl:
+        first = found_tpl[0]
+        tail = ' 等' if len(found_tpl) > 1 else ''
+        return ('pass', f'✅ 发现 {len(found_tpl)} 个模板文件（{first}{tail}），输出可复现')
 
-    if found:
-        first = found[0]
-        tail = ' 等' if len(found) > 1 else ''
-        return ('pass', f'✅ 发现 {len(found)} 个模板文件（{first}{tail}），输出可复现')
-    else:
-        return ('warn', '🟠 未发现模板引擎语法（{{ }}/{% %}），输出可能由 LLM 自由生成')
+    # 二级：Python 渲染函数名兜底
+    py = info.get('py')
+    if py:
+        for prefix in _RENDER_FN_PREFIXES:
+            if f'def {prefix}' in py:
+                return ('pass', f'✅ 发现渲染函数 def {prefix}...，输出有代码管')
+
+    return ('warn', '🟠 未发现模板或渲染函数，输出可能由 LLM 自由生成')
