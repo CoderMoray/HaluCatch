@@ -141,7 +141,7 @@ def merge_config(config, locale):
       {item['name']}
       <span class="status {item['status']}">{item['status_text']}</span>
     </a>\n"""
-        data["security_audit_section"] = f"""<section class="anim-item scroll-anim" style="text-align:center;padding:0 20px 40px;">
+        data["security_audit_section"] = f"""<section class="anim-item" data-anim="1800" style="text-align:center;padding:0 20px 40px;">">
   <h3 style="font-size:1.2rem;margin-bottom:14px;text-align:center;font-weight:600;color:var(--text2);">{locale["security"]["title"]}</h3>
   <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
     {items_html.strip()}
@@ -154,7 +154,7 @@ def merge_config(config, locale):
     demo = config.get("demo")
     if demo:
         demo_i18n = locale.get("demo", {})
-        data["demo_section"] = f"""<section id="demo" class="anim-item scroll-anim">
+        data["demo_section"] = f"""<section id="demo" class="anim-item" data-anim="3000">
   <h2>{demo_i18n.get("title", "Live Demo").format(name=data['name'])}</h2>
   <div id="ai-chat-demo-container"></div>
 </section>"""
@@ -202,7 +202,7 @@ setTimeout(function() {{ window.halucatchDemo.begin(); }}, 100);
       </div>
     </div>\n"""
         issue_url = config["github_url"] + "/issues"
-        data["problem_section"] = f"""<section class="anim-item scroll-anim">
+        data["problem_section"] = f"""<section class="anim-item" data-anim="2200">
   <h2>{prob_i18n["title"]}</h2>
   <div class="problem-grid">
     {cards_html.strip()}
@@ -242,7 +242,7 @@ setTimeout(function() {{ window.halucatchDemo.begin(); }}, 100);
         content_pro = load_content("content_pro", rp['tabs'][1]['id'])
         content_action = load_content("content_action", rp['tabs'][2]['id'])
 
-        data["report_preview_section"] = f"""<section id="report-preview" class="anim-item scroll-anim">
+        data["report_preview_section"] = f"""<section id="report-preview" class="anim-item" data-anim="2600">
   <h2>{rp_i18n["title"]}</h2>
   <p style="text-align:center;color:var(--text2);margin-bottom:24px;">{rp_i18n["subtitle"]}</p>
   <div class="preview-container">
@@ -334,7 +334,7 @@ setTimeout(function() {{ window.halucatchDemo.begin(); }}, 100);
         dev = qs.get("dev", {})
         dev_i18n = qs_i18n.get("dev", {})
 
-        data["quickstart_section"] = f"""<section id="quickstart" class="anim-item scroll-anim">
+        data["quickstart_section"] = f"""<section id="quickstart" class="anim-item" data-anim="3400">
   <h2>{qs_i18n['title']}</h2>
   <div class="qs-tabs">
     <button class="qs-tab active" onclick="switchQsTab('user')">{user_tab}</button>
@@ -435,7 +435,7 @@ setTimeout(function() {{ window.halucatchDemo.begin(); }}, 100);
       <h3>{post['title']}</h3>
       <p>{post['desc']}</p>
     </a>\n"""
-        data["blog_section"] = f"""<section id="blog" class="anim-item scroll-anim">
+        data["blog_section"] = f"""<section id="blog" class="anim-item" data-anim="3800">
   <h2><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:8px;position:relative;top:-2px;"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>{blog_i18n.get("title", blog.get("title", "Blogs"))}</h2>
   <div class="blog-grid">
     {items_html.strip()}
@@ -464,7 +464,7 @@ setTimeout(function() {{ window.halucatchDemo.begin(); }}, 100);
             full_link = f"""<p style="text-align:center;margin-top:20px;">
     <a href="{faq['full_link_url']}" class="btn btn-outline">{faq_i18n.get('view_all', 'View Full FAQ →')}</a>
   </p>"""
-        data["faq_section"] = f"""<section id="faq" class="anim-item scroll-anim">
+        data["faq_section"] = f"""<section id="faq" class="anim-item" data-anim="4200">
   <h2><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:8px;position:relative;top:-2px;"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>{faq_i18n.get('title', faq.get('title', 'FAQ'))}</h2>
   <div class="faq-list">
     {items_html.strip()}
