@@ -19,7 +19,7 @@ def check_guardrails(info, skill_type='code-engineered'):
     # 代码工程型拆两档：工具库 vs 分析型
     is_tool = skill_type == 'code-engineered' and _is_tool_skill(info)
 
-    total = 8
+    total = 11
     score = 0
 
     # 1) 输出格式明确
@@ -97,6 +97,29 @@ def check_guardrails(info, skill_type='code-engineered'):
         score += 1
     else:
         issues.append(('🟡 未声明前提假设', 'info'))
+
+    # 9) 错误上报 — 出错后是否要求告知用户（非仅内部回退）
+    if re.search(r'(告知|通知|报告.*错误|错误.*报告|遇到.*告知|出错.*告知|report\s+.*(?:error|back|issue)|inform\s+.*user|notify|停止.*告知)', md):
+        issues.append(('✅ 要求向用户上报错误', 'pass'))
+        score += 1
+    else:
+        issues.append(('🟠 未要求向用户告知错误', 'warn'))
+
+    # 10) 操作确认 — 是否要求先确认再执行破坏性操作
+    if re.search(r'(先.*确认|经.*同意|确认.*再.*执行|确认后.*操作|征得.*同意|before\s+.*proceed|proceed\s+.*confir|'
+                 r'ask\s+.*before|confirm\s+.*before|先.*检查.*再|请确认.*是否)', md):
+        issues.append(('✅ 要求操作前确认', 'pass'))
+        score += 1
+    else:
+        issues.append(('🟠 未要求操作前确认', 'warn'))
+
+    # 11) 输出确定性 — 是否要求每次结果一致可复现
+    if re.search(r'(固定.*输出|输出.*固定|确定.*结果|结果.*确定|确定性|deterministic|temperature|seed|'
+                 r'固定.*随机|可复现|可重现|reproducible|每次.*相同|一致.*结果)', md):
+        issues.append(('✅ 要求输出确定性/可复现', 'pass'))
+        score += 1
+    else:
+        issues.append(('🟠 未要求输出确定性', 'warn'))
 
     pct = score / max(total, 1)
     if pct >= 0.8:

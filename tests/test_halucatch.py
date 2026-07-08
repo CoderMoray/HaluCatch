@@ -176,9 +176,11 @@ def test_guardrails_strong():
         '执行后验证结果',
         '置信度 < 0.8 时标记',
         '数据来源: 仅限 2024 年报',
-        '若失败则回退到默认值',
+        '若失败则回退到默认值，并告知用户错误',
         '截至 2026-06-01',
         '假设: 用户已登录',
+        '执行前先确认目标路径',
+        '每次输出结果确定可复现',
     ])
     info = make_info(md_content=md)
     result = check_guardrails(info)
@@ -193,21 +195,26 @@ def test_guardrails_weak():
 
 
 def test_guardrails_tool_type():
-    """工具库型 Skill 应跳过置信度/数据来源/时效性，total=5。"""
+    """工具库型 Skill 应跳过置信度/数据来源/时效性，total=8（11-3）。"""
     md = '\n'.join([
         'create spreadsheet from template',
         'edit and convert format',
+        'do not modify source files',
+        '切勿覆盖已有文件',
         '输出 json 格式',
         '执行后 validate 结果',
         '若失败则回退到默认值',
         '假设: 文件已存在',
+        '出错时告知用户',
+        '执行前先确认操作',
+        '每次输出确定一致',
     ])
     info = make_info(md_content=md, py_content='print(1)')  # has .py → code-engineered
     result = check_guardrails(info)
-    # 工具库型：total=5（跳过了 4/5/7），得分 ≥ 4
+    # 工具库型：total=8（跳过了 4/5/7），得分 ≥ 7
     issues_text = ' '.join(i[0] for i in result['issues'])
     assert '工具库' in issues_text
-    assert result['score'] in ('4/5', '5/5')
+    assert result['score'] in ('7/8', '8/8')
 
 
 # ---- 边界用例 — 输入不完整时行为正确 ----
