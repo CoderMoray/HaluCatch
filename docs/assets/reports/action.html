@@ -1,0 +1,29 @@
+<h3>🤖 AI 行动版 — 直接给 AI 的修复指令</h3>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（五维评估 v1.7.10）</p>
+<hr>
+
+<h4>🛠️ 修复清单</h4>
+<ul>
+  <li class="warn">🟠 存在模糊表述: ['通常']</li>
+  <li class="warn">🟡 章节深度: 5 分</li>
+  <li class="warn">🔴 章节复杂度: 10.0</li>
+  <li class="warn">🟡 脚本引用链深度: 1 层</li>
+  <li class="warn">🟡 脚本覆盖比: 12% (2/17 步有脚本) — 🟠 覆盖薄弱</li>
+  <li class="warn">🔴 指令密度: 7.4</li>
+</ul>
+
+<h4>✅ 验证检查点（修复后自检）</h4>
+<ul>
+  <li>☑ 运行 <code>--validate</code> 通过</li>
+  <li>☑ 所有列名校验通过</li>
+  <li>☑ 无硬编码路径</li>
+  <li>☑ 用真实数据跑通一次</li>
+</ul>
+
+<hr>
+<h4>📋 下一步</h4>
+<ol>
+  <li><strong>执行修复</strong> — 将本报告发给你的 AI，让它按方案修改目标 Skill。修复后重新验证</li>
+  <li><strong>不执行</strong> — 不做任何修改，审查结束</li>
+  <li><strong>我有更好的意见</strong> — 描述你的修复想法，我据此重新生成修复方案</li>
+</ol>

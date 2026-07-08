@@ -1,0 +1,78 @@
+<h3>📊 专业版 — 结构化评估结果</h3>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（五维评估 v1.7.10）</p>
+<hr>
+
+<h3>📌 一句话总结</h3>
+<p>🔴 2 严重 · ⚠️ 4 注意 · 💡 3 可优化</p>
+
+<h3>🎯 核心结论卡片</h3>
+<table>
+<tr><th>维度</th><th>评级</th><th>分数</th></tr>
+<tr><td>🏗️ 地基</td><td class="pass">🟢 稳固</td><td>6/6</td></tr>
+<tr><td>🤖 代码</td><td class="pass">🟢 低风险</td><td>15/15</td></tr>
+<tr><td>📝 规则/方法论</td><td class="pass">🟢 明确</td><td>5/6</td></tr>
+<tr><td>🛡️ 护栏</td><td class="pass">🟢 到位</td><td>8/8</td></tr>
+<tr><td>📐 复杂度</td><td class="warn">🟡 注意</td><td>3.0/10</td></tr>
+</table>
+
+<h3>🔍 审查发现</h3>
+
+<h4>🏗️ 地基</h4>
+<ul>
+  <li class="pass">✅ 有固化 .py 脚本</li>
+  <li class="pass">✅ 路径已参数化或无本地绝对路径</li>
+  <li class="pass">✅ 有 --validate 验证模式</li>
+  <li class="pass">✅ 有输入验证/列名校验</li>
+  <li class="pass">✅ 使用通配符/自动发现文件</li>
+  <li class="pass">✅ SKILL.md 声明了依赖</li>
+</ul>
+
+<h4>🤖 代码</h4>
+<table>
+<tr><th>代码文件类型</th><th>审查规则数量</th><th>全通过</th><th>部分问题</th><th>全不通过</th></tr>
+<tr><td>Python</td><td>9</td><td class="pass">15</td><td>0</td><td>0</td></tr>
+</table>
+<p>— 无</p>
+
+<h4>📝 规则/方法论</h4>
+<ul>
+  <li class="warn">🟠 存在模糊表述: ['通常']</li>
+  <li class="pass">✅ 定义了数值边界/范围</li>
+  <li class="pass">✅ 包含计算/公式说明</li>
+  <li class="pass">✅ 单位使用一致</li>
+  <li class="pass">✅ 有异常分支处理</li>
+  <li class="pass">✅ 声明了默认值/回退策略</li>
+</ul>
+<p style="color:var(--text2);font-size:0.8rem;">以上为脚本基线检查，AI 应在此基础上补充语义分析</p>
+
+<h4>🛡️ 护栏</h4>
+<ul>
+  <li class="pass">✅ 明确了输出格式</li>
+  <li class="pass">✅ 检测到禁止/护栏声明</li>
+  <li class="pass">✅ 包含验证/自检步骤</li>
+  <li class="pass">✅ 涉及置信度/风险评估</li>
+  <li class="pass">✅ 声明了数据来源/范围限制</li>
+  <li class="pass">✅ 定义了错误处理/回退策略</li>
+  <li class="pass">✅ 声明了数据时效性</li>
+  <li class="pass">✅ 声明了前提假设</li>
+</ul>
+<p style="color:var(--text2);font-size:0.8rem;">以上为脚本基线检查，AI 应在此基础上补充语义分析</p>
+
+<h4>📐 复杂度</h4>
+<table>
+<tr><th>指标</th><th>权重</th><th>得分</th><th>详情</th></tr>
+<tr><td>章节深度</td><td>5%</td><td class="warn">🟡 5.0</td><td>5 分</td></tr>
+<tr><td>章节复杂度</td><td>5%</td><td class="warn">🔴 10.0</td><td>10.0</td></tr>
+<tr><td>文档引用链深度</td><td>10%</td><td class="pass">🟢 0.0</td><td>0 层</td></tr>
+<tr><td>文档引用链广度</td><td>10%</td><td class="pass">🟢 0.0</td><td>0 个</td></tr>
+<tr><td>脚本引用链深度</td><td>3%</td><td class="warn">🟡 5.0</td><td>1 层</td></tr>
+<tr><td>脚本引用链广度</td><td>2%</td><td class="pass">🟢 3.0</td><td>6 个</td></tr>
+<tr><td>重复冗余</td><td>5%</td><td class="pass">🟢 0.9</td><td>0.9</td></tr>
+<tr><td>表格复杂度</td><td>10%</td><td class="pass">🟢 3.0</td><td>3.0</td></tr>
+<tr><td>脚本覆盖比</td><td>10%</td><td class="warn">🟠 6.0</td><td>12% (2/17 步有脚本)</td></tr>
+<tr><td>代码/文档比</td><td>15%</td><td class="pass">🟢 0.0</td><td>文档 20% — 代码充裕</td></tr>
+<tr><td>指令密度</td><td>25%</td><td class="warn">🔴 7.4</td><td>7.4</td></tr>
+</table>
+<p style="margin-top:4px;font-size:0.85rem;">加权平均 3.7 × 0.8（覆盖乘数）→ 最终 <strong>3.0/10</strong></p>
+
+<p style="margin-top:16px;font-size:0.85rem;color:var(--text2);">本报告由 HaluCatch 生成。✅ 检查进度: 全部执行完毕</p>
