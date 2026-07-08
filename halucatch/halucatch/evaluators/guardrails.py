@@ -4,6 +4,10 @@ import re
 
 from .rules import _is_tool_skill
 
+# 模板文件后缀：可能包含 {{ }} / {% %} / <%= %> 等模板引擎语法
+_TEMPLATE_EXTS = frozenset({'.html', '.htm', '.tpl', '.j2', '.jinja2', '.hbs', '.mustache', '.liquid', '.tex'})
+_TEMPLATE_SYNTAX = re.compile(r'\{\{|\{%|<%=|%>')
+
 
 def check_guardrails(info, skill_type='code-engineered'):
     """护栏评估：检查解读规则是否到位，防止 AI 自信地输出错误结论。
@@ -113,13 +117,11 @@ def check_guardrails(info, skill_type='code-engineered'):
     else:
         issues.append(('🟠 未要求操作前确认', 'warn'))
 
-    # 11) 输出确定性 — 是否要求每次结果一致可复现
-    if re.search(r'(固定.*输出|输出.*固定|确定.*结果|结果.*确定|确定性|deterministic|temperature|seed|'
-                 r'固定.*随机|可复现|可重现|reproducible|每次.*相同|一致.*结果)', md):
-        issues.append(('✅ 要求输出确定性/可复现', 'pass'))
+    # 11) 输出确定性 — 扫描模板文件中的模板引擎语法
+    tpl_status, tpl_text = _check_output_determinism(info)
+    issues.append((tpl_text, tpl_status))
+    if tpl_status == 'pass':
         score += 1
-    else:
-        issues.append(('🟠 未要求输出确定性', 'warn'))
 
     pct = score / max(total, 1)
     if pct >= 0.8:
@@ -159,3 +161,40 @@ def _prohibition_signal(md):
         return ('pass', f'✅ 检测到禁止/护栏声明（否定词 {negations} / 中文禁止 {zh_prohibition}）')
     else:
         return ('warn', '🟡 未检测到明确的禁止操作声明')
+
+
+def _check_output_determinism(info):
+    """检测输出确定性：扫描候选文件中的模板引擎语法。
+
+    在 info['files'] 中按后缀筛选 .html / .j2 / .hbs 等模板文件，
+    打开读取内容，检测是否包含 Jinja2 / Handlebars / ERB 等模板引擎
+    的变量插入（{{ }}）或控制流（{% %}）语法。
+
+    模板文件 = 输出经过固定渲染管线而非 LLM 自由生成 = 输出可复现。
+
+    Returns (status, text)，status 为 'pass' | 'warn'。
+    """
+    candidates = [f for f in info.get('files', [])
+                  if f['ext'] in _TEMPLATE_EXTS
+                  and not f.get('is_test')
+                  and f['size'] < 1024 * 1024]  # 跳过 >1MB 文件
+
+    if not candidates:
+        return ('warn', '🟠 未发现模板文件，输出可能由 LLM 自由生成')
+
+    found = []
+    for f in candidates:
+        try:
+            with open(f['path'], 'r', encoding='utf-8', errors='backslashreplace') as fh:
+                content = fh.read()
+            if _TEMPLATE_SYNTAX.search(content):
+                found.append(f['rel_path'])
+        except OSError:
+            pass
+
+    if found:
+        first = found[0]
+        tail = ' 等' if len(found) > 1 else ''
+        return ('pass', f'✅ 发现 {len(found)} 个模板文件（{first}{tail}），输出可复现')
+    else:
+        return ('warn', '🟠 未发现模板引擎语法（{{ }}/{% %}），输出可能由 LLM 自由生成')
