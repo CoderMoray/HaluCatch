@@ -39,18 +39,19 @@ def _complexity_table(cx_result):
     if not raw:
         return ''
 
-    headers = '| 指标 | 得分 | 详情 |\n|------|------|------|\n'
+    headers = '| 指标 | 权重 | 得分 | 详情 |\n|------|------|------|------|\n'
     rows = []
     for _key, s in raw.items():
         label = s.get('label', _key)
+        weight = s.get('weight')
         score = s.get('score', 0)
         value = s.get('value', '')
         level = s.get('level', '')
         score_str = f'{level} {score:.1f}' if isinstance(score, (int, float)) else f'{level} {score}'
-        # 脚本覆盖比：附加乘数信息
         if 'multiplier' in s:
             score_str += f'（乘数 ×{s["multiplier"]}）'
-        rows.append(f'| {label} | {score_str} | {value} |')
+        weight_str = f'{weight:.0%}' if weight is not None else '—'
+        rows.append(f'| {label} | {weight_str} | {score_str} | {value} |')
 
     if not rows:
         return ''

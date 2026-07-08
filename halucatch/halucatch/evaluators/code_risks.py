@@ -208,7 +208,7 @@ def check_code_risks(info):
 
     files_with_issues = 0
     total_files = 0
-    lang_stats = {}  # {lang: {files: int, findings: int, rules: int}}
+    lang_stats = {}  # {lang: {files: int, clean: int, partial: int, all_fail: int, rules: int}}
 
     for lang, file_list in lang_files.items():
         patterns = lang_patterns.get(lang, [])
@@ -218,7 +218,8 @@ def check_code_risks(info):
         for f in file_list:
             path = f.get('rel_path') or f.get('path') or f.get('name', '')
             source = _read_file(f.get('path', ''))
-            file_has_issue = False
+            file_findings = 0
+            file_checks = len(patterns)  # 专属规则数（通用规则另算）
             total_files += 1
 
             # 语言专属规则
@@ -226,16 +227,16 @@ def check_code_risks(info):
             for name, pattern, desc in patterns:
                 total_checks += 1
                 if re.search(pattern, preprocessed, re.MULTILINE | re.DOTALL):
-                    # 除零风险：排除分母为常量或 max()/min() 保护的情况
                     if name == '除零风险' and _is_safe_division(preprocessed):
                         continue
                     issues.append((f'🟠 [{lang}/{name}] {desc}（{path}）', 'warn'))
                     found_risks += 1
-                    file_has_issue = True
+                    file_findings += 1
 
             # 通用规则
             for uv_name, uv_pattern, uv_desc in UNIVERSAL_PATTERNS:
                 total_checks += 1
+                file_checks += 1
                 if uv_name == '超长行':
                     long_lines = [ln for ln in source.splitlines() if len(ln) > 200]
                     if long_lines:
@@ -244,21 +245,25 @@ def check_code_risks(info):
                             'warn'
                         ))
                         found_risks += 1
-                        file_has_issue = True
+                        file_findings += 1
                 elif uv_pattern and re.search(uv_pattern, preprocessed, re.IGNORECASE):
                     issues.append((f'🔴 [{uv_name}] {uv_desc}（{path}）', 'fail'))
                     found_risks += 1
-                    file_has_issue = True
+                    file_findings += 1
 
-            if file_has_issue:
+            if file_findings > 0:
                 files_with_issues += 1
 
             # 语言统计
             if lang not in lang_stats:
-                lang_stats[lang] = {'files': 0, 'findings': 0, 'rules': len(patterns)}
+                lang_stats[lang] = {'files': 0, 'clean': 0, 'partial': 0, 'all_fail': 0, 'rules': len(patterns) + 2}
             lang_stats[lang]['files'] += 1
-            if file_has_issue:
-                lang_stats[lang]['findings'] += 1
+            if file_findings == 0:
+                lang_stats[lang]['clean'] += 1
+            elif file_findings == file_checks:
+                lang_stats[lang]['all_fail'] += 1
+            else:
+                lang_stats[lang]['partial'] += 1
 
     # 测试文件正向信号
     test_py_count = info.get('test_py_count', 0)
