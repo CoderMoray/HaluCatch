@@ -243,6 +243,8 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
 
 ### 📐 {msg['complexity']}
 
+*得分越低，Skill 越简洁可靠。*
+
 {_complexity_table(cx)}
 
 {cxi}
