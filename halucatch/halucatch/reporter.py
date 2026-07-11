@@ -112,7 +112,7 @@ def _complexity_table(cx_result):
         level = s.get('level', '')
         score_str = f'{level} {score:.1f}' if isinstance(score, (int, float)) else f'{level} {score}'
         if 'multiplier' in s:
-            score_str += f'（折扣 ×{s["multiplier"]}）'
+            score_str += f'（折扣 ×{s["multiplier"]:.2f}）'
         weight_str = f'{weight:.0%}' if weight is not None else '—'
         rows.append(f'| {label} | {weight_str} | {score_str} | {value} |')
 
@@ -121,14 +121,23 @@ def _complexity_table(cx_result):
 
     table = headers + '\n'.join(rows)
 
-    # 附加加权说明
+    # 复杂度汇总表（三行）
     weighted = cx_result.get('weighted')
     final = cx_result.get('final')
     if weighted is not None and final is not None:
-        if weighted != final:
-            table += f'\n\n加权平均 {weighted:.1f} → 最终得分 **{final:.1f}/10**'
-        else:
-            table += f'\n\n加权平均 **{final:.1f}/10**'
+        # 读取覆盖率信息填充计算公式
+        cov = raw.get('coverage', {})
+        mul = cov.get('multiplier', 1.0)
+        ratio = cov.get('ratio', 0)
+        wf = cov.get('workflow_steps', 0)
+        total_s = cov.get('total_steps', 0)
+        summary_header = '\n| 名称 | 数值 | 计算公式 |\n|------|------|----------|\n'
+        summary_rows = [
+            f'| 加权总得分 | {weighted:.1f} | 11 项指标加权平均 |',
+            f'| 脚本覆盖率折扣 | ×{mul:.2f}（覆盖率 {ratio:.0%}） | 1 − √{ratio:.0%}，{wf}/{total_s} 步有脚本 |',
+            f'| **最终复杂度** | **{final:.1f} / 10** | {weighted:.1f} × {mul:.2f} |',
+        ]
+        table += '\n' + summary_header + '\n'.join(summary_rows)
 
     return table + '\n'
 
@@ -187,7 +196,7 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
     fi = fmt_issues(f['issues'])
     ri = fmt_issues(r['issues'])
     gi = fmt_issues(g['issues'])
-    cxi = fmt_issues(cx['issues'])
+    cxi = ''  # 复杂度详情已由 _complexity_table 中的指标表 + 汇总表覆盖
     sp = info.get('skill_md_path', '')
 
     # 代码风险分组展示
@@ -326,9 +335,15 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
     # 提取 pass 和 warn/fail 项
     standard_good = []
     standard_attention = []
+    cx_keywords = ['📋', '章节深度', '章节复杂度', '文档引用链', '脚本引用链',
+                   '重复冗余', '表格复杂度', '脚本覆盖', '代码/文档', '指令密度',
+                   '加权', '原始复杂度', '折扣', '最终复杂度']
     for iss in all_items:
         text, status = iss[0], iss[1]
         if status in ['info', 'skip']:
+            continue
+        # 复杂度指标留在专业版，不入标准版
+        if any(kw in text for kw in cx_keywords):
             continue
         if status == 'pass':
             clean = text.replace('✅ ', '').replace('🟢 ', '')
