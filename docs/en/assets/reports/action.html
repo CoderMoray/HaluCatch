@@ -1,26 +1,29 @@
 <h3>🤖 AI 行动版 — 直接给 AI 的修复指令</h3>
-<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（审计根目录 SKILL.md）</p>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（五维评估 v1.7.10）</p>
 <hr>
-<h4>🛠️ 建议修复清单（按优先级排序）</h4>
-<table>
-<tr><th>优先级</th><th>文件</th><th>修改建议</th><th>状态</th></tr>
-<tr><td>~~🔴 高~~</td><td>~~halucatch_core.py~~</td><td>~~裸 except: pass → 改为 <code>except Exception as e:</code> 并打印日志~~</td><td>✅ 已修复</td></tr>
-<tr><td>~~🔴 高~~</td><td>~~halucatch_core.py~~</td><td>~~[除零风险] 除法前检查分母是否为 0~~</td><td>✅ 已修复</td></tr>
-<tr><td>~~🟠 中~~</td><td>~~halucatch_core.py~~</td><td>~~[静默覆盖] 写文件前检查是否存在，或用追加模式~~</td><td>✅ 已修复（版本号+防覆盖）</td></tr>
-<tr><td>~~🟠 中~~</td><td>~~SKILL.md~~</td><td>~~声明数据时效性约束（如"数据不超过 7 天"）~~</td><td>✅ 已修复</td></tr>
-<tr><td>~~🟠 中~~</td><td>~~SKILL.md~~</td><td>~~声明前提假设（如"输入数据已去重"）~~</td><td>✅ 已修复</td></tr>
-</table>
 
-<hr>
+<h4>🛠️ 修复清单</h4>
+<ul>
+  <li class="warn">🟠 存在模糊表述: ['通常']</li>
+  <li class="warn">🟡 章节深度: 5 分</li>
+  <li class="warn">🔴 章节复杂度: 10.0</li>
+  <li class="warn">🟡 脚本引用链深度: 1 层</li>
+  <li class="warn">🟡 脚本覆盖比: 12% (2/17 步有脚本) — 🟠 覆盖薄弱</li>
+  <li class="warn">🔴 指令密度: 7.4</li>
+</ul>
+
 <h4>✅ 验证检查点（修复后自检）</h4>
 <ul>
-  <li>☑ 所有异常处理都打印了日志，没有裸 except: pass</li>
-  <li>☑ 所有除法操作前有分母为零的检查</li>
-  <li>☑ 报告文件名含版本号或时间戳，冲突时自动加序号</li>
-  <li>☑ SKILL.md 有"数据要求"章节（时效性 + 前提假设）</li>
-  <li>☑ 未找到标准 SKILL.md 时，自动启发式匹配替代文件并报告规范性问题</li>
+  <li>☑ 运行 <code>--validate</code> 通过</li>
+  <li>☑ 所有列名校验通过</li>
+  <li>☑ 无硬编码路径</li>
+  <li>☑ 用真实数据跑通一次</li>
 </ul>
 
 <hr>
-<h4>📋 直接可用的提示词（发给 AI 执行修复）</h4>
-<pre style="margin-top:12px;">当前 HaluCatch 自审未发现高/中优先级问题。如有新需求，请描述具体场景。</pre>
+<h4>📋 下一步</h4>
+<ol>
+  <li><strong>执行修复</strong> — 将本报告发给你的 AI，让它按方案修改目标 Skill。修复后重新验证</li>
+  <li><strong>不执行</strong> — 不做任何修改，审查结束</li>
+  <li><strong>我有更好的意见</strong> — 描述你的修复想法，我据此重新生成修复方案</li>
+</ol>

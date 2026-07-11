@@ -6,6 +6,6 @@
     navigator.clipboard.writeText(text).then(function() {
       btn.classList.add('copied');
       setTimeout(function() { btn.classList.remove('copied'); }, 2000);
-    });
+    }).catch(function() { /* clipboard API 不可用时静默 */ });
   };
 })();

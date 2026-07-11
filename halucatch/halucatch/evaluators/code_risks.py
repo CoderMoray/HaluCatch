@@ -52,7 +52,7 @@ JS_PATTERNS = [
     ('空 catch', r'catch\s*\([^)]*\)\s*\{\s*\}', '空 catch 块 — 错误被完全吞掉'),
     ('代码注入', r'\beval\(', 'eval() 调用 — 代码注入风险'),
     ('无校验环境变量', r'process\.env\.\w+\s*\|\|\s*[\'"]', '环境变量直接用 || 回退 — 类型/格式无校验'),
-    ('未捕获 Promise', r'\.then\([^)]*\)(?!\s*\.(?:catch|finally))', '.then() 无 .catch() — 未捕获的 Promise rejection'),
+    ('未捕获 Promise', r'\.then\(', '.then() 无 .catch() — 未捕获的 Promise rejection'),  # 特殊处理：两步验证
 ]
 
 # Ruby
@@ -242,6 +242,9 @@ def check_code_risks(info):
                 total_checks += 1
                 if re.search(pattern, preprocessed, re.MULTILINE | re.DOTALL):
                     if name == '除零风险' and _is_safe_division(preprocessed):
+                        continue
+                    # 未捕获 Promise：文件有 .then() 但无 .catch()/.finally() 才报
+                    if name == '未捕获 Promise' and re.search(r'\.\s*(?:catch|finally)\s*\(', preprocessed):
                         continue
                     issues.append((f'{tag}🟠 [{lang}/{name}] {desc}（{path}）', 'warn'))
                     found_risks += 1

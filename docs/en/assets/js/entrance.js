@@ -1,6 +1,6 @@
 /* ============================================================
    HaluCatch — 入场动画
-   首屏 staggered delay，下方 scroll-triggered IntersectionObserver
+   全页面 data-anim 交错延迟，按顺序逐个出现
    ============================================================ */
 (function() {
   var nav = document.querySelector('.nav');
@@ -22,25 +22,17 @@
     nav.classList.remove('entering');
   }, 200);
 
+  // 全页面 data-anim 交错延迟
+  var demoDelay = 0;
   document.querySelectorAll('.anim-item[data-anim]').forEach(function(el) {
     var delay = parseInt(el.getAttribute('data-anim')) || 0;
     setTimeout(function() { el.classList.add('in'); }, delay);
+    // 记录 demo section 的延迟，在它之后启动 demo
+    if (el.id === 'demo') { demoDelay = delay; }
   });
 
-  setTimeout(function() {
-    if (window.halucatchDemo) window.halucatchDemo.begin();
-  }, 2500);
-
-  var observer = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.3 });
-
-  document.querySelectorAll('.anim-item.scroll-anim').forEach(function(el) {
-    observer.observe(el);
-  });
+  // Demo 启动：紧跟 demo section 入场之后
+  if (demoDelay > 0 && window.halucatchDemo) {
+    setTimeout(function() { window.halucatchDemo.begin(); }, demoDelay + 400);
+  }
 })();
