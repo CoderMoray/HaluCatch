@@ -33,6 +33,51 @@ def _lang_stats_table(code_result, msg):
     return table
 
 
+def _code_risk_grouped(issues):
+    """将代码风险按语言分组，排除 pass/skip。返回 {lang: [(text, status), ...]} 和 info 列表。"""
+    groups = {}
+    infos = []
+    for text, status in issues:
+        if status == 'pass':
+            continue
+        if status == 'info':
+            infos.append(text)
+            continue
+        # 从 text 中提取语言标记，如 [javascript/未捕获 Promise]
+        m = re.search(r'\[(\w+)/', text)
+        lang = m.group(1) if m else '其他'
+        groups.setdefault(lang, []).append(text)
+
+    # 排序：按问题数量
+    sorted_groups = sorted(groups.items(), key=lambda x: len(x[1]), reverse=True)
+    return sorted_groups, infos
+
+
+def _code_risk_md(sorted_groups, infos):
+    """生成代码风险分组展示 markdown。"""
+    if not sorted_groups and not infos:
+        return '- ✅ 未发现代码风险\n'
+
+    lang_names = {'python': 'Python', 'shell': 'Shell', 'go': 'Go',
+                  'javascript': 'JS', 'typescript': 'TS', 'ruby': 'Ruby',
+                  'rust': 'Rust', 'perl': 'Perl'}
+
+    parts = []
+    for lang, items in sorted_groups:
+        name = lang_names.get(lang, lang)
+        parts.append(f'#### {name}（{len(items)} 项）\n')
+        for text in items:
+            parts.append(f'- {text}')
+
+    # 代码风格提示（info 级别）
+    if infos:
+        parts.append(f'\n#### ℹ️ 代码风格提示（{len(infos)} 项）\n')
+        for text in infos:
+            parts.append(f'- {text}')
+
+    return '\n'.join(parts)
+
+
 def _complexity_table(cx_result):
     """生成复杂度评估指标表。"""
     raw = cx_result.get('raw', {})
@@ -122,11 +167,14 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
     cx_rating = cx['rating']
     cx_score = cx['score']
     fi = fmt_issues(f['issues'])
-    ci = fmt_issues(c['issues'])
     ri = fmt_issues(r['issues'])
     gi = fmt_issues(g['issues'])
     cxi = fmt_issues(cx['issues'])
     sp = info.get('skill_md_path', '')
+
+    # 代码风险分组展示
+    code_groups, code_infos = _code_risk_grouped(c['issues'])
+    code_risk_block = _code_risk_md(code_groups, code_infos)
 
     # 专业版
     self_check_passed = all(k in results for k in ['foundation', 'code', 'rules', 'guardrails', 'complexity'])
@@ -167,7 +215,7 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
 
 {_lang_stats_table(c, msg)}
 
-{ci}
+{code_risk_block}
 
 ### 📝 {msg['rules']}
 {ri}
