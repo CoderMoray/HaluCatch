@@ -20,6 +20,10 @@ sed -i '' "s/^version: .*/version: $VERSION/" "$ROOT/web/config.yaml"
 sed -i '' "s/^version_short: .*/version_short: $SHORT/" "$ROOT/web/config.yaml"
 echo "✅ web/config.yaml → $VERSION (short: $SHORT)"
 
+# 3) halucatch/__init__.py（Python 包版本）
+sed -i '' "s/^__version__ = '.*'/__version__ = '$VERSION'/" "$ROOT/halucatch/halucatch/__init__.py"
+echo "✅ halucatch/halucatch/__init__.py → $VERSION"
+
 # 3) docs/ 由 release.sh 中的 web/build.py 重新生成
 # 4) Changelog 由 generate-changelog.sh 自动处理
 echo ""
