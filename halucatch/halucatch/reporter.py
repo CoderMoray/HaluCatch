@@ -112,7 +112,7 @@ def _complexity_table(cx_result):
         level = s.get('level', '')
         score_str = f'{level} {score:.1f}' if isinstance(score, (int, float)) else f'{level} {score}'
         if 'multiplier' in s:
-            score_str += f'（乘数 ×{s["multiplier"]}）'
+            score_str += f'（折扣 ×{s["multiplier"]}）'
         weight_str = f'{weight:.0%}' if weight is not None else '—'
         rows.append(f'| {label} | {weight_str} | {score_str} | {value} |')
 

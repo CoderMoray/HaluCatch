@@ -665,9 +665,11 @@ def check_complexity(info, skill_type='code-engineered'):
             issues.append((f"🔴 {s['label']}: {s['value']}", 'fail'))
 
     if is_code and 'coverage' in scores:
+        mul = scores['coverage']['multiplier']
+        ratio_pct = int(scores['coverage'].get('ratio', 0) * 100)
         issues.append((
-            f"📊 脚本覆盖乘数: ×{scores['coverage']['multiplier']} "
-            f"→ 加权 {weighted:.1f} × {scores['coverage']['multiplier']} = 最终 {final:.1f}",
+            f"📊 脚本覆盖率 {ratio_pct}%，复杂度折扣 ×{mul} "
+            f"→ {weighted:.1f} × {mul} = {final:.1f}",
             'info'
         ))
 
