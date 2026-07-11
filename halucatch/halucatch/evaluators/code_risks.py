@@ -228,6 +228,9 @@ def check_code_risks(info):
             file_checks = len(patterns)  # 专属规则数（通用规则另算）
             total_files += 1
 
+            # skills/ 子目录：疑似外部 Skill，标注供人工判断
+            tag = '[外部Skill] ' if '/skills/' in ('/' + path.replace('\\', '/')) else ''
+
             # 语言专属规则
             preprocessed = _preprocess(source) if lang == 'python' else source
             file_set_e = lang == 'shell' and _has_set_e(source)
@@ -239,7 +242,7 @@ def check_code_risks(info):
                 if re.search(pattern, preprocessed, re.MULTILINE | re.DOTALL):
                     if name == '除零风险' and _is_safe_division(preprocessed):
                         continue
-                    issues.append((f'🟠 [{lang}/{name}] {desc}（{path}）', 'warn'))
+                    issues.append((f'{tag}🟠 [{lang}/{name}] {desc}（{path}）', 'warn'))
                     found_risks += 1
                     file_findings += 1
 
@@ -251,7 +254,7 @@ def check_code_risks(info):
                     long_lines = [ln for ln in source.splitlines() if len(ln) > 200]
                     if long_lines:
                         issues.append((
-                            f'🟡 [超长行] {uv_desc}（{len(long_lines)} 行超过 200 字符，出现在 {path}）',
+                            f'{tag}🟡 [超长行] {uv_desc}（{len(long_lines)} 行超过 200 字符，出现在 {path}）',
                             'warn'
                         ))
                         found_risks += 1
