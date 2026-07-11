@@ -57,7 +57,7 @@ tags:
 | 检查解读护栏是否到位 | 代码性能优化 |
 | 输出修复建议和骨架脚本 | 替换人工业务决策 |
 
-**硬件限制：** 单文件上限 10 MB（超大文件会被跳过并提示），不支持批量审查（一次一个目录），不支持二进制文件，完全离线运行（不联网、不调 API）。审查耗时取决于目录下文件数量和大小，通常几秒到几十秒。
+**硬件限制：** 单文件上限 10 MB（超大文件会被跳过并提示），不支持批量审查（一次一个目录），不支持二进制文件，不建立网络连接（仅通过本地 Python 脚本运行）。审查耗时取决于目录下文件数量和大小，通常几秒到几十秒。
 
 ---
 
@@ -300,7 +300,7 @@ python3 halucatch_core.py --skill-dir /path/to/skill
 **输出决策规则**：三版报告**始终由脚本生成并存盘**，对话中只展示标准版。
 
 1. 运行 `halucatch_core.py --skill-dir <路径>` → 脚本自动完成 L1 扫描 + L2 评估 + L3 报告生成
-2. 三份 `.md` 文件写入 `HaluCatch/reports/` 目录（或 `--output-dir` 指定路径）
+2. 三份 `.md` 文件写入 `reports/` 目录（或 `--output-dir` 指定路径）
 3. 对话中只输出**标准版**（白话、零术语）
 4. 标准版末尾附带提示：「需要看技术细节（专业版）或修复方案（行动版）吗？」
 5. 如果用户说「要」→ 对话中展示对应版本内容（文件已在磁盘上，直接读取展示）
@@ -345,7 +345,7 @@ python3 halucatch_core.py --skill-dir /path/to/skill
 
 报告生成后、向用户展示或提交前，**必须**先检查标准版报告中是否存在 `⚠️ 疑似外部 Skill` 标记。
 
-**如存在**：不做 `present_files`，不做 `git commit`，直接向用户确认：
+**如存在**：不做 `present_files`，直接向用户确认：
 
 > ⚠️ 发现疑似外部 Skill 目录。`skills/` 是外部安装的 Skill（非本项目代码）吗？
 
@@ -380,7 +380,7 @@ python3 halucatch_core.py --skill-dir /path/to/skill
 
 ## 报告落盘
 
-- 缺省输出到 `HaluCatch/reports/` 目录（不污染目标 Skill 目录）
+- 缺省输出到 `reports/` 目录（目标 Skill 目录内，不污染外部路径）
 - 指定 `--output-dir` 则输出到自定义路径
 - 修复包（如有）保存到：`{Skill目录}/halucatch-fix/`
 
@@ -414,7 +414,7 @@ python3 halucatch_core.py --skill-dir /path/to/skill
 
 ### 如果还是不会用
 
-> 直接说：「帮我审查这个 Skill」然后把 Skill 文件夹拖进来，或贴一段 SKILL.md 的内容。AI 会自行判断接下来的步骤。
+> 直接说：「审查 /path/to/skill」，把 Skill 文件夹拖进来即可。AI 会自行判断接下来的步骤。不要直接贴 SKILL.md 内容——用文件夹路径保证完整性。
 
 ---
 
