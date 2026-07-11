@@ -72,9 +72,9 @@ def _code_risk_md(sorted_groups, infos):
         for text in items:
             parts.append(f'- {text}')
 
-    # 代码风格提示（info 级别）——用表格
+    # 其他提示（info 级别）——用表格
     if infos:
-        parts.append(f'\n#### ℹ️ 代码风格提示（{len(infos)} 项）\n')
+        parts.append(f'\n#### ℹ️ 其他提示（{len(infos)} 项）\n')
         header = '| 语言 | 文件 | 规则 | 详情 |'
         sep = '|------|------|------|------|'
         rows = [header, sep]
@@ -217,7 +217,7 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
 | {msg['dimension']} | {msg['rating']} | {msg['score']} |
 |------|------|------|
 | 🏗️ {msg['foundation']} | {f_rating} | {f_score} |
-| 🤖 {msg['code']} | {c_rating} | {c_score} |
+| ⚙️ {msg['code']} | {c_rating} | {c_score} |
 | 📝 {msg['rules']} | {r_rating} | {r_score} |
 | 🛡️ {msg['guardrails']} | {g_rating} | {g_score} |
 | 📐 {msg['complexity']} | {cx_rating} | {cx_score} |
@@ -229,7 +229,7 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
 ### 🏗️ {msg['foundation']}
 {fi}
 
-### 🤖 {msg['code']}
+### ⚙️ {msg['code']}
 
 {_lang_stats_table(c, msg)}
 
@@ -354,7 +354,7 @@ def generate_report(info, results, output_dir=None, lang='zh-CN'):
 
 ## {msg['simple_result']}
 
-| 🏗️ {msg['foundation']} | 🤖 {msg['code']} | 📝 {msg['rules']} | 🛡️ {msg['guardrails']} | 📐 {msg['complexity']} |
+| 🏗️ {msg['foundation']} | ⚙️ {msg['code']} | 📝 {msg['rules']} | 🛡️ {msg['guardrails']} | 📐 {msg['complexity']} |
 |--------|--------|--------|--------|
 | {f_rating} {f_score} | {c_rating} {c_score} | {r_rating} {r_score} | {g_rating} {g_score} | {cx_rating} {cx_score} |
 
