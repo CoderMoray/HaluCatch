@@ -671,8 +671,11 @@ def check_complexity(info, skill_type='code-engineered'):
         mul = scores['coverage']['multiplier']
         r = scores['coverage']
         issues.append(("📋 原始复杂度: " + f"{weighted:.1f}", 'info'))
+        # 折扣档位说明
+        ra = r['ratio']
+        tier = '≥50%' if ra >= 0.5 else ('30~50%' if ra >= 0.3 else ('10~30%' if ra >= 0.1 else '<10%'))
         issues.append((
-            f"📋 折扣 ×{mul}（覆盖率 {r['ratio']:.0%}，{r['workflow_steps']}/{r['total_steps']} 步有脚本兜底）",
+            f"📋 折扣 ×{mul}（覆盖率 {ra:.0%} → {tier} 档，{r['workflow_steps']}/{r['total_steps']} 步有脚本兜底）",
             'info'
         ))
         issues.append(("📋 最终复杂度: " + f"{final:.1f} / 10", 'info'))
