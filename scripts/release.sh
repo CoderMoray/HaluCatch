@@ -85,17 +85,17 @@ fi
 echo "[5/11] 发布前自检..."
 bash "$SCRIPTS/lint-paths.sh"
 
-# ── Step 6: Build SkillHub Package ──────────────────────────────────
-echo "[6/11] 构建 SkillHub 包..."
+# ── Step 6: Check File Size ─────────────────────────────────────────
+echo "[6/11] 文件尺寸检查..."
+bash "$SCRIPTS/check-file-size.sh"
+
+# ── Step 7: Build SkillHub Package ──────────────────────────────────
+echo "[7/11] 构建 SkillHub 包..."
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "  [DRY-RUN] 将执行: build-skillhub.sh"
 else
   bash "$SCRIPTS/build-skillhub.sh"
 fi
-
-# ── Step 7: Check File Size ─────────────────────────────────────────
-echo "[7/11] 文件尺寸检查..."
-bash "$SCRIPTS/check-file-size.sh"
 
 ZIP_PATH="$ROOT/releases/HaluCatch-${VERSION}-skillhub.zip"
 CLAWHUB_ZIP="$ROOT/releases/HaluCatch-${VERSION}-clawhub.zip"
