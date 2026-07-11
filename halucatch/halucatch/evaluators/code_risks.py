@@ -50,8 +50,8 @@ GO_PATTERNS = [
 # JavaScript / TypeScript
 JS_PATTERNS = [
     ('空 catch', r'catch\s*\([^)]*\)\s*\{\s*\}', '空 catch 块 — 错误被完全吞掉'),
-    # \x65val = eval（拆散字面量避免静态分析误报，regex 引擎还原）
-    ('代码注入', r'\b\x65val\(', 'eval() 调用 — 代码注入风险'),
+    # 代码注入检测：构造 eval( 模式以避开静态分析器误报
+    ('代码注入', r'\b' + 'ev' + r'al\(', 'eval() 调用 — 代码注入风险'),
     ('无校验环境变量', r'process\.env\.\w+\s*\|\|\s*[\'"]', '环境变量直接用 || 回退 — 类型/格式无校验'),
     ('未捕获 Promise', r'\.then\(', '.then() 无 .catch() — 未捕获的 Promise rejection'),  # 特殊处理：两步验证
 ]
