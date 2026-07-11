@@ -134,8 +134,8 @@ def _complexity_table(cx_result):
         summary_header = '\n| 名称 | 数值 | 计算公式 |\n|------|------|----------|\n'
         summary_rows = [
             f'| 加权总得分 | {weighted:.1f} | 11 项指标加权平均 |',
-            f'| 脚本覆盖率折扣 | ×{mul:.2f}（覆盖率 {ratio:.0%}） | 1 − √{ratio:.0%}，{wf}/{total_s} 步有脚本 |',
-            f'| **最终复杂度** | **{final:.1f} / 10** | {weighted:.1f} × {mul:.2f} |',
+            f'| 脚本覆盖率折扣 | ×{mul:.2f}（覆盖率 {ratio:.0%}） | $1 - \\sqrt{{{ratio:.2f}}}$，{wf}/{total_s} 步有脚本 |',
+            f'| **最终复杂度** | **{final:.1f} / 10** | ${weighted:.1f} \\times {mul:.2f}$ |',
         ]
         table += '\n' + summary_header + '\n'.join(summary_rows)
 
