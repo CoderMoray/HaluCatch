@@ -53,6 +53,21 @@ def scan_folder(path, msg):
         print(msg['path_not_exist'].format(path=path))
         return None
 
+    # 读 config.yaml 中的 skills_is_external 配置
+    skills_is_external = None
+    config_path = os.path.join(path, 'config.yaml')
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    m = re.match(r'^skills_is_external:\s*(true|false|null)', line)
+                    if m:
+                        v = m.group(1)
+                        skills_is_external = True if v == 'true' else (False if v == 'false' else None)
+                        break
+        except Exception:
+            pass
+
     files = []
     skill_md_content = None
     py_contents = []
@@ -60,6 +75,8 @@ def scan_folder(path, msg):
     py_paths = []
 
     skip_dirs = {'.git', '__pycache__', '.pytest_cache', 'node_modules', '.venv', 'venv', 'avatars'}
+    if skills_is_external is True:
+        skip_dirs.add('skills')
 
     for root, dirs, filenames in os.walk(path):
         # 递归扫描子目录（过滤 .git / __pycache__ 等排除目录）
@@ -199,6 +216,7 @@ def scan_folder(path, msg):
         'max_py_lines': max_py_lines,
         'has_data': has_data,
         'version': version,
+        'skills_is_external': skills_is_external,
     }
 
 

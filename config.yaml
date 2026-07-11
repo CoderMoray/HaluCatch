@@ -1,6 +1,13 @@
 # HaluCatch SKILL.md frontmatter 统一配置
 # 构建时由 inject-frontmatter.sh 读取，逐 key 注入到 SKILL.md 头部
 
+# === HaluCatch 审查配置 ===
+# skills/ 目录是否为外部 Skill 文件夹。
+# true   = 跳过扫描，不在报告中出现
+# false  = 正常扫描（项目本身的 skill）
+# null   = 未知（默认），正常扫描并标注 [⚠️ 疑似外部 Skill]
+skills_is_external: null
+
 # === 全部平台共用 ===
 name: halucatch
 

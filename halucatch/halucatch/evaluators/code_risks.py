@@ -278,8 +278,9 @@ def check_code_risks(info):
             file_checks = len(patterns)  # 专属规则数（通用规则另算）
             total_files += 1
 
-            # skills/ 子目录：疑似外部 Skill，标注供人工判断
-            tag = '[外部Skill] ' if '/skills/' in ('/' + path.replace('\\', '/')) else ''
+            # skills/ 子目录：config 未知时标注疑似外部 Skill
+            skills_unknown = info.get('skills_is_external') is None
+            tag = '[⚠️ 疑似外部 Skill] ' if (skills_unknown and '/skills/' in ('/' + path.replace('\\', '/'))) else ''
 
             # 语言专属规则
             preprocessed = _preprocess(source) if lang == 'python' else source
