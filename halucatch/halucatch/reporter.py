@@ -61,6 +61,9 @@ def _code_risk_md(sorted_groups, infos):
     lang_names = {'python': 'Python', 'shell': 'Shell', 'go': 'Go',
                   'javascript': 'JS', 'typescript': 'TS', 'ruby': 'Ruby',
                   'rust': 'Rust', 'perl': 'Perl'}
+    ext_lang = {'.py': 'Python', '.sh': 'Shell', '.go': 'Go',
+                '.js': 'JS', '.ts': 'TS', '.rb': 'Ruby',
+                '.rs': 'Rust', '.pl': 'Perl'}
 
     parts = []
     for lang, items in sorted_groups:
@@ -69,11 +72,26 @@ def _code_risk_md(sorted_groups, infos):
         for text in items:
             parts.append(f'- {text}')
 
-    # 代码风格提示（info 级别）
+    # 代码风格提示（info 级别）——用表格
     if infos:
         parts.append(f'\n#### ℹ️ 代码风格提示（{len(infos)} 项）\n')
+        header = '| 语言 | 文件 | 规则 | 详情 |'
+        sep = '|------|------|------|------|'
+        rows = [header, sep]
         for text in infos:
-            parts.append(f'- {text}')
+            # 解析：ℹ️ [规则名] 描述（N 行超过..., 出现在 path）
+            rule_m = re.search(r'\[(\S+)\]', text)
+            rule = rule_m.group(1) if rule_m else '-'
+            file_m = re.search(r'出现在\s+(.+?)[）\)]$', text)
+            fpath = file_m.group(1) if file_m else '-'
+            # 从文件后缀推断语言
+            _, ext = os.path.splitext(fpath)
+            lang = ext_lang.get(ext, ext.lstrip('.').upper() if ext else '-')
+            # 详情：规则描述和具体数值
+            detail_m = re.search(r'\]\s+(.+?)\（\d+\s*行', text)
+            detail = detail_m.group(1) if detail_m else '-'
+            rows.append(f'| {lang} | {fpath} | {rule} | {detail} |')
+        parts.append('\n'.join(rows))
 
     return '\n'.join(parts)
 
