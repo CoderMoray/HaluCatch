@@ -3,9 +3,9 @@
 # 核心思想：从 git log 自动生成结构化的 changelog，替代手动编写
 #
 # 用法:
-#   bash scripts/generate-changelog.sh              # 生成 unreleased 条目（预览）
-#   bash scripts/generate-changelog.sh --preview    # 同上，显式预览模式
-#   bash scripts/generate-changelog.sh --write      # 将 unreleased 条目写入 docs/CHANGELOG.md
+#   bash scripts/generate-changelog.sh                 # 生成 unreleased 条目（预览）
+#   bash scripts/generate-changelog.sh --preview       # 同上，显式预览模式
+#   bash scripts/generate-changelog.sh --write 1.8.5   # 生成 v1.8.5 条目并写入 CHANGELOG
 #   bash scripts/generate-changelog.sh v1.7.2..v1.7.3  # 生成两个 tag 间的 changelog
 
 set -euo pipefail
@@ -22,6 +22,7 @@ fi
 
 # ── 解析参数 ──
 MODE="${1:---preview}"
+VERSION="${2:-}"
 
 case "$MODE" in
   --preview|"")
@@ -32,44 +33,77 @@ case "$MODE" in
     echo "💡 如需写入 changelog，运行: bash scripts/generate-changelog.sh --write"
     ;;
   --write)
-    echo "📝 将 unreleased 变更写入 $CHANGELOG ..."
-    # 生成新条目到临时文件（跳过 header 行即 ## [Unreleased]）
+    if [[ -z "$VERSION" ]]; then
+      echo "❌ --write 需要版本号参数，例如: bash $0 --write 1.8.5"
+      exit 1
+    fi
+    echo "📝 生成 v$VERSION CHANGELOG 条目..."
+
+    # 找到上一个 tag
+    PREV_TAG=$(git tag --sort=-version:refname | grep -E '^v[0-9]' | head -1)
+    if [[ -z "$PREV_TAG" ]]; then
+      echo "  ⚠️  找不到上一个 tag，使用所有历史提交"
+      RANGE=""
+    else
+      RANGE="${PREV_TAG}..HEAD"
+      echo "  📍 上一个 tag: $PREV_TAG，扫描范围: $RANGE"
+    fi
+
+    # 生成条目
     TMP_NEW=$(mktemp)
-    git-cliff --unreleased --strip header 2>/dev/null | grep -vE '^Warning' | tail -n +2 > "$TMP_NEW"
+    if [[ -z "$RANGE" ]]; then
+      git-cliff --latest --strip header 2>/dev/null > "$TMP_NEW"
+    else
+      git-cliff "$RANGE" --strip header 2>/dev/null > "$TMP_NEW"
+    fi
+
     if [[ ! -s "$TMP_NEW" ]]; then
-      echo "  ⚠️  没有新的 unreleased 变更"
+      echo "  ⚠️  没有生成任何内容（检查 commit 格式是否符合 conventional commits）"
       rm -f "$TMP_NEW"
       exit 0
     fi
-    # 用 Python 处理文件替换
+
+    # 去掉重复的 header 行（cliff.toml 自带的）
+    NEW_CONTENT=$(grep -vE '^#|^$|^---|^版本号规则|中间版本号|小版本号|每个 commit|^本文档记录' "$TMP_NEW" | sed '/^## \[V/d' | sed '/^$/d')
+    if [[ -z "$NEW_CONTENT" ]]; then
+      echo "  ⚠️  内容过滤后为空"
+      rm -f "$TMP_NEW"
+      exit 0
+    fi
+
+    # 构建版本条目并插入到 [Unreleased] 之后
+    VERSION_DATE=$(date +%Y-%m-%d)
     python3 -c "
-import re
 changelog_path = '$CHANGELOG'
-new_path = '$TMP_NEW'
+version = '$VERSION'
+version_date = '$VERSION_DATE'
+new_content = '''$NEW_CONTENT'''
 
 with open(changelog_path, 'r') as f:
     changelog = f.read()
-with open(new_path, 'r') as f:
-    new_entry = f.read()
 
-# 找到 [Unreleased] 块并替换其内容（保留标题行）
-# 匹配从 ## [Unreleased] 到下一个 --- 或 ## [V
-unreleased_match = re.search(
-    r'^## \[Unreleased\].*?(?=^---$|^## \[V)',
-    changelog,
-    re.MULTILINE | re.DOTALL
-)
-if unreleased_match:
-    old_block = unreleased_match.group(0)
-    # 保留标题行（## [Unreleased]），替换之后的内容
-    header_end = old_block.index('\n')
-    new_block = old_block[:header_end] + '\n' + new_entry
-    changelog = changelog.replace(old_block, new_block, 1)
-    with open(changelog_path, 'w') as f:
-        f.write(changelog)
-    print('  ✅ CHANGELOG.md [Unreleased] 已更新')
-else:
+# 构建新条目
+entry = f'\n## [V{version}] - {version_date}\n{new_content}\n\n---\n\n'
+
+# 插入到 ## [Unreleased] 段之后（即第一个 --- 之后）
+idx = changelog.find('## [Unreleased]')
+if idx == -1:
     print('  ⚠️  未找到 [Unreleased] 块，跳过')
+    exit(0)
+
+# 找到 [Unreleased] 后的第一个 ---
+end_idx = changelog.find('---', idx)
+if end_idx == -1:
+    print('  ⚠️  未找到分隔符，跳过')
+    exit(0)
+
+# 在 --- 所在行之后插入
+insert_idx = changelog.find('\n', end_idx) + 1
+changelog = changelog[:insert_idx] + entry + changelog[insert_idx:]
+
+with open(changelog_path, 'w') as f:
+    f.write(changelog)
+print('  ✅ CHANGELOG.md 已更新 (v' + version + ')')
 " || { echo "  ❌ 写入失败"; exit 1; }
     rm -f "$TMP_NEW"
     ;;

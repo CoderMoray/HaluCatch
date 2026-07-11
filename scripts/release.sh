@@ -76,9 +76,9 @@ fi
 # ── Step 4: Generate Changelog ──────────────────────────────────────
 echo "[4/11] 自动生成 CHANGELOG..."
 if [[ "$DRY_RUN" == "true" ]]; then
-  echo "  [DRY-RUN] 将执行: generate-changelog.sh --write"
+  echo "  [DRY-RUN] 将执行: generate-changelog.sh --write $VERSION"
 else
-  bash "$SCRIPTS/generate-changelog.sh" --write
+  bash "$SCRIPTS/generate-changelog.sh" --write "$VERSION"
 fi
 
 # ── Step 5: Lint ────────────────────────────────────────────────────
