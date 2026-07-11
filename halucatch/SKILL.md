@@ -341,6 +341,20 @@ python3 halucatch_core.py --skill-dir /path/to/skill
 
 输出格式：在每个发现条目下方追加一行 `> **AI 分析**: [具体判断]`。
 
+#### 报告审查前检查
+
+报告生成后、向用户展示或提交前，**必须**先检查标准版报告中是否存在 `⚠️ 疑似外部 Skill` 标记。
+
+**如存在**：不做 `present_files`，不做 `git commit`，直接向用户确认：
+
+> ⚠️ 发现疑似外部 Skill 目录。`skills/` 是外部安装的 Skill（非本项目代码）吗？
+
+- 用户「是」→ 改 `config.yaml`：`skills_is_external: true`，重跑 `halucatch_core.py`
+- 用户「否」→ 改 `config.yaml`：`skills_is_external: false`，重跑 `halucatch_core.py`
+- 用户无法判断 → 保持 `null`，标注保留，继续展示
+
+确认完成并重跑后，进入 Phase 4。
+
 ---
 
 ### Phase 4：修复决策与闭环
