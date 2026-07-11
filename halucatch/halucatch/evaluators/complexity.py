@@ -421,11 +421,6 @@ def _instruction_density(md):
 
     density = (imperatives + steps + code_blocks + conditionals) / total
     return min(density * 100, 10)
-    steps = _count_steps(md)
-    code_blocks = len(re.findall(r'```', md)) // 2  # 每对 ``` 算一个块
-
-    density = (imperatives + steps + code_blocks) / total
-    return min(density * 100, 10)  # 归一化到 0-10
 
 
 # ── 主评估函数 ──────────────────────────────────────────────────
