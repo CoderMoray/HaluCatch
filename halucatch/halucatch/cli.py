@@ -23,17 +23,19 @@ def _friendly_error(lang):
     """返回当前语言的异常提示消息。"""
     return {
         'zh-CN': {
-            'permission': '❌ 权限不足：无法读取或写入目标路径。请检查文件权限后重试。',
-            'file_not_found': '❌ 文件未找到：目标文件或目录不存在，可能已被移动或删除。',
-            'disk_full': '❌ 磁盘空间不足：无法写入报告文件。请清理磁盘后重试。',
-            'unexpected': '❌ 程序遇到意外错误。以下是详细信息，可供反馈时参考：',
+            'permission': '❌ 权限不足：无法读取或写入目标路径。→ 检查文件权限，或用 --output-dir 指定可写目录。',
+            'file_not_found': '❌ 目录不存在或路径错误。→ 用 ls 确认目标路径，检查拼写。',
+            'disk_full': '❌ 磁盘空间不足：无法写入报告文件。→ 清理磁盘后重试。',
+            'empty_dir': '❌ 目标目录为空或不包含可审查的文件。→ 确认目录内有 SKILL.md 或 .py/.js 文件。',
+            'unexpected': '❌ 程序遇到意外错误。→ 复制下方的错误信息，贴到 github.com/CoderMoray/HaluCatch/issues 反馈。详情：',
             'interrupted': '\n⏹️  操作已取消。',
         },
         'en': {
-            'permission': '❌ Permission denied: cannot read or write the target path. Check file permissions and retry.',
-            'file_not_found': '❌ File not found: the target file or directory does not exist.',
-            'disk_full': '❌ Disk full: cannot write report. Free up disk space and retry.',
-            'unexpected': '❌ An unexpected error occurred. Details for troubleshooting:',
+            'permission': '❌ Permission denied. → Check file permissions or use --output-dir to specify a writable path.',
+            'file_not_found': '❌ Directory not found. → Verify the path exists with ls, check for typos.',
+            'disk_full': '❌ Disk full: cannot write report. → Free up space and retry.',
+            'empty_dir': '❌ Target directory is empty or contains no scannable files. → Ensure SKILL.md or .py/.js files exist.',
+            'unexpected': '❌ Unexpected error. → Copy the details below and report at github.com/CoderMoray/HaluCatch/issues. Details:',
             'interrupted': '\n⏹️  Operation cancelled.',
         },
     }[lang]
