@@ -37,7 +37,6 @@ SHELL_PATTERNS = [
     ('静默吞错', r'\|\|\s*true\b', '|| true 静默丢弃所有错误 — 出问题时无信号'),
     ('参数缺失', r'\$\{[1-9]\d*\}(?!\s*[:-])|\$[1-9]\d*(?!\s*[:-])', '引用位置参数但无默认值 — 参数缺失时静默失败'),
     ('提权操作', r'\bsudo\b', 'sudo 提权 — 可能执行意料之外的高权限操作'),
-    ('临时文件风险', r'mktemp\b(?!.*-d)', '创建临时文件未用安全方式 — 竞态条件风险'),
 ]
 
 # Go
@@ -162,6 +161,13 @@ def _read_file(path):
         return ''
 
 
+def _has_set_e(source):
+    """检测 shell 脚本是否在文件头启用了 set -e（errexit）。
+    set -e 下 || true 是防御性标准写法，不应被 静默吞错 误报。"""
+    head = source[:500]
+    return bool(re.search(r'^[ \t]*set\s+-[a-zA-Z]*e', head, re.MULTILINE))
+
+
 
 
 # ── 主函数 ─────────────────────────────────────────────────────────
@@ -224,7 +230,11 @@ def check_code_risks(info):
 
             # 语言专属规则
             preprocessed = _preprocess(source) if lang == 'python' else source
+            file_set_e = lang == 'shell' and _has_set_e(source)
             for name, pattern, desc in patterns:
+                # set -e 脚本中的 || true 是防御性写法，跳过
+                if name == '静默吞错' and file_set_e:
+                    continue
                 total_checks += 1
                 if re.search(pattern, preprocessed, re.MULTILINE | re.DOTALL):
                     if name == '除零风险' and _is_safe_division(preprocessed):
