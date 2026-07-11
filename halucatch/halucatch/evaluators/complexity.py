@@ -567,6 +567,9 @@ def check_complexity(info, skill_type='code-engineered'):
             'score': coverage_score,
             'level': coverage_label,
             'multiplier': multiplier,
+            'ratio': ratio,
+            'total_steps': total_steps,
+            'workflow_steps': wf_steps,
         }
 
         # 7) 代码/文档比（代码越少越红——代码型 skill 没代码是硬伤）
@@ -666,12 +669,13 @@ def check_complexity(info, skill_type='code-engineered'):
 
     if is_code and 'coverage' in scores:
         mul = scores['coverage']['multiplier']
-        ratio_pct = int(scores['coverage'].get('ratio', 0) * 100)
+        r = scores['coverage']
+        issues.append(("📋 原始复杂度: " + f"{weighted:.1f}", 'info'))
         issues.append((
-            f"📊 脚本覆盖率 {ratio_pct}%，复杂度折扣 ×{mul} "
-            f"→ {weighted:.1f} × {mul} = {final:.1f}",
+            f"📋 折扣 ×{mul}（覆盖率 {r['ratio']:.0%}，{r['workflow_steps']}/{r['total_steps']} 步有脚本兜底）",
             'info'
         ))
+        issues.append(("📋 最终复杂度: " + f"{final:.1f} / 10", 'info'))
 
     score_display = f'{final:.1f}/10 (加权 {weighted:.1f})' if is_code else f'{final:.1f}/10'
 
