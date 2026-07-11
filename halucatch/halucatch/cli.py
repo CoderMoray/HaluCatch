@@ -112,7 +112,7 @@ def main():
 
         # Phase 3: 报告
         print("\n📊 生成报告...")
-        default_out = args.output_dir or os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'reports')
+        default_out = args.output_dir or os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'reports')
         _reports = generate_report(info, results, default_out, lang)
 
         # 自检
