@@ -77,7 +77,7 @@ PERL_PATTERNS = [
 # 通用（跨语言）
 UNIVERSAL_PATTERNS = [
     ('硬编码密钥', r'(?:api_key|apikey|secret_key|password|token)\s*=\s*[\'"][^\'"]+[\'"]', '硬编码的凭据/密钥在代码中'),
-    ('超长行', None, '单行过长（>200 字符）— 可读性和 diff 困难'),  # 特殊处理
+    ('超长行', None, '单行过长（>200 字符）— 可读性和 diff 困难，非幻觉相关'),  # 特殊处理，info 级别
 ]
 
 # ── 辅助函数 ───────────────────────────────────────────────────────
@@ -177,6 +177,7 @@ def check_code_risks(info):
     issues = []
     total_checks = 0
     found_risks = 0
+    info_count = 0
 
     files = info.get('files', [])
     if not files:
@@ -254,11 +255,10 @@ def check_code_risks(info):
                     long_lines = [ln for ln in source.splitlines() if len(ln) > 200]
                     if long_lines:
                         issues.append((
-                            f'{tag}🟡 [超长行] {uv_desc}（{len(long_lines)} 行超过 200 字符，出现在 {path}）',
-                            'warn'
+                            f'{tag}ℹ️ [超长行] {uv_desc}（{len(long_lines)} 行超过 200 字符，出现在 {path}）',
+                            'info'
                         ))
-                        found_risks += 1
-                        file_findings += 1
+                        info_count += 1
                 elif uv_pattern and re.search(uv_pattern, preprocessed, re.IGNORECASE):
                     issues.append((f'🔴 [{uv_name}] {uv_desc}（{path}）', 'fail'))
                     found_risks += 1
