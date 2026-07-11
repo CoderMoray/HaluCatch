@@ -168,6 +168,31 @@ def _has_set_e(source):
     return bool(re.search(r'^[ \t]*set\s+-[a-zA-Z]*e', head, re.MULTILINE))
 
 
+def _shell_func_lines(source):
+    """返回 shell 脚本中函数体内部的 1-indexed 行号集合。
+    函数内 $1/$2 是调用方提供的参数，不会缺失。"""
+    func_lines = set()
+    lines = source.splitlines()
+    in_func = False
+    depth = 0
+    for i, line in enumerate(lines, 1):
+        stripped = line.strip()
+        # 函数声明入口（忽略注释行）
+        if not stripped or stripped.startswith('#'):
+            continue
+        if not in_func and re.match(r'^[a-zA-Z_][\w-]*\s*\(\s*\)\s*\{', stripped):
+            in_func = True
+            depth = 0
+        if in_func:
+            func_lines.add(i)
+            depth += stripped.count('{')
+            depth -= stripped.count('}')
+            if depth <= 0:
+                in_func = False
+                depth = 0
+    return func_lines
+
+
 
 
 # ── 主函数 ─────────────────────────────────────────────────────────
@@ -235,6 +260,7 @@ def check_code_risks(info):
             # 语言专属规则
             preprocessed = _preprocess(source) if lang == 'python' else source
             file_set_e = lang == 'shell' and _has_set_e(source)
+            func_lines = _shell_func_lines(source) if lang == 'shell' else None
             for name, pattern, desc in patterns:
                 # set -e 脚本中的 || true 是防御性写法，跳过
                 if name == '静默吞错' and file_set_e:
@@ -246,6 +272,17 @@ def check_code_risks(info):
                     # 未捕获 Promise：文件有 .then() 但无 .catch()/.finally() 才报
                     if name == '未捕获 Promise' and re.search(r'\.\s*(?:catch|finally)\s*\(', preprocessed):
                         continue
+                    # 参数缺失在函数内部：$1/$2 是函数参数，不会缺失
+                    if name == '参数缺失' and func_lines:
+                        # 检查所有匹配行是否都在函数内
+                        in_func_only = True
+                        for m in re.finditer(pattern, preprocessed, re.MULTILINE):
+                            lineno = preprocessed[:m.start()].count('\n') + 1
+                            if lineno not in func_lines:
+                                in_func_only = False
+                                break
+                        if in_func_only:
+                            continue
                     issues.append((f'{tag}🟠 [{lang}/{name}] {desc}（{path}）', 'warn'))
                     found_risks += 1
                     file_findings += 1
