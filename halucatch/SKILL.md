@@ -11,7 +11,7 @@ allowed-tools:
   - Bash
 compatibility: Requires Python 3.8+, fully offline
 author: CoderMoray
-version: 1.8.0
+version: 1.8.1
 metadata:
   hermes:
     tags:

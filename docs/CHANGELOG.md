@@ -12,6 +12,14 @@
 ## [Unreleased]
 
 
+### Changed
+
+- CHANGELOG 补齐 v1.8.0，涵盖 1.7.2~1.8.0 全部变更
+
+### Fixed
+
+- 响应 SkillSpector 5 条发现，强化安全声明
+
 ---
 
 ## [V1.8.0] - 2026-07-11
