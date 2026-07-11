@@ -447,19 +447,10 @@ def _script_coverage_ratio(info):
 
     ratio = min(workflow_steps / total_steps, 1.0)
 
-    # ≥50% 覆盖 = 满分（=0 风险），<10% = 几乎无兜底
-    if ratio >= 0.5:
-        multiplier = 0.3
-        coverage_score = 0
-    elif ratio >= 0.3:
-        multiplier = 0.6
-        coverage_score = 3
-    elif ratio >= 0.1:
-        multiplier = 0.8
-        coverage_score = 6
-    else:
-        multiplier = 1.0
-        coverage_score = 9
+    # 折扣 = 1 - √覆盖率（边际递减：第一个脚本降幅最大）
+    import math
+    multiplier = 1.0 - math.sqrt(ratio)
+    coverage_score = 10 * multiplier  # 0-10 分，越高越严重
 
     return multiplier, ratio, total_steps, workflow_steps, script_refs, coverage_score
 
@@ -556,7 +547,7 @@ def check_complexity(info, skill_type='code-engineered'):
         coverage_pct = f'{ratio:.0%}' if ratio > 0 else '0%'
         coverage_label = (
             '🟢 覆盖充分' if ratio >= 0.5 else (
-                '🟡 覆盖不足' if ratio >= 0.3 else (
+                '🟡 覆盖不足' if ratio >= 0.25 else (
                     '🟠 覆盖薄弱' if ratio >= 0.1 else '🔴 基本无覆盖'
                 )
             )

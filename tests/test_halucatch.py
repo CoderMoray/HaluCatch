@@ -430,9 +430,10 @@ def test_complexity_low_coverage_multiplier():
     ]
     result = check_complexity(info, 'code-engineered')
     cov = result['raw']['coverage']
-    # 2/5 = 40% → ≥30% → multiplier 0.6
-    assert cov['multiplier'] == 0.6
-    assert cov['score'] == 3
+    # 2/5 = 40% → 1 - √0.4 ≈ 0.368
+    assert abs(cov['multiplier'] - 0.368) < 0.01
+    # 10 × 0.368 ≈ 3.68
+    assert abs(cov['score'] - 3.68) < 0.1
 
 
 def test_complexity_table_complex():
