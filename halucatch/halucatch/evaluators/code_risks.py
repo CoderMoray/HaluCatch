@@ -168,6 +168,30 @@ def _has_set_e(source):
     return bool(re.search(r'^[ \t]*set\s+-[a-zA-Z]*e', head, re.MULTILINE))
 
 
+def _shell_guarded_lines(source, func_lines):
+    """返回受保护的脚本级 $N 行号集合——while/case 参数解析等标准模式。"""
+    guarded = set()
+    lines = source.splitlines()
+    in_while = False
+    depth = 0  # do/done 嵌套深度
+    for i, line in enumerate(lines, 1):
+        stripped = line.strip()
+        if stripped.startswith('#') or i in func_lines:
+            continue
+        # while with argument-count guard
+        if not in_while and re.match(r'^\s*while\s+(?:\[\[?\s*)?\$#', stripped):
+            in_while = True
+            depth = 0
+        if in_while:
+            guarded.add(i)
+            depth += len(re.findall(r'\bdo\b', stripped))
+            depth -= len(re.findall(r'\bdone\b', stripped))
+            if depth <= 0 and re.search(r'\bdone\b', stripped):
+                in_while = False
+                depth = 0
+    return guarded
+
+
 def _shell_func_lines(source):
     """返回 shell 脚本中函数体内部的 1-indexed 行号集合。
     函数内 $1/$2 是调用方提供的参数，不会缺失。"""
@@ -261,6 +285,7 @@ def check_code_risks(info):
             preprocessed = _preprocess(source) if lang == 'python' else source
             file_set_e = lang == 'shell' and _has_set_e(source)
             func_lines = _shell_func_lines(source) if lang == 'shell' else None
+            guarded_lines = _shell_guarded_lines(source, func_lines) if lang == 'shell' else None
             for name, pattern, desc in patterns:
                 # set -e 脚本中的 || true 是防御性写法，跳过
                 if name == '静默吞错' and file_set_e:
@@ -272,16 +297,16 @@ def check_code_risks(info):
                     # 未捕获 Promise：文件有 .then() 但无 .catch()/.finally() 才报
                     if name == '未捕获 Promise' and re.search(r'\.\s*(?:catch|finally)\s*\(', preprocessed):
                         continue
-                    # 参数缺失在函数内部：$1/$2 是函数参数，不会缺失
-                    if name == '参数缺失' and func_lines:
-                        # 检查所有匹配行是否都在函数内
-                        in_func_only = True
+                    # 参数缺失在函数内部或 while 参数解析中：$1/$2 受保护
+                    if name == '参数缺失' and (func_lines or guarded_lines):
+                        # 检查所有匹配行是否都在保护区域内
+                        in_protected_only = True
                         for m in re.finditer(pattern, preprocessed, re.MULTILINE):
                             lineno = preprocessed[:m.start()].count('\n') + 1
-                            if lineno not in func_lines:
-                                in_func_only = False
+                            if lineno not in (func_lines or set()) and lineno not in (guarded_lines or set()):
+                                in_protected_only = False
                                 break
-                        if in_func_only:
+                        if in_protected_only:
                             continue
                     issues.append((f'{tag}🟠 [{lang}/{name}] {desc}（{path}）', 'warn'))
                     found_risks += 1
