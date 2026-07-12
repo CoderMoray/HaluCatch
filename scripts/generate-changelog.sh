@@ -36,12 +36,13 @@ run_cliff() {
   return 0
 }
 
-# ── 重建「版本索引」表 ──
-# 从 CHANGELOG 中已有的 ## [Vx.y.z] - DATE 标题 + git tag 自动重建一张
-# 「版本索引」表（版本 / 发布日期 / 提交哈希），并替换陈旧的「版本统计」
-# /「分类统计」手填段。幂等：每次 --write 都重算，永不漂移。
-rebuild_index() {
-  echo "📊 重建「版本索引」表..."
+# ── 同步版本元数据到标题 ──
+# 页面渲染时每个 ## [Vx] 会渲染成一个版本区块，因此把 commit 哈希
+# 直接并进标题（## [Vx] - DATE · `hash`），让每个区块自包含、零冗余；
+# 同时移除条目体内陈旧的「提交: xxx」行（哈希已上提），并删掉文档尾部的
+# 「版本索引」表（页面 TOC 由 build 从标题生成，无需内联）。幂等：已带哈希的标题跳过。
+sync_version_meta() {
+  echo "📑 同步版本哈希到标题（页面渲染用）..."
   if ! python3 - "$CHANGELOG" <<'PYEOF'
 import re, sys, subprocess
 
@@ -49,60 +50,57 @@ path = sys.argv[1]
 with open(path, encoding='utf-8') as f:
     text = f.read()
 
-# 提取所有 ## [Vx.y.z] - DATE 标题（按文件顺序，即与详细条目一致）
-pat = re.compile(
+heading_re = re.compile(
     r'^##\s+\[V([0-9]+\.[0-9]+\.[0-9]+)\]\s*-\s*([0-9]{4}-[0-9]{2}-[0-9]{2})',
     re.M,
 )
-heads = list(pat.finditer(text))
-heading_re = re.compile(r'^##\s', re.M)
+any_head_re = re.compile(r'^##\s', re.M)
 
-# 定位版本索引段的起始边界（兼容旧的「版本统计」段）
-idx = -1
-if '## 版本索引' in text:
-    idx = text.index('## 版本索引')
-elif '## 版本统计' in text:
-    idx = text.index('## 版本统计')
-
-keep = text[:idx].rstrip() if idx != -1 else text.rstrip()
-if keep.endswith('---'):
-    keep = keep[:keep.rfind('---')].rstrip()
-
-rows = []
-for m in heads:
-    ver, date = m.group(1), m.group(2)
-    # 切出本条目的文本块（到下一个 ## 标题为止）
-    nxt = heading_re.search(text, m.end())
-    block = text[m.end(): nxt.start() if nxt else len(text)]
-    # 优先取 git tag 的提交哈希
-    tag = 'v' + ver
-    h = ''
-    try:
-        h = subprocess.run(['git', 'log', '-1', '--format=%h', tag],
-                           capture_output=True, text=True, check=True).stdout.strip()
-    except Exception:
+matches = list(heading_re.finditer(text))
+new = text
+# 从后往前改写标题（避免位置偏移）；先剥离已有的 · `hash`（可能重复），再补一个，幂等且自愈
+for m in reversed(matches):
+    ver = m.group(1)
+    line_end = text.find('\n', m.start())
+    if line_end == -1:
+        line_end = len(text)
+    full_line = text[m.start(): line_end]
+    base = re.sub(r'\s*·.*$', '', full_line)
+    # 标题已有哈希则复用（幂等、跨重跑稳定，避免无 tag 旧版本退化为 -）
+    eh = re.search(r'·\s*`([0-9a-fA-F-]+)`', full_line)
+    if eh:
+        h = eh.group(1)
+    else:
+        nxt = any_head_re.search(text, m.end())
+        block = text[m.end(): nxt.start() if nxt else len(text)]
+        tag = 'v' + ver
         h = ''
-    # 回退：条目内「提交: `xxx`」声明的哈希（适用于无 tag 的旧版本）
-    if not h:
-        mm = re.search(r'提交:\s*`([0-9a-fA-F]+)`', block)
-        h = mm.group(1) if mm else '-'
-    rows.append(f'| V{ver} | {date} | `{h}` |')
+        try:
+            h = subprocess.run(['git', 'log', '-1', '--format=%h', tag],
+                               capture_output=True, text=True, check=True).stdout.strip()
+        except Exception:
+            h = ''
+        if not h:
+            mm = re.search(r'提交:\s*`?([0-9a-fA-F]+)`?', block)
+            h = mm.group(1) if mm else '-'
+    new_head = f'{base} · `{h}`'
+    new = new[:m.start()] + new_head + new[m.start() + len(full_line):]
 
-total = len(rows)
-table = (
-    '\n## 版本索引\n\n'
-    '| 版本 | 发布日期 | 提交哈希 |\n'
-    '|------|----------|----------|\n'
-    + '\n'.join(rows) + '\n'
-    f'\n**总计：{total} 个版本**\n'
-)
+# 移除条目体内的「提交: xxx」行（哈希已上提至标题，兼容缩进列表项）
+new = re.sub(r'\n\s*-?\s*提交:[^\n]*\n', '\n', new)
+
+# 删除文档尾部的「版本索引」段（页面 TOC 由 build 从标题生成）
+idx = new.find('## 版本索引')
+if idx != -1:
+    cut = new.rfind('\n---\n', 0, idx)
+    new = (new[:cut] + '\n') if cut != -1 else (new[:idx].rstrip() + '\n')
 
 with open(path, 'w', encoding='utf-8') as f:
-    f.write(keep + '\n\n---\n' + table + '\n')
-print(f'  ✅ 版本索引已重建（{total} 个版本）')
+    f.write(new)
+print(f'  ✅ 已为 {len(matches)} 个版本标题补上提交哈希')
 PYEOF
   then
-    echo "  ❌ 版本索引重建失败"
+    echo "  ❌ 版本哈希同步失败"
     exit 1
   fi
 }
@@ -126,7 +124,7 @@ case "$MODE" in
     fi
     echo "📝 生成 v$VERSION CHANGELOG 条目..."
 
-    # 幂等：已存在该版本条目则跳过「插入」，但仍会重建底部版本索引表
+    # 幂等：已存在该版本条目则跳过「插入」，但仍会同步版本哈希到标题
     SKIP_INSERT=0
     if [[ -f "$CHANGELOG" ]] && grep -q "^## \[V$VERSION\]" "$CHANGELOG"; then
       echo "  ℹ️  CHANGELOG 已存在 V$VERSION 条目，跳过插入（幂等）"
@@ -171,17 +169,21 @@ case "$MODE" in
 
     # 构建版本条目并插入到 [Unreleased] 之后
     VERSION_DATE=$(date +%Y-%m-%d)
+    # 写入时即用当前 HEAD 短哈希给新版本标题（release 流程中 tag 尚未创建，
+    # HEAD 即本版本对应的提交；后续 sync_version_meta 会跳过已带哈希的标题）
+    NEW_HASH=$(git rev-parse --short HEAD 2>/dev/null || echo '-')
     python3 -c "
 changelog_path = '$CHANGELOG'
 version = '$VERSION'
 version_date = '$VERSION_DATE'
+new_hash = '$NEW_HASH'
 new_content = '''$NEW_CONTENT'''
 
 with open(changelog_path, 'r') as f:
     changelog = f.read()
 
-# 构建新条目
-entry = f'\n## [V{version}] - {version_date}\n{new_content}\n\n---\n\n'
+# 构建新条目（标题直接带上 commit 哈希，页面渲染时每个版本区块自包含）
+entry = f'\n## [V{version}] - {version_date} · `{new_hash}`\n{new_content}\n\n---\n\n'
 
 # 插入到 ## [Unreleased] 段之后（即第一个 --- 之后）
 idx = changelog.find('## [Unreleased]')
@@ -206,8 +208,8 @@ print('  ✅ CHANGELOG.md 已更新 (v' + version + ')')
     rm -f "$TMP_NEW"
     fi
 
-    # 无论条目是否新插入，都重建底部「版本索引」表（替换陈旧的版本统计/分类统计段）
-    rebuild_index
+    # 无论条目是否新插入，都同步版本哈希到标题（移除冗余的「提交:」行与尾部索引表）
+    sync_version_meta
     ;;
   *)
     # 假设是 git range (e.g. v1.7.2..v1.7.3)
