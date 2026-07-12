@@ -19,6 +19,29 @@
 
 ---
 
+## [V1.8.6] - 2026-07-12
+- 独立 FAQ 页面，含响应式导航动画、搜索过滤、关键词推荐
+- CHANGELOG 补全 v1.8.1～v1.8.5
+- 运行配置从根 config.yaml 迁移到 halucatch/halucatch/.halucatch_config.yaml
+- Scanner/cli 去掉旧版 config.yaml 兼容，仅读 .halucatch_config.yaml
+- 明确 skills_is_external 控制的是项目根 skills/
+- Skills_is_external 恢复递归跳过所有层级 skills/
+- 删除 docs/FAQ.md，build.py 从 halucatch/FAQ.md 复制，统一维护源
+- FAQ 顶部加报错速查表，搜报错的人一眼定位
+- Release.sh 增加 build_faq.py 步骤
+- 修正构建输出目录为 docs/，补充 blog 与安装区配置说明
+- 将 manifest.json 纳入版本管理并升版至 1.8.6
+- Generate-changelog --write 传版本号，用 tag range 生成条目而非填 Unreleased
+- SKILL.md config.yaml 加「HaluCatch 自身」限定，frontmatter 细化 Bash 用途
+- Config.yaml compatibility 同步 SKILL.md，细化 Bash 用途声明
+- 运行配置改为 os.path.dirname(__file__) 包内路径，不依赖目标目录
+- Skills_is_external 仅跳过根级 skills/，不递归影响子目录
+- 统一错误输出格式，所有异常附加机器详情且仅 unexpected 打印 traceback
+- Build.py FAQ 路径修正为 ROOT.parent，docs/ 生成最新 FAQ
+
+---
+
+
 ## [V1.8.0] - 2026-07-11
 
 ### Added
