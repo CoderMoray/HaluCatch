@@ -81,6 +81,13 @@ for m in reversed(matches):
         except Exception:
             h = ''
         if not h:
+            # 无 tag（刚插入的新版本条目，tag 尚未创建）→ 用 HEAD
+            try:
+                h = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'],
+                                   capture_output=True, text=True, check=True).stdout.strip()
+            except Exception:
+                h = ''
+        if not h:
             mm = re.search(r'提交:\s*`?([0-9a-fA-F]+)`?', block)
             h = mm.group(1) if mm else '-'
     new_head = f'{base} · `{h}`'
