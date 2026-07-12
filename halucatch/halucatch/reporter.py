@@ -131,7 +131,7 @@ def _complexity_table(cx_result):
         ratio = cov.get('ratio', 0)
         wf = cov.get('workflow_steps', 0)
         total_s = cov.get('total_steps', 0)
-        summary_header = '\n| 名称 | 数值 | 计算公式 |\n|------|------|----------|\n'
+        summary_header = '\n#### 复杂度加权结果\n\n| 名称 | 数值 | 计算公式 |\n|------|------|----------|\n'
         summary_rows = [
             f'| 加权总得分 | {weighted:.1f} | 11 项指标加权平均 |',
             f'| 脚本覆盖率折扣 | ×{mul:.2f}（覆盖率 {ratio:.0%}） | $1 - \\sqrt{{{ratio:.2f}}}$，{wf}/{total_s} 步有脚本 |',
