@@ -594,7 +594,7 @@ class AIChatDemo {
     // Wrap consecutive <li> in <ul>
     html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
     
-    return html;
+    return this._renderFinalHtml(html);
   }
   
   // ── Utilities ───────────────────────────────────────────
