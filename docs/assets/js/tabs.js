@@ -1,18 +1,34 @@
 /* ============================================================
-   HaluCatch — Tab 切换（报告预览 + 快速开始）
+   HaluCatch — Tab 切换（报告预览 + 快速开始）+ KaTeX 渲染
    ============================================================ */
 (function() {
+  function renderMathInElement(el) {
+    if (typeof katex === 'undefined') return;
+    // 查找 $...$ 并替换为 KaTeX HTML
+    el.innerHTML = el.innerHTML.replace(/\$([^\$]+)\$/g, function(match, math) {
+      try {
+        return katex.renderToString(math.trim(), { throwOnError: false, displayMode: false });
+      } catch(e) {
+        return match;
+      }
+    });
+  }
+
   window.switchTab = function(name) {
     document.querySelectorAll('.preview-tab').forEach(function(t) { t.classList.remove('active'); });
     document.querySelectorAll('.preview-body .report-content').forEach(function(c) { c.classList.remove('active'); });
-    event.currentTarget.classList.add('active');
     document.getElementById('tab-' + name).classList.add('active');
+    var activeContent = document.getElementById('tab-' + name);
+    if (activeContent) renderMathInElement(activeContent);
   };
+
+  // 初始加载时渲染第一个活跃 tab 中的 KaTeX
+  var firstTab = document.querySelector('.preview-body .report-content.active');
+  if (firstTab) renderMathInElement(firstTab);
 
   window.switchQsTab = function(name) {
     document.querySelectorAll('.qs-tab').forEach(function(t) { t.classList.remove('active'); });
     document.querySelectorAll('.qs-panel').forEach(function(p) { p.classList.remove('active'); });
-    event.currentTarget.classList.add('active');
     document.getElementById('qs-' + name).classList.add('active');
   };
 })();
