@@ -119,16 +119,6 @@ HaluCatch 仅需要以下权限即可运行：
 - 目标 Skill 应包含至少一个 `SKILL.md` 文件（规范名称）。如有其他 `.md` 文件，AI 将尝试启发式匹配，但会报告规范性问题。
 - 目录中的 `.py` 文件视为 Skill 核心执行脚本，非第三方依赖库。
 
-### 触发条件
-
-仅在用户**显式请求审查 Skill** 时激活。以下为有效触发方式：
-
-- 使用精确命令：`审查 /path/to/skill`、`用 HaluCatch 检查 ./my-skill`
-- 提供明确路径或 Skill 文件夹引用
-- **不作为通用问答助手**：仅在用户主动要求审查时激活，不会对任意文本或对话自动触发评估
-
----
-
 ## AI 执行指南
 
 ### 语言自动检测
@@ -378,9 +368,8 @@ python3 halucatch_core.py --skill-dir /path/to/skill
 
 ## 报告落盘
 
-- 缺省输出到 `reports/` 目录（目标 Skill 目录内，不污染外部路径）
+- 缺省输出到 `reports/` 目录（目标 Skill 目录内）
 - 指定 `--output-dir` 则输出到自定义路径
-- 修复包（如有）保存到：`{Skill目录}/halucatch-fix/`
 
 ---
 
