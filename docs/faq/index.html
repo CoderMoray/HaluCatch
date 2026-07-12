@@ -19,7 +19,7 @@
   <link rel="canonical" href="https://codermoray.github.io/HaluCatch/faq/">
   <link rel="icon" type="image/svg+xml" href="../favicon.svg">
   <script>
-    var HC_VER = '1.8.7';
+    var HC_VER = '1.8.8';
     var HC_VER_SHORT = '1.8';
 
     var _t = (function(){ try { return localStorage.getItem('halucatch-theme'); } catch(e){} return null; })() || 'system';
@@ -184,7 +184,7 @@
         <span>HaluCatch 会在电脑上写文件吗？</span>
         <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
       </button>
-      <div class="faq-a"><p>会。审查完成后自动在 <code>HaluCatch/reports/</code> 目录生成三份报告（标准版、专业版、行动版 .md 文件）。不会修改目标 Skill 目录中的任何文件。如需自定义输出路径，使用 <code>--output-dir</code> 参数。<br><br><strong>Q: 审查结果长什么样？</strong><br><br>标准版报告示例（白话、零术语，给非技术用户看）：<br><br><pre><code># HaluCatch 审计报告 — my-skill<br><br>## 📌 一句话总结<br><br>🟢 3 通过 · ⚠️ 2 注意 · 💡 3 可优化<br><br>## 🎯 核心结论<br><br>| 地基 | 代码 | 规则 | 护栏 | 复杂度 |<br>|:--:|:--:|:--:|:--:|:--:|<br>| 🟢 稳固 6/6 | 🟢 干净 90/90 | 🟡 有歧义 4/6 | 🟢 到位 11/11 | 🟡 注意 2.2/10 |<br><br>### 做的不错 👍<br>- ✅ 有固化脚本兜底核心任务<br><br>### 需要注意的方面<br>- ⚠️ 存在模糊表述 ['大概']（说明书写了模糊词，AI 可能会猜错）</code></pre><br><br>包含专业版（11 项指标表 + KaTeX 公式）和行动版（修复清单）。完整示例：运行 <code>python3 halucatch_core.py --skill-dir .</code> 审自己的项目。</p></div>
+      <div class="faq-a"><p>会。审查完成后自动在 <code>HaluCatch/reports/</code> 目录生成三份报告（标准版、专业版、行动版 .md 文件）。不会修改目标 Skill 目录中的任何文件。如需自定义输出路径，使用 <code>--output-dir</code> 参数。<br><br><strong>Q: 审查结果长什么样？</strong><br><br>标准版报告示例（白话、零术语，给非技术用户看）：<br><br><pre><code># HaluCatch 审计报告 — my-skill<br><br>## 📌 一句话总结<br><br>🟢 3 通过 · ⚠️ 2 注意 · 💡 3 可优化<br><br>## 🎯 核心结论<br><br>| 地基 | 代码 | 规则 | 护栏 | 复杂度 |<br>|:--:|:--:|:--:|:--:|:--:|<br>| 🟢 稳固 6/6 | 🟢 干净 90/90 | 🟡 有歧义 4/6 | 🟢 到位 11/11 | 🟡 注意 2.2/10 |<br><br>### 做的不错 👍<br>- ✅ 有固化脚本兜底核心任务<br><br>### 需要注意的方面<br>- ⚠️ 存在模糊表述 ['大概']（说明书写了模糊词，AI 可能会猜错）</code></pre><br><br>包含专业版（11 项指标表 + KaTeX 公式）和行动版（修复清单）。完整示例：运行 <code>python3 halucatch_core.py --skill-dir .</code> 审自己的项目，或查看 [在线 Demo](https://codermoray.github.io/HaluCatch/) 的交互式报告预览。</p></div>
     </div>
 <div class="faq-item">
       <button class="faq-q" onclick="toggleFaqItem(this)">

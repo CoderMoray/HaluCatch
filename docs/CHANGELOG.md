@@ -14,6 +14,18 @@
 
 ---
 
+## [V1.8.8] - 2026-07-12 · `a470515`
+- CHANGELOG 补 hash、清 Unreleased 已发布内容
+- Release.sh 重排为 12 步，commit 先于 CHANGELOG（tag 存在 → hash 正确）
+- FAQ 反模式加 Before/After 示例，报告预览加 Demo 站链接；SkillHub 去 README
+- CHANGELOG 1.8.7 重写为真实变更，generate-changelog 移除反引号 escape
+- PREV 源改为 CHANGELOG.md hash 优先（git tag 可被挪，CHANGELOG hash 不变）
+- Sync_version_meta 新版本无 tag 时用 HEAD hash 而非 -
+- 响应 SkillSpector 3 条——删 halucatch-fix/、触发条件区、ClawHub 不打包 README
+
+---
+
+
 ## [V1.8.7] - 2026-07-12 · `8a74f7e`
 
 ### Added

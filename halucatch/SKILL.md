@@ -10,7 +10,7 @@ allowed-tools:
   - Bash
 compatibility: Requires Python 3.8+; Bash only for local 'python3 halucatch_core.py', no network/arbitrary commands
 author: CoderMoray
-version: 1.8.7
+version: 1.8.8
 metadata:
   hermes:
     tags:
