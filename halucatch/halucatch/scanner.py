@@ -78,12 +78,13 @@ def scan_folder(path, msg):
     py_paths = []
 
     skip_dirs = {'.git', '__pycache__', '.pytest_cache', 'node_modules', '.venv', 'venv', 'avatars'}
-    if skills_is_external is True:
-        skip_dirs.add('skills')
 
     for root, dirs, filenames in os.walk(path):
-        # 递归扫描子目录（过滤 .git / __pycache__ 等排除目录）
-        dirs[:] = [d for d in dirs if d not in skip_dirs]
+        # 跳过排除目录（仅根级 skills/ 受 skills_is_external 控制）
+        if os.path.abspath(root) == os.path.abspath(path) and skills_is_external is True:
+            dirs[:] = [d for d in dirs if d not in skip_dirs and d != 'skills']
+        else:
+            dirs[:] = [d for d in dirs if d not in skip_dirs]
         for fname in filenames:
             fpath = os.path.join(root, fname)
             size = os.path.getsize(fpath)
