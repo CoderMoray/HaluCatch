@@ -107,6 +107,7 @@ body.faq-page footer {
 .faq-hero {
   text-align: center; padding: 80px 20px 40px;
   max-width: 720px; margin: 0 auto;
+  position: relative; z-index: 1;
 }
 .faq-hero h1 {
   font-size: 2.4rem; font-weight: 800; margin-bottom: 24px;
@@ -145,6 +146,7 @@ body.faq-page footer {
 /* ── Main Content ── */
 .faq-content {
   max-width: 820px; margin: 0 auto; padding: 0 20px 60px;
+  position: relative; z-index: 1;
 }
 
 /* ── Section Card ── */
