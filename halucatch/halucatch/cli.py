@@ -22,19 +22,16 @@ from .scanner import scan_folder
 
 def _read_config_lang(skill_dir):
     """从 .halucatch_config.yaml 读取默认语言。"""
-    for cfg_path in [
-        os.path.join(skill_dir, 'halucatch', 'halucatch', '.halucatch_config.yaml'),
-        os.path.join(skill_dir, 'config.yaml'),
-    ]:
-        if os.path.exists(cfg_path):
-            try:
-                with open(cfg_path, 'r', encoding='utf-8') as f:
-                    for line in f:
-                        m = re.match(r'^lang:\s*(\S+)', line)
-                        if m:
-                            return m.group(1)
-            except Exception:
-                pass
+    cfg_path = os.path.join(skill_dir, 'halucatch', 'halucatch', '.halucatch_config.yaml')
+    if os.path.exists(cfg_path):
+        try:
+            with open(cfg_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    m = re.match(r'^lang:\s*(\S+)', line)
+                    if m:
+                        return m.group(1)
+        except Exception:
+            pass
     return None
 
 

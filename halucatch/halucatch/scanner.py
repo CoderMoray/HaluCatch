@@ -54,28 +54,22 @@ def scan_folder(path, msg):
         return None
 
     # 读 HaluCatch 自身运行配置（.halucatch_config.yaml）
-    # 优先读包内配置，兜底兼容根目录 config.yaml（历史用户）
     skills_is_external = None
     lang = 'auto'
-    config_paths = [
-        os.path.join(path, 'halucatch', 'halucatch', '.halucatch_config.yaml'),
-        os.path.join(path, 'config.yaml'),  # 兼容旧版
-    ]
-    for cfg_path in config_paths:
-        if os.path.exists(cfg_path):
-            try:
-                with open(cfg_path, 'r', encoding='utf-8') as f:
-                    for line in f:
-                        m = re.match(r'^skills_is_external:\s*(true|false|null)', line)
-                        if m:
-                            v = m.group(1)
-                            skills_is_external = True if v == 'true' else (False if v == 'false' else None)
-                        m2 = re.match(r'^lang:\s*(\S+)', line)
-                        if m2:
-                            lang = m2.group(1)
-            except Exception:
-                pass
-            break  # 找到第一个有效配置文件即停止
+    cfg_path = os.path.join(path, 'halucatch', 'halucatch', '.halucatch_config.yaml')
+    if os.path.exists(cfg_path):
+        try:
+            with open(cfg_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    m = re.match(r'^skills_is_external:\s*(true|false|null)', line)
+                    if m:
+                        v = m.group(1)
+                        skills_is_external = True if v == 'true' else (False if v == 'false' else None)
+                    m2 = re.match(r'^lang:\s*(\S+)', line)
+                    if m2:
+                        lang = m2.group(1)
+        except Exception:
+            pass
 
     files = []
     skill_md_content = None
