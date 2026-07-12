@@ -136,36 +136,32 @@ case "$MODE" in
     # 找到上一个版本号（优先级：git tag → git release commit → CHANGELOG.md）
     PREV_TAG=""
     SOURCE=""
+    set +e  # 以下 git/grep/sed 可能非零退出，不可被 -e 打断
 
     # 1) git tag
-    set +o pipefail  # 管道 grep 无结果返回非零，set -e 会提前退出
     PREV_TAG=$(git tag --sort=-version:refname --list 'v*' 2>/dev/null | grep -E '^v[0-9]' | head -1)
-    set -o pipefail
     if [[ -n "$PREV_TAG" ]]; then
       SOURCE="git tag"
     fi
 
-    # 2) git release commit（无 tag 时从提交记录找）
+    # 2) git release commit
     if [[ -z "$PREV_TAG" ]]; then
-      set +o pipefail
       PREV_VER=$(git log --grep="^release: v" --format="%s" --max-count=1 2>/dev/null | sed -nE 's/^release: (v[0-9.]+).*/\1/p')
-      set -o pipefail
       if [[ -n "$PREV_VER" ]]; then
         PREV_TAG="$PREV_VER"
-        SOURCE="git commit ($PREV_VER — 无对应 tag)"
+        SOURCE="git commit ($PREV_VER)"
       fi
     fi
 
     # 3) CHANGELOG.md
     if [[ -z "$PREV_TAG" ]]; then
-      set +o pipefail
       PREV_VER=$(grep -m1 '^## \[V' "$CHANGELOG" 2>/dev/null | sed -nE 's/^## \[V([0-9.]+)\].*/\1/p')
-      set -o pipefail
       if [[ -n "$PREV_VER" ]]; then
         PREV_TAG="v$PREV_VER"
         SOURCE="CHANGELOG.md ($PREV_TAG)"
       fi
     fi
+    set -e
 
     if [[ -z "$PREV_TAG" ]]; then
       echo "  ⚠️  找不到上一个版本，使用所有提交"
