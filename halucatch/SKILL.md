@@ -348,11 +348,11 @@ python3 halucatch_core.py --skill-dir /path/to/skill
 
 > ⚠️ 发现疑似外部 Skill 目录。`skills/` 是外部安装的 Skill（非本项目代码）吗？
 
-- 用户「是」→ 修改 HaluCatch 自身的运行配置文件（`skills_is_external: true`），重跑审查（不改目标 Skill 文件）
-- 用户「否」→ 同上，设 `skills_is_external: false`
-- 用户无法判断 → 保持 `null`，标注保留，继续展示
+- 用户「是」→ 询问用户「是否需要我将运行配置设为 `skills_is_external: true`，以后审查自动跳过 skills/？」——用户确认后方可修改，改后重跑审查
+- 用户「否」→ 同上，询问后设为 `false`
+- 用户无法判断 → 保持现状，标注保留，继续展示
 
-确认完成并重跑后，进入 Phase 4。
+> **⚠️ 约束：修改运行配置前必须获得用户明确授权，不得自动修改。**
 
 ---
 
