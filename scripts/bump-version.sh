@@ -5,7 +5,8 @@ set -euo pipefail
 VERSION="${1:-}"
 if [[ -z "$VERSION" ]]; then
   echo "用法: $0 X.Y.Z"
-  echo "  更新 config.yaml 和 web/config.yaml 的版本号"
+  echo "  更新 config.yaml、web/config.yaml、halucatch/__init__.py、manifest.json 的版本号"
+  echo "  (SKILL.md 的 version 由 inject-frontmatter.sh 从 config.yaml 注入)"
   exit 1
 fi
 
@@ -24,7 +25,12 @@ echo "✅ web/config.yaml → $VERSION (short: $SHORT)"
 sed -i '' "s/^__version__ = '.*'/__version__ = '$VERSION'/" "$ROOT/halucatch/halucatch/__init__.py"
 echo "✅ halucatch/halucatch/__init__.py → $VERSION"
 
-# 3) docs/ 由 release.sh 中的 web/build.py 重新生成
-# 4) Changelog 由 generate-changelog.sh 自动处理
+# 4) manifest.json（发布清单元信息）
+sed -i '' "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/" "$ROOT/manifest.json"
+echo "✅ manifest.json → $VERSION"
+
+# 5) halucatch/SKILL.md 的 version 由 inject-frontmatter.sh 从 config.yaml 注入
+# 6) docs/ 由 release.sh 中的 web/build.py 重新生成
+# 7) Changelog 由 generate-changelog.sh 自动处理
 echo ""
 echo "✅ 版本号已更新。CHANGELOG 和 docs/ 将在 release.sh 中自动生成。"

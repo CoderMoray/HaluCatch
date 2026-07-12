@@ -6,7 +6,7 @@
 # ── 基础信息 ──
 name: HaluCatch
 name_zh: 捕幻
-version: 1.8.5
+version: 1.8.6
 version_short: 1.8
 description: AI 为你创建的 Skill 执行起来靠谱吗？五维自动审查——地基是否稳固 · 代码有无隐患 · 规则是否明确 · 护栏是否到位 · 复杂度是否可控
 author: CoderMoray

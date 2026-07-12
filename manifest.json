@@ -1,6 +1,6 @@
 {
   "name": "HaluCatch",
-  "version": "1.7.1",
+  "version": "1.8.6",
   "required_files": [
     "halucatch/SKILL.md",
     "halucatch/halucatch_core.py",

@@ -1,5 +1,4 @@
 ---
-skills_is_external: None
 name: halucatch
 description: |
   Evaluates the reliability of AI Skill execution. Assesses whether a Skill's output is trustworthy, reproducible, and withstands business scrutiny when executed by an AI agent. Covers four dimensions: data pipeline integrity, code risk, business logic ambiguity, and interpretation guardrails. Use when auditing an AI Skill, checking for hallucinations or unreliable outputs, verifying execution reproducibility, or reviewing a Skill's safety before deployment or sharing.
@@ -9,9 +8,9 @@ allowed-tools:
   - Read
   - Write
   - Bash
-compatibility: Requires Python 3.8+; Bash only for local `python3 halucatch_core.py`, no network/arbitrary commands
+compatibility: Requires Python 3.8+; Bash only for local 'python3 halucatch_core.py', no network/arbitrary commands
 author: CoderMoray
-version: 1.8.5
+version: 1.8.6
 metadata:
   hermes:
     tags:
