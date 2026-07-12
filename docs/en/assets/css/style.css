@@ -761,7 +761,8 @@ section h2 {
 /* ── KaTeX 文本模式使用页面字体 ── */
 .katex .text,
 .katex .textnormal,
-.katex .mord.text {
+.katex .mord.text,
+.katex .cjk_fallback {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                "PingFang SC", "Microsoft YaHei", "Noto Sans SC",
                sans-serif !important;
