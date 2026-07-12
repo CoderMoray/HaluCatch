@@ -20,9 +20,9 @@ from .reporter import generate_report
 from .scanner import scan_folder
 
 
-def _read_config_lang(skill_dir):
-    """从 .halucatch_config.yaml 读取默认语言。"""
-    cfg_path = os.path.join(skill_dir, 'halucatch', 'halucatch', '.halucatch_config.yaml')
+def _read_config_lang():
+    """从 HaluCatch 包内 .halucatch_config.yaml 读取默认语言。"""
+    cfg_path = os.path.join(os.path.dirname(__file__), '.halucatch_config.yaml')
     if os.path.exists(cfg_path):
         try:
             with open(cfg_path, 'r', encoding='utf-8') as f:
@@ -72,7 +72,7 @@ def main():
         args = parser.parse_args()
 
         # 语言检测：CLI --lang > 系统 locale > config.yaml 默认
-        config_lang = _read_config_lang(args.skill_dir)
+        config_lang = _read_config_lang()
         lang = args.lang
         if lang == 'auto':
             lang = config_lang or detect_system_locale()

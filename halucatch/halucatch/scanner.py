@@ -53,10 +53,10 @@ def scan_folder(path, msg):
         print(msg['path_not_exist'].format(path=path))
         return None
 
-    # 读 HaluCatch 自身运行配置（.halucatch_config.yaml）
+    # 读 HaluCatch 自身运行配置（.halucatch_config.yaml，位于包内）
     skills_is_external = None
     lang = 'auto'
-    cfg_path = os.path.join(path, 'halucatch', 'halucatch', '.halucatch_config.yaml')
+    cfg_path = os.path.join(os.path.dirname(__file__), '.halucatch_config.yaml')
     if os.path.exists(cfg_path):
         try:
             with open(cfg_path, 'r', encoding='utf-8') as f:
