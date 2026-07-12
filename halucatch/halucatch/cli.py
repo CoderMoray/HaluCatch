@@ -156,22 +156,24 @@ def main():
     except KeyboardInterrupt:
         print(_friendly_error(lang)['interrupted'])
         sys.exit(130)
-    except PermissionError:
+    except PermissionError as e:
         print(_friendly_error(lang)['permission'])
+        print(f'  {e}')
         sys.exit(1)
     except FileNotFoundError as e:
         print(_friendly_error(lang)['file_not_found'])
-        print(f"  → {e}")
+        print(f'  {e}')
         sys.exit(1)
     except OSError as e:
-        if getattr(e, 'errno', None) == 28:  # ENOSPC
+        if getattr(e, 'errno', None) == 28:
             print(_friendly_error(lang)['disk_full'])
         else:
             print(_friendly_error(lang)['unexpected'])
-            traceback.print_exc()
+        print(f'  {e}')
         sys.exit(1)
-    except Exception:
+    except Exception as e:
         print(_friendly_error(lang)['unexpected'])
+        print(f'  {e}')
         traceback.print_exc()
         sys.exit(1)
 
