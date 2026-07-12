@@ -350,7 +350,7 @@ python3 halucatch_core.py --skill-dir /path/to/skill
 
 - 用户「是」→ 设 `skills_is_external: true`，重跑审查
 - 用户「否」→ 设 `skills_is_external: false`，重跑审查
-- 用户无法判断 → 保持现状，标注保留，继续展示
+- 用户无法判断 → 保持现状，脚本在最终报告中自动标注 `[⚠️ 疑似外部 Skill]`，继续展示
 
 ---
 
