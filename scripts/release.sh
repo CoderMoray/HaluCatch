@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # release.sh — HaluCatch 一键发布脚本
-# 使用 set -uo pipefail（不用 -e，手动处理错误）
-set -uo pipefail
+# 严格模式：任何未捕获的错误都会立即中止，禁止静默失败
+set -euo pipefail
 
 VERSION="${1:-}"
 if [[ -z "$VERSION" ]]; then
@@ -27,25 +27,23 @@ done
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SCRIPTS="$ROOT/scripts"
 
+# ── 统一错误退出 ──────────────────────────────────────────────────────
+# 任何关键步骤失败时，打印 ❌ 并以非零状态退出，绝不静默继续
+fail() {
+  echo "❌ $1" >&2
+  exit 1
+}
+
 echo "🚀 HaluCatch 发布 v$VERSION"
 [[ "$DRY_RUN" == "true" ]] && echo "⚠️  DRY-RUN 模式（不修改任何文件）"
 echo ""
-
-# ── 辅助函数：dry-run 感知执行 ────────────────────────────────────────
-run() {
-  if [[ "$DRY_RUN" == "true" ]]; then
-    echo "  [DRY-RUN] 将执行: $*"
-  else
-    eval "$@"
-  fi
-}
 
 # ── Step 1: Bump Version ────────────────────────────────────────────
 echo "[1/11] 升级版本号..."
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "  [DRY-RUN] 将执行: bump-version.sh $VERSION"
 else
-  bash "$SCRIPTS/bump-version.sh" "$VERSION"
+  bash "$SCRIPTS/bump-version.sh" "$VERSION" || fail "bump-version.sh 执行失败"
 fi
 
 # ── Step 2: Inject Frontmatter ──────────────────────────────────────
@@ -53,7 +51,7 @@ echo "[2/11] 注入 frontmatter 到 SKILL.md..."
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "  [DRY-RUN] 将执行: inject-frontmatter.sh"
 else
-  bash "$SCRIPTS/inject-frontmatter.sh"
+  bash "$SCRIPTS/inject-frontmatter.sh" || fail "inject-frontmatter.sh 执行失败"
 fi
 
 # ── Step 3: Build Web ───────────────────────────────────────────────
@@ -66,14 +64,8 @@ else
   if command -v /Users/chrismoray/.workbuddy/binaries/python/envs/default/bin/python3 &>/dev/null; then
     WEB_PYTHON="/Users/chrismoray/.workbuddy/binaries/python/envs/default/bin/python3"
   fi
-  if ! $WEB_PYTHON "$ROOT/web/build.py" --all; then
-    echo "  ❌ web/build.py 执行失败，请先 pip install pyyaml"
-    exit 1
-  fi
-  if ! $WEB_PYTHON "$ROOT/web/build_faq.py" --all; then
-    echo "  ❌ web/build_faq.py 执行失败"
-    exit 1
-  fi
+  $WEB_PYTHON "$ROOT/web/build.py" --all || fail "web/build.py 执行失败，请先 pip install pyyaml"
+  $WEB_PYTHON "$ROOT/web/build_faq.py" --all || fail "web/build_faq.py 执行失败"
   echo "  ✅ docs/ 已重新生成"
 fi
 
@@ -82,23 +74,32 @@ echo "[4/11] 自动生成 CHANGELOG..."
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "  [DRY-RUN] 将执行: generate-changelog.sh --write $VERSION"
 else
-  bash "$SCRIPTS/generate-changelog.sh" --write "$VERSION"
+  bash "$SCRIPTS/generate-changelog.sh" --write "$VERSION" \
+    || fail "generate-changelog.sh 执行失败（CHANGELOG 未生成，发布中止）"
 fi
 
-# ── Step 5: Lint ────────────────────────────────────────────────────
+# ── Step 5: Lint（严格模式：自检失败即中止） ─────────────────────────
 echo "[5/11] 发布前自检..."
-bash "$SCRIPTS/lint-paths.sh"
+if [[ "$DRY_RUN" == "true" ]]; then
+  echo "  [DRY-RUN] 将执行: lint-paths.sh --strict"
+else
+  bash "$SCRIPTS/lint-paths.sh" --strict || fail "lint-paths.sh 自检失败"
+fi
 
 # ── Step 6: Check File Size ─────────────────────────────────────────
 echo "[6/11] 文件尺寸检查..."
-bash "$SCRIPTS/check-file-size.sh"
+if [[ "$DRY_RUN" == "true" ]]; then
+  echo "  [DRY-RUN] 将执行: check-file-size.sh"
+else
+  bash "$SCRIPTS/check-file-size.sh" || fail "check-file-size.sh 执行失败"
+fi
 
 # ── Step 7: Build SkillHub Package ──────────────────────────────────
 echo "[7/11] 构建 SkillHub 包..."
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "  [DRY-RUN] 将执行: build-skillhub.sh"
 else
-  bash "$SCRIPTS/build-skillhub.sh"
+  bash "$SCRIPTS/build-skillhub.sh" || fail "build-skillhub.sh 执行失败"
 fi
 
 ZIP_PATH="$ROOT/releases/HaluCatch-${VERSION}-skillhub.zip"
@@ -109,7 +110,7 @@ if [[ "$DRY_RUN" == "true" ]]; then
   echo "[8/11] DRY-RUN: 将构建 ClawHub 包"
 elif [[ "$SKIP_CLAWHUB" == "false" ]]; then
   echo "[8/11] 构建 ClawHub 发布包..."
-  bash "$SCRIPTS/build-clawhub.sh"
+  bash "$SCRIPTS/build-clawhub.sh" || fail "build-clawhub.sh 执行失败"
 else
   echo "[8/11] 跳过 ClawHub 构建"
 fi
@@ -119,7 +120,11 @@ if [[ "$DRY_RUN" == "true" ]]; then
   echo "[9/11] DRY-RUN: 将发布到 SkillHub ($ZIP_PATH)"
 elif [[ "$SKIP_SKILLHUB" == "false" ]]; then
   echo "[9/11] 发布到 SkillHub..."
-  skillhub publish "$ZIP_PATH" || echo "⚠️  SkillHub 发布失败（可手动重试）"
+  if [[ ! -f "$ZIP_PATH" ]]; then
+    fail "SkillHub 发布包不存在: $ZIP_PATH（Step 7 未生成？）"
+  fi
+  skillhub publish "$ZIP_PATH" \
+    || fail "SkillHub 发布失败（可手动重试: skillhub publish $ZIP_PATH）"
 else
   echo "[9/11] 跳过 SkillHub"
 fi
@@ -129,10 +134,14 @@ if [[ "$DRY_RUN" == "true" ]]; then
   echo "[10/11] DRY-RUN: 将发布到 ClawHub (halucatch@$VERSION)"
 elif [[ "$SKIP_CLAWHUB" == "false" ]]; then
   echo "[10/11] 发布到 ClawHub..."
+  if [[ ! -f "$CLAWHUB_ZIP" ]]; then
+    fail "ClawHub 发布包不存在: $CLAWHUB_ZIP（Step 8 未生成？）"
+  fi
   TMP_CLAWHUB="/tmp/halucatch-publish"
   rm -rf "$TMP_CLAWHUB" && mkdir -p "$TMP_CLAWHUB"
   unzip -q "$CLAWHUB_ZIP" -d "$TMP_CLAWHUB"
-  (cd "$TMP_CLAWHUB" && clawhub publish . --slug halucatch --name "HaluCatch / 捕幻" --version "$VERSION") || echo "⚠️  ClawHub 发布失败（可手动重试）"
+  (cd "$TMP_CLAWHUB" && clawhub publish . --slug halucatch --name "HaluCatch / 捕幻" --version "$VERSION") \
+    || fail "ClawHub 发布失败（可手动重试: 解压 $CLAWHUB_ZIP 后 clawhub publish）"
   rm -rf "$TMP_CLAWHUB"
 else
   echo "[10/11] 跳过 ClawHub"
@@ -159,14 +168,14 @@ elif [[ "$SKIP_GITHUB" == "false" ]]; then
     # 从 CHANGELOG.md 提取最新版本条目作为 commit body
     COMMIT_MSG="release: v$VERSION"
     if [[ -f "$ROOT/docs/CHANGELOG.md" ]]; then
-      CHANGELOG_BODY=$(sed -n "/^## \[V$VERSION\]/,/^---/p" "$ROOT/docs/CHANGELOG.md" | sed '1d;$d' | sed '/^$/d')
+      CHANGELOG_BODY=$(sed -n "/^## \[V$VERSION\]/,/^---/p" "$ROOT/docs/CHANGELOG.md" | sed '1d;$d' | sed '/^$/d') || true
       if [[ -n "$CHANGELOG_BODY" ]]; then
         COMMIT_MSG="$COMMIT_MSG"$'\n\n'"$CHANGELOG_BODY"
       fi
     fi
 
-    git add -A
-    git commit -m "$COMMIT_MSG"
+    git add -A || fail "git add 失败"
+    git commit -m "$COMMIT_MSG" || fail "git commit 失败"
     echo "  ✅ 已提交"
   else
     echo "  工作区干净，跳过 commit"
@@ -174,29 +183,29 @@ elif [[ "$SKIP_GITHUB" == "false" ]]; then
 
   # 打 tag（如果不存在）
   if [[ "$TAG_EXISTS" == "false" ]]; then
-    git tag "v$VERSION"
+    git tag "v$VERSION" || fail "git tag v$VERSION 失败"
     echo "  ✅ 已打 tag v$VERSION"
   fi
 
   # 推送
   echo "  推送到 GitHub..."
-  git push origin main
+  git push origin main || fail "git push origin main 失败（检查网络/权限）"
   if [[ "$TAG_EXISTS" == "false" ]]; then
-    git push origin "v$VERSION"
+    git push origin "v$VERSION" || fail "git push origin v$VERSION 失败（检查网络/权限）"
   fi
   echo "  ✅ 已推送，GitHub Actions 将自动创建 Release"
 
 else
   # --skip-github 模式：本地 commit + tag，不 push
   if [[ -n $(git status --porcelain) ]]; then
-    git add -A
-    git commit -m "release: v$VERSION"
+    git add -A || fail "git add 失败"
+    git commit -m "release: v$VERSION" || fail "git commit 失败"
     echo "  ✅ 已提交（本地）"
   else
     echo "  工作区干净，跳过 commit"
   fi
   if [[ "$TAG_EXISTS" == "false" ]]; then
-    git tag "v$VERSION"
+    git tag "v$VERSION" || fail "git tag v$VERSION 失败"
     echo "  ✅ 已打 tag v$VERSION（本地）"
   fi
   echo "  ⚠️  跳过 git push（需手动: git push origin v$VERSION && git push origin main）"
@@ -204,18 +213,3 @@ fi
 
 echo ""
 echo "✅ HaluCatch v$VERSION 发布完成"
-
-# ── AI 提醒：mcpmarket / agentskills 用同一个分支 ───────────────────
-if [[ "$DRY_RUN" != "true" ]]; then
-  echo ""
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo "🤖 AI ACTION REQUIRED — 告诉用户:"
-  echo ""
-  echo "   发布完成！手动操作："
-  echo "   1. mcpmarket → https://app.mcpmarket.com/<用户名>/skills"
-  echo "   2. agentskills.sh → https://agentskill.sh/submit"
-  echo ""
-  echo "   两个平台都填:"
-  echo "   https://github.com/CoderMoray/HaluCatch/tree/agentskills/halucatch"
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-fi
