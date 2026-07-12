@@ -346,13 +346,11 @@ python3 halucatch_core.py --skill-dir /path/to/skill
 
 **如存在**：不做 `present_files`，直接向用户确认：
 
-> ⚠️ 发现疑似外部 Skill 目录。`skills/` 是外部安装的 Skill（非本项目代码）吗？
+> ⚠️ 发现疑似外部 Skill 目录。`skills/` 是外部安装的 Skill（非本项目代码）吗？→ 确认后我会同步更新 HaluCatch 运行配置，之后自动跳过。
 
-- 用户「是」→ 询问用户「是否需要我将运行配置设为 `skills_is_external: true`，以后审查自动跳过 skills/？」——用户确认后方可修改，改后重跑审查
-- 用户「否」→ 同上，询问后设为 `false`
+- 用户「是」→ 设 `skills_is_external: true`，重跑审查
+- 用户「否」→ 设 `skills_is_external: false`，重跑审查
 - 用户无法判断 → 保持现状，标注保留，继续展示
-
-> **⚠️ 约束：修改运行配置前必须获得用户明确授权，不得自动修改。**
 
 ---
 
