@@ -344,14 +344,14 @@ python3 halucatch_core.py --skill-dir /path/to/skill
 
 报告生成后、向用户展示或提交前，**必须**先检查标准版报告中是否存在 `⚠️ 疑似外部 Skill` 标记。
 
-**如存在**：不做 `present_files`，通过交互选项弹窗向用户确认（不要只用文字提问等回复）：
+**如存在**：不做 `present_files`，向用户确认（优先用交互弹窗；不支持弹窗的平台改用文字列出选项，等用户回复 1/2/3）：
 
 > ⚠️ 发现疑似外部 Skill 目录。`skills/` 是外部安装的 Skill（非本项目代码）吗？→ 确认后我会同步更新 HaluCatch 运行配置，之后自动跳过。
 
-选项（三个，标题「外部 Skill 确认」）：
-- 「是，跳过 skills/」→ 设 `skills_is_external: true`，重跑审查
-- 「否，正常扫描」→ 设 `skills_is_external: false`，重跑审查
-- 「不确定，保留标记」→ 保持现状，报告自动标注 `[⚠️ 疑似外部 Skill]`，继续展示
+选项（标题「外部 Skill 确认」）：
+1. 「是，跳过 skills/」→ 设 `skills_is_external: true`，重跑审查
+2. 「否，正常扫描」→ 设 `skills_is_external: false`，重跑审查
+3. 「不确定，保留标记」→ 保持现状，报告自动标注 `[⚠️ 疑似外部 Skill]`，继续展示
 
 ---
 
