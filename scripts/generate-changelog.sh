@@ -133,42 +133,43 @@ case "$MODE" in
 
     if [[ "$SKIP_INSERT" -eq 0 ]]; then
 
-    # 找到上一个版本号（优先级：git tag → git release commit → CHANGELOG.md）
-    PREV_TAG=""
+    # 找到上一个版本的 commit 哈希（优先级：CHANGELOG.md hash → git tag → commit 记录）
+    # 用 CHANGELOG 的 hash 而非 git tag：tag 可能被删/挪，CHANGELOG 的 hash 不变
+    PREV_COMMIT=""
     SOURCE=""
-    set +e  # 以下 git/grep/sed 可能非零退出，不可被 -e 打断
+    set +e
 
-    # 1) git tag
-    PREV_TAG=$(git tag --sort=-version:refname --list 'v*' 2>/dev/null | grep -E '^v[0-9]' | head -1)
-    if [[ -n "$PREV_TAG" ]]; then
-      SOURCE="git tag"
+    # 1) CHANGELOG.md 最新版本条目的 hash（最可靠，不受 tag 变动影响）
+    PREV_COMMIT=$(grep -m1 '^## \[V[0-9]' "$CHANGELOG" 2>/dev/null | sed -nE 's/.*`([a-f0-9]+)`.*/\1/p')
+    if [[ -n "$PREV_COMMIT" ]]; then
+      SOURCE="CHANGELOG.md (hash=$PREV_COMMIT)"
     fi
 
-    # 2) git release commit
-    if [[ -z "$PREV_TAG" ]]; then
-      PREV_VER=$(git log --grep="^release: v" --format="%s" --max-count=1 2>/dev/null | sed -nE 's/^release: (v[0-9.]+).*/\1/p')
-      if [[ -n "$PREV_VER" ]]; then
-        PREV_TAG="$PREV_VER"
-        SOURCE="git commit ($PREV_VER)"
+    # 2) git tag（兜底：CHANGELOG 无 hash 时用）
+    if [[ -z "$PREV_COMMIT" ]]; then
+      PREV_TAG=$(git tag --sort=-version:refname --list 'v*' 2>/dev/null | grep -E '^v[0-9]' | head -1)
+      if [[ -n "$PREV_TAG" ]]; then
+        PREV_COMMIT="$PREV_TAG"
+        SOURCE="git tag ($PREV_TAG)"
       fi
     fi
 
-    # 3) CHANGELOG.md
-    if [[ -z "$PREV_TAG" ]]; then
-      PREV_VER=$(grep -m1 '^## \[V' "$CHANGELOG" 2>/dev/null | sed -nE 's/^## \[V([0-9.]+)\].*/\1/p')
+    # 3) git release commit（最后兜底）
+    if [[ -z "$PREV_COMMIT" ]]; then
+      PREV_VER=$(git log --grep="^release: v" --format="%s" --max-count=1 2>/dev/null | sed -nE 's/^release: (v[0-9.]+).*/\1/p')
       if [[ -n "$PREV_VER" ]]; then
-        PREV_TAG="v$PREV_VER"
-        SOURCE="CHANGELOG.md ($PREV_TAG)"
+        PREV_COMMIT="$PREV_VER"
+        SOURCE="git commit ($PREV_VER)"
       fi
     fi
     set -e
 
-    if [[ -z "$PREV_TAG" ]]; then
+    if [[ -z "$PREV_COMMIT" ]]; then
       echo "  ⚠️  找不到上一个版本，使用所有提交"
       RANGE="--latest"
     else
-      RANGE="${PREV_TAG}..HEAD"
-      echo "  📍 上一个版本: $PREV_TAG（来源: $SOURCE）"
+      RANGE="${PREV_COMMIT}..HEAD"
+      echo "  📍 上一个版本: $PREV_COMMIT (来源: $SOURCE)"
     fi
 
     # 生成条目（失败立即退出，绝不静默）
