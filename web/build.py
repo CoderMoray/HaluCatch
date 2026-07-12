@@ -550,6 +550,12 @@ def copy_assets(output_dir, config=None):
         print("  🔧 theme.js STORAGE_KEY replaced")
 
     # 复制 favicon 到输出根目录（浏览器默认从 / 加载）
+    # FAQ.md — 从 halucatch/ 复制，不维护两份
+    faq_src = ROOT / "halucatch" / "FAQ.md"
+    if faq_src.exists():
+        shutil.copy2(faq_src, output_dir / "FAQ.md")
+        print(f"  📄 FAQ.md → {output_dir}")
+
     favicon = assets_src / "images" / "favicon.svg"
     if favicon.exists():
         shutil.copy2(favicon, output_dir / "favicon.svg")
