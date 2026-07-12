@@ -28,7 +28,6 @@ cp "$ROOT/halucatch/SKILL.md"       "$TMP/"
 cp "$ROOT/halucatch/halucatch_core.py" "$TMP/"
 cp -r "$ROOT/halucatch/halucatch"      "$TMP/"
 cp "$ROOT/README.md"          "$TMP/"
-cp "$ROOT/config.yaml"        "$TMP/"
 cp "$ROOT/manifest.json"      "$TMP/"
 cp "$ROOT/LICENSE"            "$TMP/" 2>/dev/null || true
 

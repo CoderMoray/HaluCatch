@@ -349,8 +349,8 @@ python3 halucatch_core.py --skill-dir /path/to/skill
 
 > ⚠️ 发现疑似外部 Skill 目录。`skills/` 是外部安装的 Skill（非本项目代码）吗？
 
-- 用户「是」→ 修改 HaluCatch 自身的 `config.yaml`（`skills_is_external: true`），重跑审查（不改目标 Skill 文件）
-- 用户「否」→ 改 `config.yaml`：`skills_is_external: false`，重跑 `halucatch_core.py`
+- 用户「是」→ 修改 HaluCatch 自身的运行配置文件（`skills_is_external: true`），重跑审查（不改目标 Skill 文件）
+- 用户「否」→ 同上，设 `skills_is_external: false`
 - 用户无法判断 → 保持 `null`，标注保留，继续展示
 
 确认完成并重跑后，进入 Phase 4。

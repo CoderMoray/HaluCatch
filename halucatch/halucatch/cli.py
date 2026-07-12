@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import re
 import sys
 import traceback
 
@@ -17,6 +18,24 @@ from .evaluators import (
 )
 from .reporter import generate_report
 from .scanner import scan_folder
+
+
+def _read_config_lang(skill_dir):
+    """从 .halucatch_config.yaml 读取默认语言。"""
+    for cfg_path in [
+        os.path.join(skill_dir, 'halucatch', 'halucatch', '.halucatch_config.yaml'),
+        os.path.join(skill_dir, 'config.yaml'),
+    ]:
+        if os.path.exists(cfg_path):
+            try:
+                with open(cfg_path, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        m = re.match(r'^lang:\s*(\S+)', line)
+                        if m:
+                            return m.group(1)
+            except Exception:
+                pass
+    return None
 
 
 def _friendly_error(lang):
@@ -55,8 +74,11 @@ def main():
         parser.add_argument('--validate', action='store_true', help='仅扫描文件清单，不执行评估')
         args = parser.parse_args()
 
-        # 语言检测
-        lang = detect_system_locale() if args.lang == 'auto' else args.lang
+        # 语言检测：CLI --lang > 系统 locale > config.yaml 默认
+        config_lang = _read_config_lang(args.skill_dir)
+        lang = args.lang
+        if lang == 'auto':
+            lang = config_lang or detect_system_locale()
         msg = MESSAGES[lang]
 
         print("=" * 60)
