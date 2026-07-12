@@ -245,16 +245,16 @@
     </div>
     <div class="preview-body">
       <div class="report-content active" id="tab-standard"><h3>📗 标准版 — 用人话告诉你哪里有问题</h3>
-<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（五维评估 v1.7.10）</p>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（五维评估 v1.8.6）</p>
 <hr>
 
 <h4>一句话总结</h4>
-<p>🔴 2 严重 · ⚠️ 4 注意 · 💡 3 可优化</p>
+<p>🔴 3 严重 · ⚠️ 3 注意 · 💡 5 可优化</p>
 
 <h4 style="margin-top:16px;">审查结果</h4>
 <table>
-<tr><th style="text-align:center">🏗️ 地基</th><th style="text-align:center">🤖 代码</th><th style="text-align:center">📝 规则</th><th style="text-align:center">🛡️ 护栏</th><th style="text-align:center">📐 复杂度</th></tr>
-<tr><td class="pass" style="text-align:center">🟢 6/6</td><td class="pass" style="text-align:center">🟢 15/15</td><td class="pass" style="text-align:center">🟢 5/6</td><td class="pass" style="text-align:center">🟢 8/8</td><td class="warn" style="text-align:center">🟡 3.0/10</td></tr>
+<tr><th style="text-align:center">🏗️ 地基</th><th style="text-align:center">💻 代码</th><th style="text-align:center">📝 规则/方法论</th><th style="text-align:center">🛡️ 护栏</th><th style="text-align:center">📐 复杂度</th></tr>
+<tr><td class="pass" style="text-align:center">🟢 6/6</td><td class="pass" style="text-align:center">🟢 15/15</td><td class="pass" style="text-align:center">🟢 6/6</td><td class="pass" style="text-align:center">🟢 11/11</td><td class="warn" style="text-align:center">🟡 2.7/10</td></tr>
 </table>
 
 <h4>做得好的方面</h4>
@@ -265,53 +265,45 @@
   <li class="pass">✅ 有输入验证/列名校验</li>
   <li class="pass">✅ 使用通配符/自动发现文件</li>
   <li class="pass">✅ SKILL.md 声明了依赖</li>
+  <li class="pass">✅ 未检测到模糊词汇</li>
   <li class="pass">✅ 定义了数值边界/范围</li>
   <li class="pass">✅ 包含计算/公式说明</li>
   <li class="pass">✅ 单位使用一致</li>
   <li class="pass">✅ 有异常分支处理</li>
   <li class="pass">✅ 声明了默认值/回退策略</li>
   <li class="pass">✅ 明确了输出格式</li>
-  <li class="pass">✅ 检测到禁止/护栏声明</li>
+  <li class="pass">✅ 检测到禁止/护栏声明（否定词 1 / 中文禁止 3）</li>
   <li class="pass">✅ 包含验证/自检步骤</li>
   <li class="pass">✅ 涉及置信度/风险评估</li>
   <li class="pass">✅ 声明了数据来源/范围限制</li>
   <li class="pass">✅ 定义了错误处理/回退策略</li>
   <li class="pass">✅ 声明了数据时效性</li>
   <li class="pass">✅ 声明了前提假设</li>
-  <li class="pass">✅ 文档引用链深度: 0 层</li>
-  <li class="pass">✅ 文档引用链广度: 0 个</li>
-  <li class="pass">✅ 脚本引用链广度: 6 个</li>
-  <li class="pass">✅ 重复冗余: 0.9</li>
-  <li class="pass">✅ 表格复杂度: 3.0</li>
-  <li class="pass">✅ 代码/文档比: 代码充裕</li>
+  <li class="pass">✅ 要求向用户上报错误</li>
+  <li class="pass">✅ 要求操作前确认</li>
+  <li class="pass">✅ 发现渲染函数，输出有代码管</li>
 </ul>
 
 <h4>需要注意的方面</h4>
-<ul>
-  <li class="warn">⚠️ 存在模糊表述: '通常'</li>
-  <li class="warn">⚠️ 章节深度: 5 分</li>
-  <li class="warn">❌ 章节复杂度: 10.0</li>
-  <li class="warn">⚠️ 脚本引用链深度: 1 层</li>
-  <li class="warn">⚠️ 脚本覆盖比: 12% (2/17 步有脚本) — 🟠 覆盖薄弱</li>
-  <li class="warn">❌ 指令密度: 7.4</li>
-</ul>
+<p style="color:var(--text2);">✅ 无发现问题。</p>
 
-<p style="font-size:0.85rem;color:var(--text2);margin-top:16px;">本报告是标准版本。如需技术细节，见专业版报告。</p></div>
+<p style="font-size:0.85rem;color:var(--text2);margin-top:16px;">本报告是标准版本。如需技术细节，见专业版报告。</p>
+</div>
       <div class="report-content" id="tab-pro"><h3>📊 专业版 — 结构化评估结果</h3>
-<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（五维评估 v1.7.10）</p>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（五维评估 v1.8.6）</p>
 <hr>
 
 <h3>📌 一句话总结</h3>
-<p>🔴 2 严重 · ⚠️ 4 注意 · 💡 3 可优化</p>
+<p>🔴 3 严重 · ⚠️ 3 注意 · 💡 5 可优化</p>
 
 <h3>🎯 核心结论卡片</h3>
 <table>
 <tr><th>维度</th><th>评级</th><th>分数</th></tr>
 <tr><td>🏗️ 地基</td><td class="pass">🟢 稳固</td><td>6/6</td></tr>
-<tr><td>🤖 代码</td><td class="pass">🟢 低风险</td><td>15/15</td></tr>
-<tr><td>📝 规则/方法论</td><td class="pass">🟢 明确</td><td>5/6</td></tr>
-<tr><td>🛡️ 护栏</td><td class="pass">🟢 到位</td><td>8/8</td></tr>
-<tr><td>📐 复杂度</td><td class="warn">🟡 注意</td><td>3.0/10</td></tr>
+<tr><td>💻 代码</td><td class="pass">🟢 低风险</td><td>15/15</td></tr>
+<tr><td>📝 规则/方法论</td><td class="pass">🟢 明确</td><td>6/6</td></tr>
+<tr><td>🛡️ 护栏</td><td class="pass">🟢 到位</td><td>11/11</td></tr>
+<tr><td>📐 复杂度</td><td class="warn">🟡 注意</td><td>2.7/10 (加权 3.9)</td></tr>
 </table>
 
 <h3>🔍 审查发现</h3>
@@ -326,16 +318,16 @@
   <li class="pass">✅ SKILL.md 声明了依赖</li>
 </ul>
 
-<h4>🤖 代码</h4>
+<h4>💻 代码</h4>
 <table>
 <tr><th>代码文件类型</th><th>审查规则数量</th><th>全通过</th><th>部分问题</th><th>全不通过</th></tr>
 <tr><td>Python</td><td>9</td><td class="pass">15</td><td>0</td><td>0</td></tr>
 </table>
-<p>— 无</p>
+<p>— 未发现代码风险</p>
 
 <h4>📝 规则/方法论</h4>
 <ul>
-  <li class="warn">🟠 存在模糊表述: ['通常']</li>
+  <li class="pass">✅ 未检测到模糊词汇</li>
   <li class="pass">✅ 定义了数值边界/范围</li>
   <li class="pass">✅ 包含计算/公式说明</li>
   <li class="pass">✅ 单位使用一致</li>
@@ -347,13 +339,16 @@
 <h4>🛡️ 护栏</h4>
 <ul>
   <li class="pass">✅ 明确了输出格式</li>
-  <li class="pass">✅ 检测到禁止/护栏声明</li>
+  <li class="pass">✅ 检测到禁止/护栏声明（否定词 1 / 中文禁止 3）</li>
   <li class="pass">✅ 包含验证/自检步骤</li>
   <li class="pass">✅ 涉及置信度/风险评估</li>
   <li class="pass">✅ 声明了数据来源/范围限制</li>
   <li class="pass">✅ 定义了错误处理/回退策略</li>
   <li class="pass">✅ 声明了数据时效性</li>
   <li class="pass">✅ 声明了前提假设</li>
+  <li class="pass">✅ 要求向用户上报错误</li>
+  <li class="pass">✅ 要求操作前确认</li>
+  <li class="pass">✅ 发现渲染函数 def generate_...，输出有代码管</li>
 </ul>
 <p style="color:var(--text2);font-size:0.8rem;">以上为脚本基线检查，AI 应在此基础上补充语义分析</p>
 
@@ -365,28 +360,29 @@
 <tr><td>文档引用链深度</td><td>10%</td><td class="pass">🟢 0.0</td><td>0 层</td></tr>
 <tr><td>文档引用链广度</td><td>10%</td><td class="pass">🟢 0.0</td><td>0 个</td></tr>
 <tr><td>脚本引用链深度</td><td>3%</td><td class="warn">🟡 5.0</td><td>1 层</td></tr>
-<tr><td>脚本引用链广度</td><td>2%</td><td class="pass">🟢 3.0</td><td>6 个</td></tr>
-<tr><td>重复冗余</td><td>5%</td><td class="pass">🟢 0.9</td><td>0.9</td></tr>
+<tr><td>脚本引用链广度</td><td>2%</td><td class="warn">🟡 3.5</td><td>7 个</td></tr>
+<tr><td>重复冗余</td><td>5%</td><td class="pass">🟢 0.8</td><td>0.8</td></tr>
 <tr><td>表格复杂度</td><td>10%</td><td class="pass">🟢 3.0</td><td>3.0</td></tr>
-<tr><td>脚本覆盖比</td><td>10%</td><td class="warn">🟠 6.0</td><td>12% (2/17 步有脚本)</td></tr>
-<tr><td>代码/文档比</td><td>15%</td><td class="pass">🟢 0.0</td><td>文档 20% — 代码充裕</td></tr>
-<tr><td>指令密度</td><td>25%</td><td class="warn">🔴 7.4</td><td>7.4</td></tr>
+<tr><td>脚本覆盖比</td><td>10%</td><td class="warn">🟠 6.8</td><td>10% (2/20 步有脚本, 18 步无) — 🟠 覆盖薄弱</td></tr>
+<tr><td>代码/文档比</td><td>15%</td><td class="pass">🟢 0.0</td><td>文档 19% — 🟢 代码充裕</td></tr>
+<tr><td>指令密度</td><td>25%</td><td class="warn">🔴 7.8</td><td>7.8</td></tr>
 </table>
-<p style="margin-top:4px;font-size:0.85rem;">加权平均 3.7 × 0.8（覆盖乘数）→ 最终 <strong>3.0/10</strong></p>
+<p style="margin-top:4px;font-size:0.85rem;">加权平均 3.9 × 0.68（覆盖乘数）→ 最终 <strong>2.7/10</strong></p>
 
-<p style="margin-top:16px;font-size:0.85rem;color:var(--text2);">本报告由 HaluCatch 生成。✅ 检查进度: 全部执行完毕</p></div>
+<p style="margin-top:16px;font-size:0.85rem;color:var(--text2);">本报告由 HaluCatch 生成。✅ 检查进度: 全部执行完毕</p>
+</div>
       <div class="report-content" id="tab-action"><h3>🤖 AI 行动版 — 直接给 AI 的修复指令</h3>
-<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（五维评估 v1.7.10）</p>
+<p style="color:var(--text2);font-size:0.9rem;margin-bottom:16px;">以下是 HaluCatch 审计自身的真实报告（五维评估 v1.8.6）</p>
 <hr>
 
 <h4>🛠️ 修复清单</h4>
 <ul>
-  <li class="warn">🟠 存在模糊表述: ['通常']</li>
   <li class="warn">🟡 章节深度: 5 分</li>
   <li class="warn">🔴 章节复杂度: 10.0</li>
   <li class="warn">🟡 脚本引用链深度: 1 层</li>
-  <li class="warn">🟡 脚本覆盖比: 12% (2/17 步有脚本) — 🟠 覆盖薄弱</li>
-  <li class="warn">🔴 指令密度: 7.4</li>
+  <li class="warn">🟡 脚本引用链广度: 7 个</li>
+  <li class="warn">🔴 脚本覆盖比: 10% (2/20 步有脚本, 18 步无) — 🟠 覆盖薄弱</li>
+  <li class="warn">🔴 指令密度: 7.8</li>
 </ul>
 
 <h4>✅ 验证检查点（修复后自检）</h4>
@@ -400,10 +396,11 @@
 <hr>
 <h4>📋 下一步</h4>
 <ol>
-  <li><strong>执行修复</strong> — 将本报告发给你的 AI，让它按方案修改目标 Skill。修复后重新验证</li>
+  <li><strong>执行修复</strong> — 将本报告发给你的 AI，让它按方案修改目标 Skill。修复后重新运行 <code>halucatch_core.py --skill-dir &lt;路径&gt;</code> 验证</li>
   <li><strong>不执行</strong> — 不做任何修改，审查结束</li>
   <li><strong>我有更好的意见</strong> — 描述你的修复想法，我据此重新生成修复方案</li>
-</ol></div>
+</ol>
+</div>
     </div>
   </div>
 </section>
