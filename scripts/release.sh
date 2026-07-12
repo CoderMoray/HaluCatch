@@ -70,6 +70,10 @@ else
     echo "  ❌ web/build.py 执行失败，请先 pip install pyyaml"
     exit 1
   fi
+  if ! $WEB_PYTHON "$ROOT/web/build_faq.py" --all; then
+    echo "  ❌ web/build_faq.py 执行失败"
+    exit 1
+  fi
   echo "  ✅ docs/ 已重新生成"
 fi
 
