@@ -133,14 +133,40 @@ case "$MODE" in
 
     if [[ "$SKIP_INSERT" -eq 0 ]]; then
 
-    # 找到上一个 tag
-    PREV_TAG=$(git tag --sort=-version:refname | grep -E '^v[0-9]' | head -1) || PREV_TAG=""
+    # 找到上一个版本号（优先级：git tag → git release commit → CHANGELOG.md）
+    PREV_TAG=""
+    SOURCE=""
+
+    # 1) git tag
+    PREV_TAG=$(git tag --sort=-version:refname --list 'v*' | grep -E '^v[0-9]' | head -1) || PREV_TAG=""
+    if [[ -n "$PREV_TAG" ]]; then
+      SOURCE="git tag"
+    fi
+
+    # 2) git release commit（无 tag 时从提交记录找）
     if [[ -z "$PREV_TAG" ]]; then
-      echo "  ⚠️  找不到上一个 tag，使用最新提交"
+      PREV_VER=$(git log --grep="^release: v" --format="%s" --max-count=1 | sed -nE 's/^release: (v[0-9.]+).*/\1/p') || PREV_VER=""
+      if [[ -n "$PREV_VER" ]]; then
+        PREV_TAG="$PREV_VER"
+        SOURCE="git commit ($PREV_VER — 无对应 tag)"
+      fi
+    fi
+
+    # 3) CHANGELOG.md
+    if [[ -z "$PREV_TAG" ]]; then
+      PREV_VER=$(grep -m1 '^## \[V' "$CHANGELOG" 2>/dev/null | sed -nE 's/^## \[V([0-9.]+)\].*/\1/p') || PREV_VER=""
+      if [[ -n "$PREV_VER" ]]; then
+        PREV_TAG="v$PREV_VER"
+        SOURCE="CHANGELOG.md ($PREV_TAG)"
+      fi
+    fi
+
+    if [[ -z "$PREV_TAG" ]]; then
+      echo "  ⚠️  找不到上一个版本，使用所有提交"
       RANGE="--latest"
     else
       RANGE="${PREV_TAG}..HEAD"
-      echo "  📍 上一个 tag: $PREV_TAG，扫描范围: $RANGE"
+      echo "  📍 上一个版本: $PREV_TAG（来源: $SOURCE）"
     fi
 
     # 生成条目（失败立即退出，绝不静默）
