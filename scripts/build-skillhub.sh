@@ -26,7 +26,6 @@ echo "  复制文件..."
 cp "$ROOT/halucatch/SKILL.md" "$TMPDIR/"
 cp "$ROOT/halucatch/halucatch_core.py" "$TMPDIR/"
 cp -r "$ROOT/halucatch/halucatch" "$TMPDIR/"
-cp "$ROOT/README.md" "$TMPDIR/"
 [[ -f "$ROOT/docs/CHANGELOG.md" ]] && cp "$ROOT/docs/CHANGELOG.md" "$TMPDIR/CHANGELOG.md"
 [[ -f "$ROOT/halucatch/FAQ.md" ]] && cp "$ROOT/halucatch/FAQ.md" "$TMPDIR/FAQ.md"
 # SkillHub 不接受 LICENSE 文件
