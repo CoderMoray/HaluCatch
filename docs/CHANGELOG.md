@@ -19,12 +19,22 @@
 
 ---
 
-## [V1.8.7] - 2026-07-12 · `-`
-- PREV_TAG 空值兜底，避免 set -euo pipefail 下变量未绑定
+## [V1.8.7] - 2026-07-12
+
+### Added
+- FAQ 顶部新增「🔍 报错速查」表格，搜报错一眼定位
+- AI 确认外部 Skill 支持弹窗+文字双模式，选项带编号
+
+### Changed
+- 异常处理格式统一：所有异常附加机器详情，仅 unexpected 打印 traceback
+- SKILL.md 配置修改确认一步完成（用户回复即授权，不二次确认）
+- SKILL.md 第三选项说明 `[疑似外部 Skill]` 为脚本自动标注功能
+
+### Fixed
+- `compatibility` 随 config.yaml 同步，细化 Bash 用途声明
+- 根 `config.yaml` 走 frontmatter，去除 `skills_is_external` 字段
 - PREV_TAG 三级回退（git tag → commit → CHANGELOG），始终输出来源
-- Pipefail 临时关闭，用 set ±o 取代不可靠的 || fallback
-- 全段 set +e 替代逐个 pipefail toggling，根除 unbound variable
-- Generate-changelog.sh 去 set -u，根除 unbound variable 困扰
+- generate-changelog.sh 去 `set -u`、去反引号 escape，根除 unbound variable
 
 ---
 

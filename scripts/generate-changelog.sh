@@ -197,21 +197,17 @@ case "$MODE" in
 
     # 构建版本条目并插入到 [Unreleased] 之后
     VERSION_DATE=$(date +%Y-%m-%d)
-    # 写入时即用当前 HEAD 短哈希给新版本标题（release 流程中 tag 尚未创建，
-    # HEAD 即本版本对应的提交；后续 sync_version_meta 会跳过已带哈希的标题）
-    NEW_HASH=$(git rev-parse --short HEAD 2>/dev/null || echo '-')
     python3 -c "
 changelog_path = '$CHANGELOG'
 version = '$VERSION'
 version_date = '$VERSION_DATE'
-new_hash = '$NEW_HASH'
 new_content = '''$NEW_CONTENT'''
 
 with open(changelog_path, 'r') as f:
     changelog = f.read()
 
-# 构建新条目（标题直接带上 commit 哈希，页面渲染时每个版本区块自包含）
-entry = f'\n## [V{version}] - {version_date} · `{new_hash}`\n{new_content}\n\n---\n\n'
+# 构建新条目（hash 由 sync_version_meta 后续统一补上，此处不加避免 bash 反引号 escape 问题）
+entry = f'\n## [V{version}] - {version_date}\n{new_content}\n\n---\n\n'
 
 # 插入到 ## [Unreleased] 段之后（即第一个 --- 之后）
 idx = changelog.find('## [Unreleased]')
