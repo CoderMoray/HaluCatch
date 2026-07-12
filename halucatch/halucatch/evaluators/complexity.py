@@ -669,7 +669,7 @@ def check_complexity(info, skill_type='code-engineered'):
         ))
         issues.append(("📋 最终复杂度: " + f"{final:.1f} / 10", 'info'))
 
-    score_display = f'{final:.1f}/10 (加权 {weighted:.1f})' if is_code else f'{final:.1f}/10'
+    score_display = f'{final:.1f}/10'
 
     # 注入权重到每个指标
     for key in scores:
