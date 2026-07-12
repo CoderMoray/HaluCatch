@@ -36,6 +36,77 @@ run_cliff() {
   return 0
 }
 
+# ── 重建「版本索引」表 ──
+# 从 CHANGELOG 中已有的 ## [Vx.y.z] - DATE 标题 + git tag 自动重建一张
+# 「版本索引」表（版本 / 发布日期 / 提交哈希），并替换陈旧的「版本统计」
+# /「分类统计」手填段。幂等：每次 --write 都重算，永不漂移。
+rebuild_index() {
+  echo "📊 重建「版本索引」表..."
+  if ! python3 - "$CHANGELOG" <<'PYEOF'
+import re, sys, subprocess
+
+path = sys.argv[1]
+with open(path, encoding='utf-8') as f:
+    text = f.read()
+
+# 提取所有 ## [Vx.y.z] - DATE 标题（按文件顺序，即与详细条目一致）
+pat = re.compile(
+    r'^##\s+\[V([0-9]+\.[0-9]+\.[0-9]+)\]\s*-\s*([0-9]{4}-[0-9]{2}-[0-9]{2})',
+    re.M,
+)
+heads = list(pat.finditer(text))
+heading_re = re.compile(r'^##\s', re.M)
+
+# 定位版本索引段的起始边界（兼容旧的「版本统计」段）
+idx = -1
+if '## 版本索引' in text:
+    idx = text.index('## 版本索引')
+elif '## 版本统计' in text:
+    idx = text.index('## 版本统计')
+
+keep = text[:idx].rstrip() if idx != -1 else text.rstrip()
+if keep.endswith('---'):
+    keep = keep[:keep.rfind('---')].rstrip()
+
+rows = []
+for m in heads:
+    ver, date = m.group(1), m.group(2)
+    # 切出本条目的文本块（到下一个 ## 标题为止）
+    nxt = heading_re.search(text, m.end())
+    block = text[m.end(): nxt.start() if nxt else len(text)]
+    # 优先取 git tag 的提交哈希
+    tag = 'v' + ver
+    h = ''
+    try:
+        h = subprocess.run(['git', 'log', '-1', '--format=%h', tag],
+                           capture_output=True, text=True, check=True).stdout.strip()
+    except Exception:
+        h = ''
+    # 回退：条目内「提交: `xxx`」声明的哈希（适用于无 tag 的旧版本）
+    if not h:
+        mm = re.search(r'提交:\s*`([0-9a-fA-F]+)`', block)
+        h = mm.group(1) if mm else '-'
+    rows.append(f'| V{ver} | {date} | `{h}` |')
+
+total = len(rows)
+table = (
+    '\n## 版本索引\n\n'
+    '| 版本 | 发布日期 | 提交哈希 |\n'
+    '|------|----------|----------|\n'
+    + '\n'.join(rows) + '\n'
+    f'\n**总计：{total} 个版本**\n'
+)
+
+with open(path, 'w', encoding='utf-8') as f:
+    f.write(keep + '\n\n---\n' + table + '\n')
+print(f'  ✅ 版本索引已重建（{total} 个版本）')
+PYEOF
+  then
+    echo "  ❌ 版本索引重建失败"
+    exit 1
+  fi
+}
+
 case "$MODE" in
   --preview|"")
     echo "🔍 当前 unreleased 变更预览:"
@@ -55,11 +126,14 @@ case "$MODE" in
     fi
     echo "📝 生成 v$VERSION CHANGELOG 条目..."
 
-    # 幂等：已存在该版本条目则跳过，避免重复插入
+    # 幂等：已存在该版本条目则跳过「插入」，但仍会重建底部版本索引表
+    SKIP_INSERT=0
     if [[ -f "$CHANGELOG" ]] && grep -q "^## \[V$VERSION\]" "$CHANGELOG"; then
-      echo "  ℹ️  CHANGELOG 已存在 V$VERSION 条目，跳过写入（幂等）"
-      exit 0
+      echo "  ℹ️  CHANGELOG 已存在 V$VERSION 条目，跳过插入（幂等）"
+      SKIP_INSERT=1
     fi
+
+    if [[ "$SKIP_INSERT" -eq 0 ]]; then
 
     # 找到上一个 tag
     PREV_TAG=$(git tag --sort=-version:refname | grep -E '^v[0-9]' | head -1) || true
@@ -130,6 +204,10 @@ with open(changelog_path, 'w') as f:
 print('  ✅ CHANGELOG.md 已更新 (v' + version + ')')
 " || { echo "  ❌ CHANGELOG 写入失败"; rm -f "$TMP_NEW"; exit 1; }
     rm -f "$TMP_NEW"
+    fi
+
+    # 无论条目是否新插入，都重建底部「版本索引」表（替换陈旧的版本统计/分类统计段）
+    rebuild_index
     ;;
   *)
     # 假设是 git range (e.g. v1.7.2..v1.7.3)
