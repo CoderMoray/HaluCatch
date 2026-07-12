@@ -9,7 +9,7 @@
 #   bash scripts/generate-changelog.sh v1.7.2..v1.7.3  # 生成两个 tag 间的 changelog
 #
 # 重要：git-cliff 的任何错误都必须显式暴露并以非零状态退出，禁止静默失败。
-set -euo pipefail
+set -eo pipefail  # -u 去掉：$() 命令替换在不同 bash 版本下行为不一致
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CLIFF_TOML="$ROOT/cliff.toml"
