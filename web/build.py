@@ -480,9 +480,12 @@ setTimeout(function() {{ window.halucatchDemo.begin(); }}, 100);
 
     # ── Footer ──
     footer_i18n = locale["footer"]
+    footer_cfg_links = {l.get("label"): l.get("url") for l in config.get("footer", {}).get("links", []) if l.get("url")}
     footer_links = ""
     for link in footer_i18n.get("links", []):
-        footer_links += f'<a href="{config["github_url"]}">{link["label"]}</a>\n'
+        url = footer_cfg_links.get(link["label"], config["github_url"])
+        target = ' target="_blank"' if url.startswith("http") else ""
+        footer_links += f'<a href="{url}"{target}>{link["label"]}</a>\n'
     # skillhub / clawhub footer
     if cta.get("skillhub"):
         footer_links += f'<a href="{cta["skillhub"]["url"]}" target="_blank">SkillHub</a>\n'

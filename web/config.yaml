@@ -392,6 +392,3 @@ footer:
       url: https://github.com/CoderMoray/HaluCatch/releases
     - label: 决策流程图
       url: decision-flowchart.html
-    # skillhub/clawhub 链接从上方 cta / skillhub / clawhub 配置自动生成
-    - label: FAQ 完整版
-      url: FAQ.md
