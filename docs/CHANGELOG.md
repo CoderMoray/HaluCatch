@@ -19,6 +19,16 @@
 
 ---
 
+## [V1.8.7] - 2026-07-12 · `-`
+- PREV_TAG 空值兜底，避免 set -euo pipefail 下变量未绑定
+- PREV_TAG 三级回退（git tag → commit → CHANGELOG），始终输出来源
+- Pipefail 临时关闭，用 set ±o 取代不可靠的 || fallback
+- 全段 set +e 替代逐个 pipefail toggling，根除 unbound variable
+- Generate-changelog.sh 去 set -u，根除 unbound variable 困扰
+
+---
+
+
 ## [V1.8.6] - 2026-07-12 · `40dd088`
 - 独立 FAQ 页面，含响应式导航动画、搜索过滤、关键词推荐
 - CHANGELOG 补全 v1.8.1～v1.8.5
