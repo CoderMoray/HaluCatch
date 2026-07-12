@@ -31,10 +31,17 @@
     if (activeContent) renderMathInElement(activeContent);
   };
 
-  // 初始加载时渲染所有 tab 中的 KaTeX（即使隐藏）
-  document.querySelectorAll('.preview-body .report-content').forEach(function(el) {
-    renderMathInElement(el);
-  });
+  // 初始加载时渲染所有 tab 中的 KaTeX
+  function initRender() {
+    if (typeof katex === 'undefined') {
+      // KaTeX 还没加载好，延迟重试
+      return setTimeout(initRender, 50);
+    }
+    document.querySelectorAll('.preview-body .report-content').forEach(function(el) {
+      renderMathInElement(el);
+    });
+  }
+  initRender();
 
   window.switchQsTab = function(name, el) {
     document.querySelectorAll('.qs-tab').forEach(function(t) { t.classList.remove('active'); });

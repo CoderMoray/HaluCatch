@@ -478,26 +478,27 @@ class AIChatDemo {
   renderMarkdown(text) {
     var self = this;
     try {
-      // Step 1: Extract $...$ math and render with KaTeX
+      // Step 1: 用占位符（带 markdown 安全字符）替换 $...$，避免被 marked 破坏
       var mathHtml = [];
       if (typeof katex !== 'undefined') {
         text = text.replace(/\$([^\$]+)\$/g, function(match, math) {
-          var placeholder = '\x00MATH' + mathHtml.length + '\x00';
+          var idx = mathHtml.length;
+          var placeholder = '<!--MATH' + idx + '-->';
           try {
             mathHtml.push(katex.renderToString(math.trim(), {
               throwOnError: false, displayMode: false
             }));
           } catch(e) {
-            mathHtml.push(match); // fallback: keep raw
+            mathHtml.push(match);
           }
           return placeholder;
         });
       }
 
-      // 恢复 HTML 的通用函数（替换占位符 + 修复 KaTeX 中文）
+      // 恢复 HTML 的通用函数
       function finalize(html) {
         for (var i = 0; i < mathHtml.length; i++) {
-          html = html.split('\x00MATH' + i + '\x00').join(mathHtml[i]);
+          html = html.split('<!--MATH' + i + '-->').join(mathHtml[i]);
         }
         // 修复 KaTeX 中文：行内样式强制覆盖
         var tmp = document.createElement('div');
