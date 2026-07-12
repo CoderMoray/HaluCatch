@@ -1,7 +1,7 @@
 ---
 name: halucatch
 description: |
-  Evaluates the reliability of AI Skill execution. Assesses whether a Skill's output is trustworthy, reproducible, and withstands business scrutiny when executed by an AI agent. Covers four dimensions: data pipeline integrity, code risk, business logic ambiguity, and interpretation guardrails. Use when auditing an AI Skill, checking for hallucinations or unreliable outputs, verifying execution reproducibility, or reviewing a Skill's safety before deployment or sharing.
+  Evaluates the reliability of AI Skill execution. Assesses whether a Skill's output is trustworthy, reproducible, and withstands business scrutiny when executed by an AI agent. Covers four dimensions: data pipeline integrity, code risk, business logic ambiguity, and interpretation guardrails. Activate only when the user provides a specific skill directory path and explicitly requests a HaluCatch audit.
 summary: AI Skill 执行可靠性审查工具。评估一个 Skill 被 AI 执行时，结果是否可信、是否可复现、是否经得起业务推敲。覆盖四维度：地基（数据管线）、代码、规则（业务口径）、护栏（解读指南）。
 license: MIT
 allowed-tools:
@@ -123,15 +123,13 @@ HaluCatch 仅需要以下权限即可运行：
 
 ### 语言自动检测
 
-AI 在加载本 Skill 时，应从系统提示（`<response_language>`）或对话上下文判断用户语言，然后自动添加 `--lang` 参数：
+建议根据 `<response_language>` 或对话上下文传递 `--lang` 参数（默认 `auto` 自动检测系统 locale）。用户如有偏好以用户指定为准：
 
 | 用户语言 | 参数 | 示例 |
 |-----------|------|------|
 | 中文（简体/繁体） | `--lang zh-CN` | `python3 halucatch_core.py --skill-dir <path> --lang zh-CN` |
 | 英文 | `--lang en` | `python3 halucatch_core.py --skill-dir <path> --lang en` |
 | 不确定 | 不添加（默认 `auto`，自动检测系统 locale） | `python3 halucatch_core.py --skill-dir <path>` |
-
-**原则**：AI 肯定知道用户用什么语言，不需要用户手动配置。
 
 ### 基本用法
 
