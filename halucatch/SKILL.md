@@ -1,7 +1,7 @@
 ---
 name: halucatch
 description: |
-  Evaluates the reliability of AI Skill execution. Assesses whether a Skill's output is trustworthy, reproducible, and withstands business scrutiny when executed by an AI agent. Covers four dimensions: data pipeline integrity, code risk, business logic ambiguity, and interpretation guardrails. Activate only when the user provides a specific skill directory path and explicitly requests a HaluCatch audit.
+  Evaluates the reliability of AI Skill execution. Assesses whether a Skill's output is trustworthy, reproducible, and withstands business scrutiny when executed by an AI agent. Covers four dimensions: data pipeline integrity, code risk, business logic ambiguity, and interpretation guardrails. Used for auditing AI skills, detecting hallucinations or unreliable outputs, verifying reproducibility, and reviewing safety before deployment. Requires a specific skill directory path as input.
 summary: AI Skill 执行可靠性审查工具。评估一个 Skill 被 AI 执行时，结果是否可信、是否可复现、是否经得起业务推敲。覆盖四维度：地基（数据管线）、代码、规则（业务口径）、护栏（解读指南）。
 license: MIT
 allowed-tools:
