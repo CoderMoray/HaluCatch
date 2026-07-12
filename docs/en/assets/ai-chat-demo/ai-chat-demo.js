@@ -477,18 +477,42 @@ class AIChatDemo {
   
   renderMarkdown(text) {
     try {
-      // marked v3/v4: try sync parse first
+      // Step 1: Extract $...$ math and render with KaTeX
+      var mathHtml = [];
+      if (typeof katex !== 'undefined') {
+        text = text.replace(/\$([^\$]+)\$/g, function(match, math) {
+          var placeholder = '\x00MATH' + mathHtml.length + '\x00';
+          try {
+            mathHtml.push(katex.renderToString(math.trim(), {
+              throwOnError: false, displayMode: false
+            }));
+          } catch(e) {
+            mathHtml.push(match); // fallback: keep raw
+          }
+          return placeholder;
+        });
+      }
+
+      // Step 2: marked parse
       if (typeof marked !== 'undefined') {
-        const result = marked.parse(text, { async: false });
-        if (typeof result === 'string') return result;
-        // If async result (Promise), handle it
+        var result = marked.parse(text, { async: false });
+        if (typeof result === 'string') {
+          // Step 3: restore KaTeX HTML
+          for (var i = 0; i < mathHtml.length; i++) {
+            result = result.split('\x00MATH' + i + '\x00').join(mathHtml[i]);
+          }
+          return result;
+        }
         if (result && typeof result.then === 'function') {
-          result.then(html => {
-            this.el.reportContent.innerHTML = html;
-          }).catch(() => {
+          result.then(function(html) {
+            for (var i = 0; i < mathHtml.length; i++) {
+              html = html.split('\x00MATH' + i + '\x00').join(mathHtml[i]);
+            }
+            if (this.el) this.el.reportContent.innerHTML = html;
+          }.bind(this)).catch(function() {
             this.el.reportContent.innerHTML = this.simpleMarkdown(text);
-          });
-          return this.simpleMarkdown(text); // Show fallback immediately
+          }.bind(this));
+          return this.simpleMarkdown(text);
         }
       }
     } catch (e) {
