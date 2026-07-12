@@ -134,7 +134,9 @@ def render_qa(body):
         m = re.match(r'\*\*Q:\s*(.+?)\*\*\s*\n+(.*)', item, re.DOTALL)
         if m:
             q = m.group(1).strip()
-            a = md_to_html(m.group(2).strip())
+            a = re.sub(r'-{3,}\s*$', '', m.group(2).strip())
+            a = md_to_html(a)
+            a = re.sub(r'(?:<br>\s*)+$', '', a)  # 去掉尾部空行
             html += f"""<div class="faq-item">
       <button class="faq-q" onclick="toggleFaqItem(this)">
         <span>{q}</span>
