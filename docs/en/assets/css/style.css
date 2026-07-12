@@ -758,6 +758,10 @@ section h2 {
 
 .faq-a ol { padding-left: 40px; }
 
+/* ── KaTeX 文本继承页面字体 ── */
+.katex .text,
+.katex .textnormal { font-family: inherit; }
+
 /* ── Copy Button ── */
 .copy-wrapper { position: relative; }
 
