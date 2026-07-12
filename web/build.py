@@ -224,7 +224,7 @@ setTimeout(function() {{ window.halucatchDemo.begin(); }}, 100);
         tabs_html = ""
         for i, tab in enumerate(rp["tabs"]):
             active = " active" if i == 0 else ""
-            tabs_html += f'<div class="preview-tab{active}" onclick="switchTab(\'{tab["id"]}\')">{tab["label"]}</div>\n'
+            tabs_html += f'<div class="preview-tab{active}" onclick="switchTab(\'{tab["id"]}\', this)">{tab["label"]}</div>\n'
 
         # 报告内容：支持内联 HTML 字符串或引用文件路径
         def load_content(key, tab_id):
@@ -337,8 +337,8 @@ setTimeout(function() {{ window.halucatchDemo.begin(); }}, 100);
         data["quickstart_section"] = f"""<section id="quickstart" class="anim-item" data-anim="3400">
   <h2>{qs_i18n['title']}</h2>
   <div class="qs-tabs">
-    <button class="qs-tab active" onclick="switchQsTab('user')">{user_tab}</button>
-    <button class="qs-tab" onclick="switchQsTab('dev')">{dev_tab}</button>
+    <button class="qs-tab active" onclick="switchQsTab('user', this)">{user_tab}</button>
+    <button class="qs-tab" onclick="switchQsTab('dev', this)">{dev_tab}</button>
   </div>
 
   <div id="qs-user" class="qs-panel active">

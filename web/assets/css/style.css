@@ -758,9 +758,14 @@ section h2 {
 
 .faq-a ol { padding-left: 40px; }
 
-/* ── KaTeX 文本继承页面字体 ── */
+/* ── KaTeX 文本模式使用页面字体 ── */
 .katex .text,
-.katex .textnormal { font-family: inherit; }
+.katex .textnormal,
+.katex .mord.text {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "PingFang SC", "Microsoft YaHei", "Noto Sans SC",
+               sans-serif !important;
+}
 
 /* ── Copy Button ── */
 .copy-wrapper { position: relative; }

@@ -14,9 +14,10 @@
     });
   }
 
-  window.switchTab = function(name) {
+  window.switchTab = function(name, el) {
     document.querySelectorAll('.preview-tab').forEach(function(t) { t.classList.remove('active'); });
     document.querySelectorAll('.preview-body .report-content').forEach(function(c) { c.classList.remove('active'); });
+    if (el) el.classList.add('active');
     document.getElementById('tab-' + name).classList.add('active');
     var activeContent = document.getElementById('tab-' + name);
     if (activeContent) renderMathInElement(activeContent);
@@ -26,9 +27,10 @@
   var firstTab = document.querySelector('.preview-body .report-content.active');
   if (firstTab) renderMathInElement(firstTab);
 
-  window.switchQsTab = function(name) {
+  window.switchQsTab = function(name, el) {
     document.querySelectorAll('.qs-tab').forEach(function(t) { t.classList.remove('active'); });
     document.querySelectorAll('.qs-panel').forEach(function(p) { p.classList.remove('active'); });
+    if (el) el.classList.add('active');
     document.getElementById('qs-' + name).classList.add('active');
   };
 })();

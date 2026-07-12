@@ -241,9 +241,9 @@
   <p style="text-align:center;color:var(--text2);margin-bottom:24px;">同一份 Skill，三份视角 — 以下是 HaluCatch 审计自身的真实报告</p>
   <div class="preview-container">
     <div class="preview-tabs">
-      <div class="preview-tab active" onclick="switchTab('standard')">📗 标准版</div>
-<div class="preview-tab" onclick="switchTab('pro')">📊 专业版</div>
-<div class="preview-tab" onclick="switchTab('action')">🤖 AI 行动版</div>
+      <div class="preview-tab active" onclick="switchTab('standard', this)">📗 标准版</div>
+<div class="preview-tab" onclick="switchTab('pro', this)">📊 专业版</div>
+<div class="preview-tab" onclick="switchTab('action', this)">🤖 AI 行动版</div>
     </div>
     <div class="preview-body">
       <div class="report-content active" id="tab-standard"><h3>📗 标准版 — 用人话告诉你哪里有问题</h3>
@@ -423,8 +423,8 @@
 <section id="quickstart" class="anim-item" data-anim="3400">
   <h2>快速开始</h2>
   <div class="qs-tabs">
-    <button class="qs-tab active" onclick="switchQsTab('user')">👤 普通用户</button>
-    <button class="qs-tab" onclick="switchQsTab('dev')">👨‍💻 开发者</button>
+    <button class="qs-tab active" onclick="switchQsTab('user', this)">👤 普通用户</button>
+    <button class="qs-tab" onclick="switchQsTab('dev', this)">👨‍💻 开发者</button>
   </div>
 
   <div id="qs-user" class="qs-panel active">
