@@ -12,6 +12,14 @@
         return match;
       }
     });
+    // 整个 KaTeX 公式字号继承父级（抵消默认 1.21em 缩放）
+    el.querySelectorAll('.katex').forEach(function(k) {
+      k.style.setProperty('font-size', 'inherit', 'important');
+    });
+    // KaTeX 中文使用页面字体
+    el.querySelectorAll('.cjk_fallback').forEach(function(span) {
+      span.style.setProperty('font-family', '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif', 'important');
+    });
   }
 
   window.switchTab = function(name, el) {

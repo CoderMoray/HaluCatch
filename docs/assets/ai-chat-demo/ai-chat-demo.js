@@ -476,6 +476,7 @@ class AIChatDemo {
   }
   
   renderMarkdown(text) {
+    var self = this;
     try {
       // Step 1: Extract $...$ math and render with KaTeX
       var mathHtml = [];
@@ -493,26 +494,34 @@ class AIChatDemo {
         });
       }
 
+      // 恢复 HTML 的通用函数（替换占位符 + 修复 KaTeX 中文）
+      function finalize(html) {
+        for (var i = 0; i < mathHtml.length; i++) {
+          html = html.split('\x00MATH' + i + '\x00').join(mathHtml[i]);
+        }
+        // 修复 KaTeX 中文：行内样式强制覆盖
+        var tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        tmp.querySelectorAll('.katex').forEach(function(k) {
+          k.style.setProperty('font-size', 'inherit', 'important');
+        });
+        tmp.querySelectorAll('.cjk_fallback').forEach(function(span) {
+          span.style.setProperty('font-family', '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif', 'important');
+        });
+        return tmp.innerHTML;
+      }
+
       // Step 2: marked parse
       if (typeof marked !== 'undefined') {
         var result = marked.parse(text, { async: false });
-        if (typeof result === 'string') {
-          // Step 3: restore KaTeX HTML
-          for (var i = 0; i < mathHtml.length; i++) {
-            result = result.split('\x00MATH' + i + '\x00').join(mathHtml[i]);
-          }
-          return result;
-        }
+        if (typeof result === 'string') return finalize(result);
         if (result && typeof result.then === 'function') {
           result.then(function(html) {
-            for (var i = 0; i < mathHtml.length; i++) {
-              html = html.split('\x00MATH' + i + '\x00').join(mathHtml[i]);
-            }
-            if (this.el) this.el.reportContent.innerHTML = html;
-          }.bind(this)).catch(function() {
-            this.el.reportContent.innerHTML = this.simpleMarkdown(text);
-          }.bind(this));
-          return this.simpleMarkdown(text);
+            self.el.reportContent.innerHTML = finalize(html);
+          }).catch(function() {
+            self.el.reportContent.innerHTML = self.simpleMarkdown(text);
+          });
+          return self.simpleMarkdown(text);
         }
       }
     } catch (e) {
