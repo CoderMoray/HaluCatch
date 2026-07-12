@@ -134,7 +134,7 @@ case "$MODE" in
     if [[ "$SKIP_INSERT" -eq 0 ]]; then
 
     # 找到上一个 tag
-    PREV_TAG=$(git tag --sort=-version:refname | grep -E '^v[0-9]' | head -1) || true
+    PREV_TAG=$(git tag --sort=-version:refname | grep -E '^v[0-9]' | head -1) || PREV_TAG=""
     if [[ -z "$PREV_TAG" ]]; then
       echo "  ⚠️  找不到上一个 tag，使用最新提交"
       RANGE="--latest"

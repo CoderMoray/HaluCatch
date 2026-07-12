@@ -22,7 +22,7 @@ compatibility: Requires Python 3.8+; Bash only for local 'python3 halucatch_core
 
 # === Hermes Agent + ClawHub ===
 author: CoderMoray
-version: "1.8.6"
+version: "1.8.7"
 metadata:
   hermes:
     tags:
