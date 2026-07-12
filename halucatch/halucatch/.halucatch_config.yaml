@@ -1,0 +1,13 @@
+# HaluCatch 自身运行配置（审查时由 scanner.py 读取）
+# 此文件随包分发，不在根目录，不与构建用的 config.yaml 混淆
+
+# 项目根目录下的 skills/ 是否为外部 Skill 文件夹（如 WorkBuddy 安装的外部 Skill）
+# true  = 跳过扫描，不在报告中出现
+# false = 正常扫描
+# null  = 未知（默认），正常扫描并标注 [⚠️ 疑似外部 Skill]
+skills_is_external: null
+
+# 默认报告语言（CLI --lang 参数覆盖此值）
+# auto = 自动检测系统语言
+# zh-CN / en = 指定语言
+lang: auto
