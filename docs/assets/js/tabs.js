@@ -23,9 +23,10 @@
     if (activeContent) renderMathInElement(activeContent);
   };
 
-  // 初始加载时渲染第一个活跃 tab 中的 KaTeX
-  var firstTab = document.querySelector('.preview-body .report-content.active');
-  if (firstTab) renderMathInElement(firstTab);
+  // 初始加载时渲染所有 tab 中的 KaTeX（即使隐藏）
+  document.querySelectorAll('.preview-body .report-content').forEach(function(el) {
+    renderMathInElement(el);
+  });
 
   window.switchQsTab = function(name, el) {
     document.querySelectorAll('.qs-tab').forEach(function(t) { t.classList.remove('active'); });
