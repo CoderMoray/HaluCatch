@@ -478,57 +478,49 @@ class AIChatDemo {
   renderMarkdown(text) {
     var self = this;
     try {
-      // Step 1: 用占位符（带 markdown 安全字符）替换 $...$，避免被 marked 破坏
-      var mathHtml = [];
-      if (typeof katex !== 'undefined') {
-        text = text.replace(/\$([^\$]+)\$/g, function(match, math) {
-          var idx = mathHtml.length;
-          var placeholder = '<!--MATH' + idx + '-->';
-          try {
-            mathHtml.push(katex.renderToString(math.trim(), {
-              throwOnError: false, displayMode: false
-            }));
-          } catch(e) {
-            mathHtml.push(match);
-          }
-          return placeholder;
-        });
-      }
-
-      // 恢复 HTML 的通用函数
-      function finalize(html) {
-        for (var i = 0; i < mathHtml.length; i++) {
-          html = html.split('<!--MATH' + i + '-->').join(mathHtml[i]);
-        }
-        // 修复 KaTeX 中文：行内样式强制覆盖
-        var tmp = document.createElement('div');
-        tmp.innerHTML = html;
-        tmp.querySelectorAll('.katex').forEach(function(k) {
-          k.style.setProperty('font-size', 'inherit', 'important');
-        });
-        tmp.querySelectorAll('.cjk_fallback').forEach(function(span) {
-          span.style.setProperty('font-family', '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif', 'important');
-        });
-        return tmp.innerHTML;
-      }
-
-      // Step 2: marked parse
+      // Step 1: marked 先渲染，$...$ 作为纯文本保留在 HTML 中
+      var html = text;
       if (typeof marked !== 'undefined') {
         var result = marked.parse(text, { async: false });
-        if (typeof result === 'string') return finalize(result);
-        if (result && typeof result.then === 'function') {
-          result.then(function(html) {
-            self.el.reportContent.innerHTML = finalize(html);
+        if (typeof result === 'string') html = result;
+        else if (result && typeof result.then === 'function') {
+          result.then(function(h) {
+            self.el.reportContent.innerHTML = self._renderFinalHtml(h);
           }).catch(function() {
             self.el.reportContent.innerHTML = self.simpleMarkdown(text);
           });
           return self.simpleMarkdown(text);
         }
       }
+      return this._renderFinalHtml(html);
     } catch (e) {
       console.warn('Markdown render fallback:', e);
     }
     return this.simpleMarkdown(text);
+  }
+
+  _renderFinalHtml(html) {
+    // Step 2: 在 marked 后的 HTML 中直接找 $...$ 替换为 KaTeX
+    html = html.replace(/\$([^\$]+)\$/g, function(match, math) {
+      if (typeof katex !== 'undefined') {
+        try {
+          return katex.renderToString(math.trim(), {
+            throwOnError: false, displayMode: false
+          });
+        } catch(e) {}
+      }
+      return match;
+    });
+    // Step 3: 修复 KaTeX 中文样式
+    var tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    tmp.querySelectorAll('.katex').forEach(function(k) {
+      k.style.setProperty('font-size', 'inherit', 'important');
+    });
+    tmp.querySelectorAll('.cjk_fallback').forEach(function(span) {
+      span.style.setProperty('font-family', '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif', 'important');
+    });
+    return tmp.innerHTML;
   }
   
   simpleMarkdown(text) {
