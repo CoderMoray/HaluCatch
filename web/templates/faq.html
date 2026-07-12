@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ seo.title }}</title>
+  <meta name="description" content="{{ seo.description }}">
+  <meta property="og:title" content="{{ seo.title }}">
+  <meta property="og:description" content="{{ seo.description }}">
+  <meta property="og:url" content="{{ pages_url }}faq/">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="{{ pages_url }}og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ seo.title }}">
+  <meta name="twitter:description" content="{{ seo.description }}">
+  <meta name="twitter:image" content="{{ pages_url }}og-image.png">
+  <link rel="canonical" href="{{ pages_url }}faq/">
+  <link rel="icon" type="image/svg+xml" href="../{{ favicon }}">
+  <script>
+    var HC_VER = '{{ version }}';
+    var HC_VER_SHORT = '{{ version_short }}';
+
+    var _t = (function(){ try { return localStorage.getItem('{{ theme_storage_key }}'); } catch(e){} return null; })() || 'system';
+    if (_t === 'system') _t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.write('<style>html,body{background:#0a0a0f}</style>');
+  </script>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/faq-page.css">
+</head>
+<body class="faq-page">
+
+<a href="#faq-main" class="skip-link">{{ a11y.skip_to_content }}</a>
+
+<!-- Navigation -->
+<nav class="nav">
+  <a href="../index.html" class="nav-back-link">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l-7-7 7-7"/><path d="M19 12H5"/></svg>
+    <span class="back-label-full">{{ faq_page.back_label }}</span>
+    <span class="back-label-short">{{ faq_page.back_label_short }}</span>
+  </a>
+  <div class="nav-inner">
+    <span class="nav-brand">
+      {{ brand_svg }}
+      <span class="brand-wrap"><span class="brand-full">{{ nav.brand_full }}</span><span class="brand-short">{{ nav.brand_short }}</span></span>
+    </span>
+    <div class="nav-tools">
+      <div class="theme-pill" id="theme-pill">
+        <button class="theme-pill-btn" data-theme="light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg><span class="pill-label">{{ nav.theme_light }}</span></button>
+        <button class="theme-pill-btn" data-theme="dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="pill-label">{{ nav.theme_dark }}</span></button>
+        <button class="theme-pill-btn" data-theme="system"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span class="pill-label">{{ nav.theme_auto }}</span></button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero / Title -->
+<section class="faq-hero" id="faq-main">
+  <h1>{{ faq_page.title }}</h1>
+  <div class="faq-search-wrap">
+    <svg class="faq-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" class="faq-search" placeholder="{{ faq_page.search_placeholder }}">
+    <button class="faq-search-clear" id="faq-search-clear" aria-label="Clear">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+</section>
+
+<!-- FAQ Content -->
+<main class="faq-content">
+  {{ faq_content }}
+  <div class="faq-no-results" id="faq-no-results">
+    <p class="faq-no-results-msg">{{ faq_page.no_results_msg }}</p>
+    <p class="faq-no-results-hint">{{ faq_page.no_results_hint }}</p>
+    <div class="faq-keyword-chips" id="faq-keyword-chips">
+      {{ faq_page.keyword_chips }}
+    </div>
+  </div>
+</main>
+
+<!-- Back to Top Button -->
+<button class="back-to-top" id="back-to-top" aria-label="{{ faq_page.back_to_top }}">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<!-- Footer -->
+<footer>
+  <p>
+    <a href="../index.html">{{ faq_page.back_label }}</a>
+    <a href="{{ github_url }}">GitHub</a>
+    <a href="{{ github_url }}/releases">Releases</a>
+  </p>
+  <p style="margin-top:12px;">{{ footer.copyright }}</p>
+</footer>
+
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/js/faq.js"></script>
+<script src="../assets/js/faq-search.js"></script>
+<script src="../assets/js/version.js"></script>
+
+</body>
+</html>

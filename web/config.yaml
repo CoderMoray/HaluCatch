@@ -254,7 +254,7 @@ quickstart:
       prompt: |
         请先检查是否已安装 SkillHub 商店，若未安装，请根据 https://skillhub.cn/install/skillhub.md 安装SkillHub商店，但是只安装CLI，然后安装halucatch技能。若已安装，则直接安装halucatch技能。
     clawhub:                                # (可选) 填了才渲染国际方案卡片
-      title: 🌐 国际用户方案
+      title: 国际用户方案
       subtitle: 为国际用户提供 ClawHub 安装提示词
       note: Global AI skill marketplace
       prompt: |
@@ -308,15 +308,36 @@ quickstart:
 # ============================================================
 blog_posts:
   title: Blogs
+  # 每条 item（增删卡片 = 增删这里的列表项，其余无需改动）：
+  #   platform 平台名（必填，显示在图标右侧）
+  #   icon     (可选) 平台图标，两种写法都支持：
+  #             1) 绝对 URL，如 https://juejin.cn/favicon.ico
+  #             2) 相对 assets 目录的路径，如 assets/icons/juejin.ico
+  #                —— 文件需放在 web/assets/ 下（构建时整体拷贝到 docs/assets/），
+  #                   用相对路径引用即可，多语言子目录也能正确解析。
+  #             不填则不显示图标。
+  #   color    (可选) 卡片主色（十六进制），驱动平台标签 + 图标衬底配色。
+  #             不填则回退 CSS 中按序号的默认配色（蓝/红/橙）。
+  #   title / desc / url  (必填)
   items:
     - platform: 掘金
+      icon: https://juejin.cn/favicon.ico
+      color: "#1e80ff"
       title: AI Skill 也会"说胡话"？我做了一个执行可靠性审查工具
       desc: 介绍 HaluCatch 的设计思路、四维评估框架和实战案例
       url: https://juejin.cn/post/7656841584964599842
     - platform: CSDN
+      icon: https://g.csdnimg.cn/static/logo/favicon.ico
+      color: "#e53e3e"
       title: 如何检查你的 AI Skill 是否可靠？HaluCatch 使用指南
       desc: 从安装到实战的完整教程，零基础也能上手
       url: https://blog.csdn.net/weixin_41767324/article/details/162432750
+    - platform: 企鹅虾友会
+      icon: https://xiayouhui.cloud.tencent.com/favicon.ico
+      color: "#ff5a1f"
+      title: HaluCatch 实战：给 AI Skill 做一次执行可靠性体检
+      desc: 用五维审查框架，把 AI 帮你做的 Skill 在“翻车”前揪出问题
+      url: https://xiayouhui.cloud.tencent.com/#/community/post/post-8b853a046c38
 
 # ============================================================
 # FAQ（可选，空数组则跳过整个区块）
@@ -324,7 +345,7 @@ blog_posts:
 faq:
   title: FAQ
   full_link_label: 查看完整 FAQ →
-  full_link_url: FAQ.md
+  full_link_url: faq/index.html
   items:
     - q: HaluCatch 需要联网吗？
       a: 不需要。全程离线运行，仅扫描本地文件夹中的 SKILL.md 和 .py 文件，不会发起任何网络请求。
@@ -345,6 +366,22 @@ faq:
 
 # ============================================================
 # Footer
+# ============================================================
+# ============================================================
+# FAQ 独立页面
+# ============================================================
+faq_page:
+  title: "FAQ — 常见问题"
+  description: "HaluCatch 常见问题：安装配置、报错速查、使用场景、能力边界、技术细节"
+  suggested_keywords:
+    - 联网
+    - 安装
+    - 报错
+    - 报告
+    - 批量
+    - 免费
+    - 中文
+
 # ============================================================
 footer:
   copyright: HaluCatch © 2026 · MIT License

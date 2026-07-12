@@ -430,8 +430,12 @@ setTimeout(function() {{ window.halucatchDemo.begin(); }}, 100);
         blog_i18n = locale.get("blog", {})
         items_html = ""
         for post in blog["items"]:
+            icon_html = f'<img src="{post["icon"]}" class="blog-platform-icon" alt="" loading="lazy">' if post.get("icon") else ""
+            # color 字段：配置卡片主色，注入到 .blog-platform 的 --blog-accent 变量
+            # 未配置则回退 CSS 中按序号的默认配色
+            accent = f' style="--blog-accent:{post["color"]}"' if post.get("color") else ""
             items_html += f"""<a href="{post['url']}" target="_blank" class="blog-card">
-      <div class="blog-platform">{post['platform']}</div>
+      <div class="blog-platform"{accent}>{icon_html}{post['platform']}</div>
       <h3>{post['title']}</h3>
       <p>{post['desc']}</p>
     </a>\n"""

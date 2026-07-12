@@ -127,6 +127,25 @@ faq:
   title: FAQ
   view_all: View Full FAQ →
 
+# ── FAQ Page ──
+faq_page:
+  title: "FAQ — Frequently Asked Questions"
+  description: "HaluCatch FAQ: installation, error lookup, use cases, capabilities, technical details"
+  back_label: "Back to Home"
+  back_label_short: "Back"
+  search_placeholder: "Search for answers..."
+  back_to_top: "Back to Top"
+  no_results_msg: "No results found"
+  no_results_hint: "Try these keywords:"
+  suggested_keywords:
+    - offline
+    - install
+    - error
+    - report
+    - batch
+    - free
+    - Chinese
+
 # ── Common UI ──
 copy_label: Copy
 copied_label: Copied!

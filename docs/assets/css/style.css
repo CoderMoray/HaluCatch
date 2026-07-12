@@ -436,13 +436,35 @@ section h2 {
 .problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
 
 .problem-card {
+  position: relative;
   display: flex; flex-direction: column;
   background: color-mix(in srgb, var(--surface) 75%, transparent);
   -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
   border: 1px solid var(--border); border-radius: 12px; padding: 24px;
 }
+.problem-card::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--text) 12%, transparent);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.36s ease;
+}
+.problem-card:hover { transform: translateY(-6px); }
+.problem-card:hover::after { opacity: 1; }
 
-.problem-card .icon { font-size: 2rem; margin-bottom: 12px; }
+.problem-card .icon { font-size: 2rem; margin-bottom: 12px; display: inline-block; width: fit-content; align-self: flex-start; transform-origin: center; }
+.problem-card:hover .icon { animation: emoji-wobble-pop 0.6s ease-in-out; }
+@keyframes emoji-wobble-pop {
+  0%, 100% { transform: rotate(0deg) scale(1) translateY(0); }
+  20% { transform: rotate(-12deg) scale(1.18) translateY(-2px); }
+  40% { transform: rotate(10deg) scale(1.06) translateY(0); }
+  60% { transform: rotate(-7deg) scale(1.12) translateY(-1px); }
+  80% { transform: rotate(5deg) scale(1.03) translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .problem-card:hover .icon { animation: none; }
+  .problem-card:hover { transform: none; }
+  .problem-card::after { transition: none; }
+}
 .problem-card h3 { font-size: 1rem; margin-bottom: 8px; }
 .problem-card p { font-size: 0.9rem; color: var(--text2); }
 
@@ -587,7 +609,7 @@ section h2 {
 .install-copy-btn {
   display: block; margin: 0 auto;
   background: var(--accent); border: none; border-radius: 8px;
-  padding: 10px 20px; font-size: 0.85rem; color: #fff; cursor: pointer;
+  padding: 6px 18px; font-size: 0.82rem; color: #fff; cursor: pointer;
   transition: background 0.3s ease; font-family: inherit; font-weight: 600; white-space: nowrap;
 }
 
@@ -597,7 +619,8 @@ section h2 {
 
 .install-copy-text { display: inline-block; position: relative; overflow: hidden; }
 .install-copy-text > span { display: block; white-space: nowrap; transition: transform 0.3s ease; }
-.install-copy-text > span.copied-label { position: absolute; left: 0; top: 0; transform: translateY(100%); }
+.install-copy-text > span.copy-label { position: relative; top: 0.5px; }
+.install-copy-text > span.copied-label { position: absolute; left: 0; top: 0.5px; transform: translateY(100%); }
 .install-copy-btn.copied .install-copy-text > span.copy-label { transform: translateY(-100%); }
 .install-copy-btn.copied .install-copy-text > span.copied-label { transform: translateY(0); }
 
@@ -681,16 +704,24 @@ section h2 {
 .blog-card p { color: var(--text2); font-size: 0.9rem; line-height: 1.6; }
 
 .blog-platform {
-  display: inline-block; font-size: 0.75rem; font-weight: 600;
+  display: inline-flex; align-items: center; font-size: 0.75rem; font-weight: 600;
   padding: 2px 10px; border-radius: 4px;
+  /* 主色由 config 的 color 字段经 --blog-accent 注入；未配则回退默认蓝 */
+  color: var(--blog-accent, #339af0);
+  background: color-mix(in srgb, var(--blog-accent, #339af0) 14%, #fff);
 }
-
-[data-theme="dark"] .blog-platform { background: #1a3a5c; color: #339af0; }
-[data-theme="light"] .blog-platform { background: #e6f1fb; color: #2878c8; }
-.blog-card:nth-child(1) .blog-platform { background: #e8f5fe; color: #1e80ff; }
-.blog-card:nth-child(2) .blog-platform { background: #fef0f0; color: #e53e3e; }
-[data-theme="dark"] .blog-card:nth-child(1) .blog-platform { background: #1a2840; color: #5aa8ff; }
-[data-theme="dark"] .blog-card:nth-child(2) .blog-platform { background: #2a1818; color: #fc8181; }
+.blog-platform-icon {
+  width: 14px; height: 14px; margin-right: 5px; border-radius: 3px;
+  vertical-align: -2px; flex: 0 0 auto; background: #fff;
+}
+[data-theme="dark"] .blog-platform {
+  background: color-mix(in srgb, var(--blog-accent, #339af0) 24%, #0a0a0f);
+  color: color-mix(in srgb, var(--blog-accent, #339af0) 78%, #fff);
+}
+/* 默认配色：仅当某条 blog 未设 color 时，按卡片序号生效（兜底） */
+.blog-card:nth-child(1) .blog-platform { --blog-accent: #1e80ff; }
+.blog-card:nth-child(2) .blog-platform { --blog-accent: #e53e3e; }
+.blog-card:nth-child(3) .blog-platform { --blog-accent: #ff5a1f; }
 
 /* ── FAQ ── */
 .faq-list { display: flex; flex-direction: column; gap: 10px; }
@@ -756,6 +787,7 @@ footer a { margin: 0 12px; }
 .badge, .btn, .chat-option-btn {
   transition: transform 0.36s ease, width 0.36s ease, margin 0.36s ease, padding 0.36s ease, font-size 0.36s ease;
 }
+.problem-card { transition: transform 0.36s ease; }
 
 .nav, .nav-link, .problem-card, .preview-container, .badge, pre, .btn,
 .qs-tab, .step-num, footer, .theme-pill, .nav-blog-menu, .nav-blog-item,

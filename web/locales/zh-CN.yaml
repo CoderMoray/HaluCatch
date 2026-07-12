@@ -132,6 +132,25 @@ faq:
   title: FAQ
   view_all: 查看完整 FAQ →
 
+# ── FAQ Page ──
+faq_page:
+  title: "FAQ — 常见问题"
+  description: "HaluCatch 常见问题：安装配置、报错速查、使用场景、能力边界、技术细节"
+  back_label: "返回首页"
+  back_label_short: "返回"
+  search_placeholder: "输入关键词，快速找到答案..."
+  back_to_top: "回到顶部"
+  no_results_msg: "未找到匹配的结果"
+  no_results_hint: "试试这些关键词："
+  suggested_keywords:
+    - 联网
+    - 安装
+    - 报错
+    - 报告
+    - 批量
+    - 免费
+    - 中文
+
 # ── 通用 UI ──
 copy_label: 一键复制
 copied_label: 复制成功

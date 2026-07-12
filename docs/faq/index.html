@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ — 常见问题</title>
+  <meta name="description" content="HaluCatch 常见问题：安装配置、报错速查、使用场景、能力边界、技术细节">
+  <meta property="og:title" content="FAQ — 常见问题">
+  <meta property="og:description" content="HaluCatch 常见问题：安装配置、报错速查、使用场景、能力边界、技术细节">
+  <meta property="og:url" content="https://codermoray.github.io/HaluCatch/faq/">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://codermoray.github.io/HaluCatch/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="FAQ — 常见问题">
+  <meta name="twitter:description" content="HaluCatch 常见问题：安装配置、报错速查、使用场景、能力边界、技术细节">
+  <meta name="twitter:image" content="https://codermoray.github.io/HaluCatch/og-image.png">
+  <link rel="canonical" href="https://codermoray.github.io/HaluCatch/faq/">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <script>
+    var HC_VER = '1.8.5';
+    var HC_VER_SHORT = '1.8';
+
+    var _t = (function(){ try { return localStorage.getItem('halucatch-theme'); } catch(e){} return null; })() || 'system';
+    if (_t === 'system') _t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.write('<style>html,body{background:#0a0a0f}</style>');
+  </script>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/faq-page.css">
+</head>
+<body class="faq-page">
+
+<a href="#faq-main" class="skip-link">跳转到主要内容</a>
+
+<!-- Navigation -->
+<nav class="nav">
+  <a href="../index.html" class="nav-back-link">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l-7-7 7-7"/><path d="M19 12H5"/></svg>
+    <span class="back-label-full">返回首页</span>
+    <span class="back-label-short">返回</span>
+  </a>
+  <div class="nav-inner">
+    <span class="nav-brand">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+      <span class="brand-wrap"><span class="brand-full">HaluCatch / 捕幻</span><span class="brand-short">捕幻</span></span>
+    </span>
+    <div class="nav-tools">
+      <div class="theme-pill" id="theme-pill">
+        <button class="theme-pill-btn" data-theme="light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg><span class="pill-label">Light</span></button>
+        <button class="theme-pill-btn" data-theme="dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span class="pill-label">Night</span></button>
+        <button class="theme-pill-btn" data-theme="system"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span class="pill-label">Auto</span></button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero / Title -->
+<section class="faq-hero" id="faq-main">
+  <h1>FAQ — 常见问题</h1>
+  <div class="faq-search-wrap">
+    <svg class="faq-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" class="faq-search" placeholder="输入关键词，快速找到答案...">
+    <button class="faq-search-clear" id="faq-search-clear" aria-label="Clear">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+</section>
+
+<!-- FAQ Content -->
+<main class="faq-content">
+  <section class="faq-section qa-section">
+  <h3 class="faq-section-title"><span class="fs-icon">💡</span> 基础</h3>
+  <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>HaluCatch 需要联网吗？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>不需要。全程离线运行，仅扫描本地文件夹中的 SKILL.md 和 .py 文件，不会发起任何网络请求。如果执行卡住，大概率是 AI 对话环境超时或目标路径文件过多导致扫描耗时。</p></div>
+    </div>
+<div class="faq-item">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>HaluCatch 怎么用？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>对 AI 说「帮我用 HaluCatch 审查 /path/to/skill」即可。AI 会先确认目标路径无误，再开始扫描评估。为避免误操作，请确保指定的路径是希望审查的 Skill 目录，不要指向系统目录或 home 目录。3 步上手：<br><br>1. 跑一次审查 → 看标准版报告了解问题<br>2. 打开 <code>-行动版.md</code> → 从列表第一条开始逐项修复<br>3. 修复后重新跑 → 对比分数是否改善</p></div>
+    </div>
+<div class="faq-item">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>HaluCatch 是免费的吗？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>是。HaluCatch 采用 MIT 开源协议，完全免费，包括个人和商业使用。源代码在 GitHub 上公开。</p></div>
+    </div>
+<div class="faq-item">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>HaluCatch 支持中文还是英文？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>都支持。HaluCatch 会自动检测你的 AI 对话环境的语言偏好，输出对应语言的三份报告（标准版、专业版、行动版）。也可以通过 <code>--lang en</code> 或 <code>--lang zh-CN</code> 强制指定。</p></div>
+    </div>
+<div class="faq-item">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>HaluCatch 可以在哪些 AI 平台上使用？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>HaluCatch 支持所有允许上传提示词/技能的 AI 平台，包括 ClawHub、SkillHub 等技能市场。同时支持纯命令行模式，可以在任何终端中运行。<br><br>---</p></div>
+    </div>
+
+</section>
+
+<section class="faq-section table-section">
+  <h3 class="faq-section-title"><span class="fs-icon">🔍</span> 报错速查</h3>
+  <div class="faq-table-wrap">
+    <table class="faq-table">
+      <thead><tr><th>报错 / 报告标记</th><th>原因</th><th>解决</th></tr></thead>
+<tbody>
+      <tr><td><code>❌ 路径不存在</code></td><td>目录拼错或已移动</td><td><code>ls <路径></code> 确认目录存在</td></tr>
+      <tr><td><code>❌ 目录为空</code></td><td>缺少 SKILL.md</td><td>新建 SKILL.md（一行标题也行）再跑</td></tr>
+      <tr><td><code>⚠️ 疑似外部 Skill</code></td><td><code>skills/</code> 下有别人安装的 Skill</td><td>确认后修改运行配置文件中 <code>skills_is_external</code></td></tr>
+      <tr><td><code>🔴 硬编码路径</code></td><td>SKILL.md 或脚本里有绝对路径</td><td>全部改成相对路径</td></tr>
+      <tr><td><code>🟠 模糊表述</code></td><td>说明书用了"大概/可能/通常"等词</td><td>换成明确的 if-else 条件句</td></tr>
+      <tr><td><code>🔴 裸 except</code></td><td><code>except: pass</code> 吞掉了错误</td><td>至少 <code>except Exception as e: print(e)</code></td></tr>
+      <tr><td><code>🟠 不存在文件引用</code></td><td>引用的脚本/文档实际不在文件夹里</td><td><code>ls</code> 确认文件存在，修正文件名</td></tr>
+      <tr><td><code>🟠 覆盖薄弱</code></td><td>大部分步骤没有脚本兜底</td><td>把核心步骤写成 .py/.sh 脚本</td></tr>
+    </tbody>
+  </table>
+</div>
+</section>
+
+<section class="faq-section scenes-section">
+  <h3 class="faq-section-title"><span class="fs-icon">📋</span> 使用场景</h3>
+  <div class="scenes-grid">
+    <div class="scene-card">
+      <h4>发布前自审</h4>
+      <p>你要把写好的 Skill 发布到 ClawHub / SkillHub，想确保它在别人机器上也能正常工作。<br>跑一次全维度审查。重点看标准版报告的「地基」和「代码风险」——硬编码路径、裸 except、虚构命令是最高频的坑。改完后跑第二次验证分数提升。</p>
+    </div>
+    <div class="scene-card">
+      <h4>接手别人的 Skill</h4>
+      <p>别人写的 Skill 文档很长，你不敢直接给 AI 执行，怕出问题。<br>跑一次审查，直接看「行动版报告」——它把每个问题拆成「现状 → 风险 → 修复方案 → 验证方法」，照着改就行，不用通读原始 SKILL.md。</p>
+    </div>
+    <div class="scene-card">
+      <h4>CI 自动检查</h4>
+      <p>你在维护 Skill 仓库，想每次改代码时自动检查质量不退化。<br><pre><code>python3 -m halucatch --skill-dir . --validate    # 快速扫描文件清单<br>python3 -m halucatch --skill-dir . --output-dir ./ci-reports  # 完整审查出报告</code></pre><br>在 CI 里集成，每次 PR 确保分数不下降。</p>
+    </div>
+  </div>
+</section>
+
+<section class="faq-section capabilities-section">
+  <h3 class="faq-section-title"><span class="fs-icon">⚡</span> 能力边界</h3>
+  <div class="caps-grid">
+    <div class="cap-card cap-green">
+      <div class="cap-icon">✅</div>
+      <h4>能做什么</h4>
+      <ul>      <li>✅ 扫描 SKILL.md 和关联 .py 文件，检查执行可靠性</li>
+      <li>✅ 识别硬编码路径、裸异常处理、虚构命令等 7 类代码风险</li>
+      <li>✅ 评估业务规则歧义和护栏完整度</li>
+      <li>✅ 自动识别中英文，输出对应语言报告</li>
+      <li>✅ 生成标准版/专业版/行动版三份报告</li></ul>
+    </div>
+    <div class="cap-card cap-red">
+      <div class="cap-icon">❌</div>
+      <h4>不能做什么</h4>
+      <ul>      <li>❌ 不联网 —— 不访问任何 API，不下载文件</li>
+      <li>❌ 不查安全漏洞 —— SQL 注入、XSS、恶意指令交给 ClawHub SkillSpector</li>
+      <li>❌ 不批量处理 —— 一次一个目录</li>
+      <li>❌ 不代替人工决策 —— 报告是建议，最终你拍板</li></ul>
+    </div>
+    <div class="cap-card cap-orange">
+      <div class="cap-icon">📏</div>
+      <h4>硬性限制</h4>
+      <ul>      <li>📏 单文件 > 10 MB 会被跳过并提示</li>
+      <li>📁 不支持二进制文件</li>
+      <li>⏱️ 处理时间取决于文件数量和大小，通常 1-60 秒</li></ul>
+    </div>
+  </div>
+</section>
+
+<section class="faq-section qa-section">
+  <h3 class="faq-section-title"><span class="fs-icon">📊</span> 报告</h3>
+  <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>HaluCatch 会在电脑上写文件吗？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>会。审查完成后自动在 <code>HaluCatch/reports/</code> 目录生成三份报告（标准版、专业版、行动版 .md 文件）。不会修改目标 Skill 目录中的任何文件。如需自定义输出路径，使用 <code>--output-dir</code> 参数。<br><br><strong>Q: 审查结果长什么样？</strong><br><br>标准版报告示例（白话、零术语，给非技术用户看）：<br><br><pre><code># HaluCatch 审计报告 — my-skill<br><br>## 📌 一句话总结<br><br>🟢 3 通过 · ⚠️ 2 注意 · 💡 3 可优化<br><br>## 🎯 核心结论<br><br>| 地基 | 代码 | 规则 | 护栏 | 复杂度 |<br>|:--:|:--:|:--:|:--:|:--:|<br>| 🟢 稳固 6/6 | 🟢 干净 90/90 | 🟡 有歧义 4/6 | 🟢 到位 11/11 | 🟡 注意 2.2/10 |<br><br>### 做的不错 👍<br>- ✅ 有固化脚本兜底核心任务<br><br>### 需要注意的方面<br>- ⚠️ 存在模糊表述 ['大概']（说明书写了模糊词，AI 可能会猜错）</code></pre><br><br>包含专业版（11 项指标表 + KaTeX 公式）和行动版（修复清单）。完整示例：运行 <code>python3 halucatch_core.py --skill-dir .</code> 审自己的项目。</p></div>
+    </div>
+<div class="faq-item">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>审查结果说「护栏薄弱」，怎么修？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>看同目录下的 <code>HaluCatch-report-日期-行动版.md</code>，它逐条列出了修复方案和验证检查点。按清单逐项改即可，改完后重新审查验证。</p></div>
+    </div>
+<div class="faq-item">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>为什么工具库型 Skill 的护栏分数看起来比分析型低？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>护栏检查按类型分层——工具库型只查 5 项核心项（跳过数据来源/时效性/置信度），分析型查全 8 项。分母不同，分数不可直接比较。</p></div>
+    </div>
+<div class="faq-item">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>报告里看到的版本号是什么意思？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>报告日期是生成当天，版本号跟随 HaluCatch 自身版本。同一个 Skill 在不同版本 HaluCatch 下的评分可能不同——因为检测规则在持续改进。</p></div>
+    </div>
+<div class="faq-item">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>能一次审查多个 Skill 吗？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>当前版本暂不支持批量模式。你可以逐个运行。批量功能已在 roadmap 中。<br><br>---</p></div>
+    </div>
+
+</section>
+
+<section class="faq-section qa-section">
+  <h3 class="faq-section-title"><span class="fs-icon">🛠️</span> 技术</h3>
+  <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>为什么有些 Skill 被分类为「代码工程型」而有些是「纯方法论型」？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>含 .py 文件、或 SKILL.md 中嵌入了 <code>\</code>\<code>\</code>python` 代码块、或引用了 pandas 等数据处理库的 Skill → 代码工程型（启用全四维评估）。其余 → 纯方法论型（只查方法论+护栏）。</p></div>
+    </div>
+<div class="faq-item">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>出现文件编码错误怎么办？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>HaluCatch 会尝试以 UTF-8 读取所有文件。如果遇到非 UTF-8 编码（如 GBK），会用 <code>backslashreplace</code> 保留原始字节的转义形式，避免静默丢数据。</p></div>
+    </div>
+<div class="faq-item">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>代码风险检查有哪些规则？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>当前 7 条通用规则：异常处理（裸 except: pass）、浮点比较（== 0.0）、除零风险（return 中无保护除法）、硬编码阈值（固定 skiprows）、路径拼接（字符串拼路径）、静默覆盖（open 写模式无警告）、超时缺失（requests 无 timeout）。</p></div>
+    </div>
+<div class="faq-item">
+      <button class="faq-q" onclick="toggleFaqItem(this)">
+        <span>行动版报告里的「Phase 4 闭环」是什么意思？</span>
+        <svg class="faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a"><p>审查完成后，HaluCatch 会询问是否按方案修复。选择「执行修复」→ 将方案发给 AI 实施 → 修复后重新审查验证。选择「我有更好建议」→ 描述你的想法 → 重新生成方案。选「不执行」→ 结束。完整的「发现→修复→验证」链路。<br><br>---</p></div>
+    </div>
+
+</section>
+
+<section class="faq-section antipattern-section">
+  <h3 class="faq-section-title"><span class="fs-icon">🚫</span> 常见反模式（不要做的事）</h3>
+    <div class="antipattern-sub">
+    <h4>⚠️ 致命反模式</h4>
+    <div class="faq-table-wrap">
+    <table class="faq-table">
+      <thead><tr><th>踩坑</th><th>后果</th><th>正确做法</th></tr></thead>
+<tbody>
+      <tr><td>让 AI 看完 HaluCatch 报告就直接改代码</td><td>AI 可能误解报告建议，添加有问题的修复</td><td>先人工审查每条建议，确认后再让 AI 执行</td></tr>
+      <tr><td>只看评分不看详情</td><td>高分但细节全是烂摊子</td><td>逐条看 warn/fail，优先修 🔴</td></tr>
+      <tr><td>Skills/ 目录塞满别人的 Skill 后跑审查</td><td>别人代码的问题全算在你头上</td><td><code>config.yaml</code> 设 <code>skills_is_external: true</code></td></tr>
+    </tbody>
+  </table>
+</div>
+  </div>
+  <div class="antipattern-sub">
+    <h4>地基（Foundation）</h4>
+    <div class="faq-table-wrap">
+    <table class="faq-table">
+      <thead><tr><th>踩坑</th><th>后果</th><th>怎么避</th></tr></thead>
+<tbody>
+      <tr><td>SKILL.md 里引用本地绝对路径（如 <code>/Users/me/project/</code>）</td><td>换台机器就跑不了</td><td>全部用相对路径：<code>references/guide.md</code> 而非 <code>/home/me/guide.md</code></td></tr>
+      <tr><td>引用的脚本/文档文件实际不存在</td><td>AI 按不存在的东西执行，产生幻觉</td><td>跑审查前先 <code>ls</code> 确认每个被引用的文件都在</td></tr>
+      <tr><td>明明有 Python 脚本但 SKILL.md 里没提</td><td>HaluCatch 可能漏掉代码风险检查</td><td><code>SKILL.md</code> 里注明所有 Python 依赖和入口文件</td></tr>
+    </tbody>
+  </table>
+</div>
+  </div>
+  <div class="antipattern-sub">
+    <h4>代码风险（Code）</h4>
+    <div class="faq-table-wrap">
+    <table class="faq-table">
+      <thead><tr><th>踩坑</th><th>后果</th><th>怎么避</th></tr></thead>
+<tbody>
+      <tr><td><code>except Exception: pass</code> 或 <code>except: pass</code></td><td>出错静默吞掉，查 bug 如大海捞针</td><td>最少 <code>except Exception as e: print(e)</code></td></tr>
+      <tr><td><code>open(filename, 'w')</code> 无保护</td><td>静默覆盖已有文件，数据丢失</td><td>改成 <code>'x'</code> 模式，或写入前检查 <code>os.path.exists()</code></td></tr>
+      <tr><td><code>requests.get(url)</code> 没设 <code>timeout=</code></td><td>网络卡住时永久挂起</td><td>统一设 <code>timeout=30</code></td></tr>
+      <tr><td>除法运算不检查分母是否为零</td><td>输入数据稍有异常就崩</td><td>所有除法前加 <code>if denominator == 0:</code> 分支</td></tr>
+    </tbody>
+  </table>
+</div>
+  </div>
+  <div class="antipattern-sub">
+    <h4>规则（Rules）</h4>
+    <div class="faq-table-wrap">
+    <table class="faq-table">
+      <thead><tr><th>踩坑</th><th>后果</th><th>怎么避</th></tr></thead>
+<tbody>
+      <tr><td>用模糊词（"大概"、"可能"、"应该"、"或许"）</td><td>AI 执行时自行脑补，输出不可复现</td><td>把模糊词换成明确的条件："当 A 为真时执行 B"</td></tr>
+      <tr><td>指令只有正常路径，没有异常分支</td><td>出状况时 AI 不知道该怎么办</td><td>每条核心指令至少配一个"如果失败了怎么办"</td></tr>
+      <tr><td>引用了 Skill 不支持的虚构命令或功能</td><td>AI 试图执行不存在的东西</td><td>写指令前确认所有命令在你的环境下真实可用</td></tr>
+    </tbody>
+  </table>
+</div>
+  </div>
+  <div class="antipattern-sub">
+    <h4>护栏（Guardrails）</h4>
+    <div class="faq-table-wrap">
+    <table class="faq-table">
+      <thead><tr><th>踩坑</th><th>后果</th><th>怎么避</th></tr></thead>
+<tbody>
+      <tr><td>没声明"不要做什么"</td><td>AI 可能在你不希望的场景下触发 Skill</td><td>开头加一句："仅当用户明确请求 X 时激活，其他情况下忽略"</td></tr>
+      <tr><td>输出格式没约束</td><td>同样的输入每次输出格式不一样</td><td>明确指定输出结构：JSON schema / Markdown 表格 / 固定模板</td></tr>
+      <tr><td>引用了外部 API 但没声明密钥需求</td><td>用户装完发现跑不了</td><td><code>metadata.openclaw.requires.env</code> 里列出所有需要的环境变量</td></tr>
+    </tbody>
+  </table>
+</div>
+  </div>
+
+</section>
+
+  <div class="faq-no-results" id="faq-no-results">
+    <p class="faq-no-results-msg">未找到匹配的结果</p>
+    <p class="faq-no-results-hint">试试这些关键词：</p>
+    <div class="faq-keyword-chips" id="faq-keyword-chips">
+      <button class="keyword-chip" data-keyword="联网">联网</button><button class="keyword-chip" data-keyword="安装">安装</button><button class="keyword-chip" data-keyword="报错">报错</button><button class="keyword-chip" data-keyword="报告">报告</button><button class="keyword-chip" data-keyword="批量">批量</button><button class="keyword-chip" data-keyword="免费">免费</button><button class="keyword-chip" data-keyword="中文">中文</button>
+    </div>
+  </div>
+</main>
+
+<!-- Back to Top Button -->
+<button class="back-to-top" id="back-to-top" aria-label="回到顶部">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<!-- Footer -->
+<footer>
+  <p>
+    <a href="../index.html">返回首页</a>
+    <a href="https://github.com/CoderMoray/HaluCatch">GitHub</a>
+    <a href="https://github.com/CoderMoray/HaluCatch/releases">Releases</a>
+  </p>
+  <p style="margin-top:12px;">HaluCatch © 2026 · MIT License</p>
+</footer>
+
+<script src="../assets/js/theme.js"></script>
+<script src="../assets/js/faq.js"></script>
+<script src="../assets/js/faq-search.js"></script>
+<script src="../assets/js/version.js"></script>
+
+</body>
+</html>
