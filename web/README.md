@@ -36,7 +36,7 @@ web/
 │   └── images/
 │       ├── favicon.svg
 │       └── og-image.png
-└── dist/                    ← 构建输出
+└── ../docs/                  ← 构建输出（项目根目录 docs/，GitHub Pages 部署源）
 ```
 
 ## 🚀 Quick Start
@@ -52,7 +52,7 @@ python3 build.py --lang en
 python3 build.py --all
 ```
 
-输出在 `web/dist/`。GitHub Pages 部署源设为 `web/dist/` 即可。
+输出在项目根的 `docs/`（即 `web/../docs/`）。GitHub Pages 部署源设为 `docs/` 即可。
 
 ---
 
@@ -225,7 +225,7 @@ quickstart:
       prompt: |                   # 一键复制的安装提示词
         请先检查是否已安装 SkillHub...
     clawhub:                      # 国际安装方案（可选）
-      title: 🌐 国际用户方案
+      title: 国际用户方案
       subtitle: 描述文字
       note: Global marketplace
       prompt: |
@@ -249,11 +249,17 @@ quickstart:
 ```yaml
 blog_posts:
   items:
-    - platform: 掘金              # 平台名（显示为标签）
+    - platform: 掘金                       # 平台名（显示为标签，图标右侧）
+      icon: https://juejin.cn/favicon.ico   # (可选) 平台图标：绝对 URL，或 assets/ 相对路径（如 assets/icons/juejin.ico）
+      color: "#1e80ff"                      # (可选) 卡片主色（十六进制，需加引号）；不填则回退默认蓝
       title: 文章标题
       desc: 文章摘要
       url: https://juejin.cn/post/xxx
 ```
+
+- **增删卡片** = 增删 `items` 下的列表项，无需改代码或 CSS。
+- `icon` 支持两种写法：绝对 URL，或放在 `web/assets/` 下的相对路径（构建时自动拷贝到输出目录）。
+- `color` 驱动平台标签 + 图标衬底的配色，深/浅主题自动适配；不填则按序号回退默认色。
 
 #### 11. FAQ（可选，不填跳过整块）
 
@@ -363,4 +369,4 @@ config 中该区块不存在或为空 → 整块跳过
 6. 编辑 `assets/reports/*.html` 替换报告预览内容
 7. 翻译 `locales/en.yaml`
 8. 运行 `python3 build.py --all`
-9. 部署 `dist/` 到 GitHub Pages / Vercel / 任意静态托管
+9. 部署 `docs/` 到 GitHub Pages / Vercel / 任意静态托管
